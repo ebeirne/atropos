@@ -1,0 +1,23 @@
+{
+  "judged_at": "2026-10-10T04:39:17.078Z",
+  "options": {
+    "thread_timeline": "The thread is the interface: one line across the screen is time. Past release days are beads (size = how much you moved, filled = protection would have paid). Atty stands at today. Upcoming releases are knots ahead of her, tied (protect) or cut (skip). Clicking a knot plays her walkthrough for that release; settled calls slide into the past showing whether she was right.",
+    "story_mode": "Full-screen story mode only: one sentence and one visual per screen, tap to advance, like phone stories; detail tables behind a single \"see everything\" link.",
+    "chat_first": "Chat first: the user talks to Atty (voice or text) and she answers with small cards for quotes, history and fine print.",
+    "current": "Keep the current page: a walkthrough hero beside Atty, then numbered index sections (quotes, public funds, watching, news)."
+  },
+  "avg": {
+    "win": {
+      "thread_timeline": 1,
+      "story_mode": 0,
+      "chat_first": 0,
+      "current": 0
+    },
+    "clear": {
+      "thread_timeline": 0.7666666666666668,
+      "story_mode": 0.09,
+      "chat_first": 0.04666666666666667,
+      "current": 0.09666666666666666
+    }
+  }
+}
