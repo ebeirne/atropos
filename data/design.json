@@ -1,0 +1,116 @@
+{
+  "judged_at": "2026-10-09T21:13:44.473Z",
+  "names": [
+    {
+      "name": "Vantage",
+      "art": 1.91,
+      "finance": 1.16,
+      "simple": 1.73,
+      "honest": 0.66,
+      "total": 1.6
+    },
+    {
+      "name": "Horizon Desk",
+      "art": 1.94,
+      "finance": 1.04,
+      "simple": 1.74,
+      "honest": 0.68,
+      "total": 1.57
+    },
+    {
+      "name": "Horizon",
+      "art": 1.96,
+      "finance": 0.82,
+      "simple": 1.84,
+      "honest": 0.61,
+      "total": 1.54
+    },
+    {
+      "name": "Lodestar",
+      "art": 1.91,
+      "finance": 1.28,
+      "simple": 1.32,
+      "honest": 0.7,
+      "total": 1.5
+    },
+    {
+      "name": "Lantern",
+      "art": 1.9,
+      "finance": 0.32,
+      "simple": 1.85,
+      "honest": 0.68,
+      "total": 1.36
+    },
+    {
+      "name": "Bellwether",
+      "art": 1.11,
+      "finance": 1.4,
+      "simple": 1.05,
+      "honest": 0.67,
+      "total": 1.19
+    },
+    {
+      "name": "Prior Desk",
+      "art": 0.98,
+      "finance": 1.08,
+      "simple": 1.4,
+      "honest": 0.7,
+      "total": 1.15
+    },
+    {
+      "name": "Foresight",
+      "art": 1.85,
+      "finance": 0.59,
+      "simple": 1.77,
+      "honest": 0.28,
+      "total": 0.7
+    }
+  ],
+  "design": {
+    "charts": {
+      "pick": "ladder",
+      "probabilities": {
+        "ladder": 0.97,
+        "curve": 0.02,
+        "ranges": 0.01,
+        "cjk": 0
+      }
+    },
+    "headline_face": {
+      "pick": "serif",
+      "probabilities": {
+        "serif": 0.56,
+        "grotesk": 0.44
+      }
+    },
+    "body_face": {
+      "pick": "sans",
+      "probabilities": {
+        "sans": 1,
+        "mono": 0
+      }
+    },
+    "numbers": {
+      "pick": "tabular",
+      "probabilities": {
+        "tabular": 0.92,
+        "body": 0.08
+      }
+    },
+    "ticker": {
+      "pick": "strip",
+      "probabilities": {
+        "strip": 0.85,
+        "none": 0.15
+      }
+    },
+    "accent": {
+      "pick": "navy",
+      "probabilities": {
+        "navy": 0.56,
+        "signals": 0.3,
+        "gold": 0.14
+      }
+    }
+  }
+}

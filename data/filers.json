@@ -1,0 +1,402 @@
+[
+ {
+  "cik": "0001537191",
+  "name": "Louisiana State Employees Retirement System",
+  "lastFiled": "2026-07-21",
+  "adsh": "0001537191-26-000005",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0000796848",
+  "name": "TEACHER RETIREMENT SYSTEM OF TEXAS",
+  "lastFiled": "2026-08-14",
+  "adsh": "0000796848-26-000010",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001007280",
+  "name": "PUBLIC EMPLOYEES RETIREMENT SYSTEM OF OHIO",
+  "lastFiled": "2026-08-17",
+  "adsh": "0001007280-26-000013",
+  "kind": "state_pension",
+  "kindConfidence": 0.97
+ },
+ {
+  "cik": "0001398739",
+  "name": "Employees Retirement System of Texas",
+  "lastFiled": "2026-08-14",
+  "adsh": "0001398739-26-000009",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0000919079",
+  "name": "CALIFORNIA PUBLIC EMPLOYEES RETIREMENT SYSTEM",
+  "lastFiled": "2026-08-14",
+  "adsh": "0000919079-26-000011",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001558481",
+  "name": "Arizona State Retirement System",
+  "lastFiled": "2026-08-07",
+  "adsh": "0000897069-26-001594",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0000762152",
+  "name": "STATE OF MICHIGAN RETIREMENT SYSTEM",
+  "lastFiled": "2026-07-30",
+  "adsh": "0000762152-26-000012",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001081019",
+  "name": "CALIFORNIA STATE TEACHERS RETIREMENT SYSTEM",
+  "lastFiled": "2026-08-24",
+  "adsh": "0001081019-26-000019",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001588873",
+  "name": "Municipal Employees' Retirement System of Michigan",
+  "lastFiled": "2026-08-10",
+  "adsh": "0001588873-26-000004",
+  "kind": "municipal_pension",
+  "kindConfidence": 0.73
+ },
+ {
+  "cik": "0002107791",
+  "name": "Orange County Employees Retirement System",
+  "lastFiled": "2026-08-07",
+  "adsh": "0000897069-26-001596",
+  "kind": "municipal_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0000314969",
+  "name": "NEW YORK STATE TEACHERS RETIREMENT SYSTEM",
+  "lastFiled": "2026-07-23",
+  "adsh": "0000314969-26-000007",
+  "kind": "state_pension",
+  "kindConfidence": 0.99
+ },
+ {
+  "cik": "0001698632",
+  "name": "Texas County & District Retirement System",
+  "lastFiled": "2026-08-04",
+  "adsh": "0001214659-26-009522",
+  "kind": "municipal_pension",
+  "kindConfidence": 0.99
+ },
+ {
+  "cik": "0000938076",
+  "name": "STATE BOARD OF ADMINISTRATION OF FLORIDA RETIREMENT SYSTEM",
+  "lastFiled": "2026-08-10",
+  "adsh": "0000938076-26-000007",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0002040686",
+  "name": "Police & Firemen's Retirement System of New Jersey",
+  "lastFiled": "2026-07-23",
+  "adsh": "0002040686-26-000003",
+  "kind": "state_pension",
+  "kindConfidence": 0.9
+ },
+ {
+  "cik": "0000714142",
+  "name": "TEACHERS RETIREMENT SYSTEM OF THE STATE OF KENTUCKY",
+  "lastFiled": "2026-08-12",
+  "adsh": "0000714142-26-000003",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001986812",
+  "name": "Employees' Retirement Fund of the City of Fort Worth",
+  "lastFiled": "2026-08-07",
+  "adsh": "0001986812-26-000004",
+  "kind": "municipal_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001541910",
+  "name": "Illinois Municipal Retirement Fund",
+  "lastFiled": "2026-08-12",
+  "adsh": "0001541910-26-000008",
+  "kind": "municipal_pension",
+  "kindConfidence": 0.6
+ },
+ {
+  "cik": "0001107314",
+  "name": "OREGON PUBLIC EMPLOYEES RETIREMENT FUND",
+  "lastFiled": "2026-07-29",
+  "adsh": "0001213900-26-082470",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0000810265",
+  "name": "NEW YORK STATE COMMON RETIREMENT FUND",
+  "lastFiled": "2026-07-29",
+  "adsh": "0000810265-26-000004",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001483262",
+  "name": "State of New Jersey Common Pension Fund A",
+  "lastFiled": "2026-07-27",
+  "adsh": "0001483262-26-000003",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0002103310",
+  "name": "PBU - The Pension Fund of Early Childhood & Youth Educators",
+  "lastFiled": "2026-07-16",
+  "adsh": "0002103310-26-000010",
+  "kind": "other",
+  "kindConfidence": 0.42
+ },
+ {
+  "cik": "0001540880",
+  "name": "FJARDE AP-FONDEN /FOURTH SWEDISH NATIONAL PENSION FUND",
+  "lastFiled": "2026-07-29",
+  "adsh": "0001540880-26-000008",
+  "kind": "state_pension",
+  "kindConfidence": 0.6
+ },
+ {
+  "cik": "0001483066",
+  "name": "State of New Jersey Common Pension Fund D",
+  "lastFiled": "2026-08-04",
+  "adsh": "0001483066-26-000003",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001483260",
+  "name": "State of New Jersey Common Pension Fund E",
+  "lastFiled": "2026-07-27",
+  "adsh": "0001483260-26-000003",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0002139779",
+  "name": "Lifeyrissjodur verzlunarmanna (Pension Fund of Commerce)",
+  "lastFiled": "2026-07-27",
+  "adsh": "0002139779-26-000006",
+  "kind": "other",
+  "kindConfidence": 0.84
+ },
+ {
+  "cik": "0000931588",
+  "name": "PROVIDA PENSION FUND ADMINISTRATOR",
+  "lastFiled": "2026-08-28",
+  "adsh": "0001628280-26-059287",
+  "kind": "other",
+  "kindConfidence": 0.85
+ },
+ {
+  "cik": "0000937567",
+  "name": "ONTARIO TEACHERS PENSION PLAN BOARD",
+  "lastFiled": "2026-08-07",
+  "adsh": "0001999371-26-017424",
+  "kind": "other",
+  "kindConfidence": 0.56
+ },
+ {
+  "cik": "0001991835",
+  "name": "Canada Post Corp Registered Pension Plan",
+  "lastFiled": "2026-07-15",
+  "adsh": "0001991835-26-000003",
+  "kind": "other",
+  "kindConfidence": 0.91
+ },
+ {
+  "cik": "0001283718",
+  "name": "CANADA PENSION PLAN INVESTMENT BOARD",
+  "lastFiled": "2026-08-14",
+  "adsh": "0001104659-26-097308",
+  "kind": "other",
+  "kindConfidence": 0.57
+ },
+ {
+  "cik": "0001535845",
+  "name": "HEALTHCARE OF ONTARIO PENSION PLAN TRUST FUND",
+  "lastFiled": "2026-08-13",
+  "adsh": "0001535845-26-000007",
+  "kind": "other",
+  "kindConfidence": 0.54
+ },
+ {
+  "cik": "0001396318",
+  "name": "PUBLIC SECTOR PENSION INVESTMENT BOARD",
+  "lastFiled": "2026-08-13",
+  "adsh": "0001396318-26-000031",
+  "kind": "state_pension",
+  "kindConfidence": 0.68
+ },
+ {
+  "cik": "0002064039",
+  "name": "North Dakota State Investment Board",
+  "lastFiled": "2026-08-04",
+  "adsh": "0002064039-26-000005",
+  "kind": "state_pension",
+  "kindConfidence": 0.97
+ },
+ {
+  "cik": "0000854157",
+  "name": "STATE OF WISCONSIN INVESTMENT BOARD",
+  "lastFiled": "2026-08-14",
+  "adsh": "0001062993-26-004375",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0000943712",
+  "name": "WASHINGTON STATE INVESTMENT BOARD",
+  "lastFiled": "2026-08-03",
+  "adsh": "0000943712-26-000004",
+  "kind": "state_pension",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0000315297",
+  "name": "PUBLIC EMPLOYEES RETIREMENT ASSOCIATION OF COLORADO",
+  "lastFiled": "2026-08-11",
+  "adsh": "0000315297-26-000007",
+  "kind": "state_pension",
+  "kindConfidence": 0.9
+ },
+ {
+  "cik": "0000315024",
+  "name": "SCHOOL EMPLOYEES RETIREMENT BOARD OF OHIO",
+  "lastFiled": "2026-07-13",
+  "adsh": "0000315024-26-000003",
+  "kind": "state_pension",
+  "kindConfidence": 0.86
+ },
+ {
+  "cik": "0000315054",
+  "name": "REGENTS OF THE UNIVERSITY OF CALIFORNIA",
+  "lastFiled": "2026-08-11",
+  "adsh": "0001140361-26-032196",
+  "kind": "public_university",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001697228",
+  "name": "University of Wisconsin Foundation",
+  "lastFiled": "2026-08-14",
+  "adsh": "0001697228-26-000005",
+  "kind": "public_university",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0002103357",
+  "name": "University of Cambridge Investment Management Ltd",
+  "lastFiled": "2026-07-13",
+  "adsh": "0002103357-26-000003",
+  "kind": "other",
+  "kindConfidence": 0.31
+ },
+ {
+  "cik": "0000351083",
+  "name": "TRUSTEES OF THE UNIVERSITY OF PENNSYLVANIA",
+  "lastFiled": "2026-08-10",
+  "adsh": "0001193125-26-342162",
+  "kind": "private_university",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001994249",
+  "name": "University of Illinois Foundation",
+  "lastFiled": "2026-08-12",
+  "adsh": "0001104659-26-094727",
+  "kind": "public_university",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001802874",
+  "name": "University of Massachusetts Foundation, Inc.",
+  "lastFiled": "2026-10-01",
+  "adsh": "0001802874-26-000014",
+  "kind": "public_university",
+  "kindConfidence": 0.99
+ },
+ {
+  "cik": "0001624050",
+  "name": "University of Maryland Foundation, Inc.",
+  "lastFiled": "2026-08-12",
+  "adsh": "0001193125-26-345988",
+  "kind": "public_university",
+  "kindConfidence": 0.99
+ },
+ {
+  "cik": "0000314957",
+  "name": "UNIVERSITY OF CHICAGO",
+  "lastFiled": "2026-08-14",
+  "adsh": "0001104659-26-096786",
+  "kind": "private_university",
+  "kindConfidence": 0.97
+ },
+ {
+  "cik": "0001019231",
+  "name": "UNIVERSITY OF TEXAS/TEXAS AM INVESTMENT MANAGEMENT CO",
+  "lastFiled": "2026-08-03",
+  "adsh": "0001019231-26-000022",
+  "kind": "public_university",
+  "kindConfidence": 0.97
+ },
+ {
+  "cik": "0001896071",
+  "name": "University of Pittsburgh - Of the Commonwealth System of Higher Education",
+  "lastFiled": "2026-08-12",
+  "adsh": "0001896071-26-000006",
+  "kind": "public_university",
+  "kindConfidence": 1
+ },
+ {
+  "cik": "0001904477",
+  "name": "Endowment Wealth Management, Inc.",
+  "lastFiled": "2026-08-06",
+  "adsh": "0001214659-26-009680",
+  "kind": "other",
+  "kindConfidence": 0.86
+ },
+ {
+  "cik": "0001512237",
+  "name": "Global Endowment Management, LP",
+  "lastFiled": "2026-08-14",
+  "adsh": "0001512237-26-000004",
+  "kind": "other",
+  "kindConfidence": 0.84
+ },
+ {
+  "cik": "0000316011",
+  "name": "LILLY ENDOWMENT INC",
+  "lastFiled": "2026-07-23",
+  "adsh": "0000316011-26-000027",
+  "kind": "private_university",
+  "kindConfidence": 0.7
+ },
+ {
+  "cik": "0001034546",
+  "name": "CITY OF LONDON INVESTMENT MANAGEMENT CO LTD",
+  "lastFiled": "2026-07-31",
+  "adsh": "0001072613-26-000621",
+  "kind": "other",
+  "kindConfidence": 0.45
+ }
+]

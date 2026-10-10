@@ -1,0 +1,335 @@
+{
+  "judged_at": "2026-10-09T20:38:19.902Z",
+  "model": null,
+  "slots": {
+    "hero": {
+      "pick": "See what the market expects before it happens.",
+      "rows": [
+        {
+          "text": "Know the odds before the number.",
+          "clear": 0.86,
+          "accurate": 0.52
+        },
+        {
+          "text": "See what the market expects before it happens.",
+          "clear": 1.05,
+          "accurate": 0.59
+        },
+        {
+          "text": "See what the market expects.",
+          "clear": 0.82,
+          "accurate": 0.56
+        },
+        {
+          "text": "Prediction-market odds, turned into one trade or none.",
+          "clear": 0.81,
+          "accurate": 0.81
+        },
+        {
+          "text": "What traders expect, checked against what you own.",
+          "clear": 0.85,
+          "accurate": 0.61
+        },
+        {
+          "text": "The odds on every economic release, read for your portfolio.",
+          "clear": 0.76,
+          "accurate": 0.42
+        }
+      ],
+      "latency_ms": 404
+    },
+    "hero_sub": {
+      "pick": "Reads the odds. Checks your holdings. Suggests one trade, or none.",
+      "rows": [
+        {
+          "text": "Odds on inflation, the Fed and jobs, checked against your holdings.",
+          "clear": 0.8,
+          "accurate": 0.52
+        },
+        {
+          "text": "Prediction markets price every economic release. We check those odds against what you own.",
+          "clear": 0.64,
+          "accurate": 0.19
+        },
+        {
+          "text": "Reads the odds. Checks your holdings. Suggests one trade, or none.",
+          "clear": 1.42,
+          "accurate": 0.67
+        },
+        {
+          "text": "Live odds on the next inflation print, Fed decision and jobs report, matched to your portfolio.",
+          "clear": 0.72,
+          "accurate": 0.63
+        },
+        {
+          "text": "What traders expect for inflation, the Fed and jobs, checked against what you own.",
+          "clear": 0.92,
+          "accurate": 0.66
+        },
+        {
+          "text": "Odds on the next inflation, Fed and jobs numbers. Matched to what you own. One trade, or none.",
+          "clear": 1,
+          "accurate": 0.74
+        }
+      ],
+      "latency_ms": 208
+    },
+    "cta": {
+      "pick": "Check my portfolio",
+      "rows": [
+        {
+          "text": "Open the console",
+          "clear": 0.62,
+          "accurate": 0.24
+        },
+        {
+          "text": "See this week",
+          "clear": 1.28,
+          "accurate": 0.43
+        },
+        {
+          "text": "Check my portfolio",
+          "clear": 1.47,
+          "accurate": 0.38
+        },
+        {
+          "text": "Get started",
+          "clear": 1.23,
+          "accurate": 0.45
+        }
+      ],
+      "latency_ms": 186
+    },
+    "step1": {
+      "pick": "Read the odds. What traders are betting on inflation, the Fed and jobs.",
+      "rows": [
+        {
+          "text": "Read the odds. What traders are betting on inflation, the Fed and jobs.",
+          "clear": 1.21,
+          "accurate": 0.8
+        },
+        {
+          "text": "Read the odds. Live prediction-market prices, cleaned of the betting margin.",
+          "clear": 0.96,
+          "accurate": 0.84
+        },
+        {
+          "text": "Read the odds. Every possible outcome, with how likely the market thinks it is.",
+          "clear": 0.8,
+          "accurate": 0.43
+        }
+      ],
+      "latency_ms": 174
+    },
+    "step2": {
+      "pick": "Check what you own. Read-only access to your brokerage, nothing more.",
+      "rows": [
+        {
+          "text": "Check what you own. Link Robinhood or Fidelity, read-only.",
+          "clear": 1.23,
+          "accurate": 0.82
+        },
+        {
+          "text": "Check what you own. See how each release could move each holding.",
+          "clear": 0.88,
+          "accurate": 0.28
+        },
+        {
+          "text": "Check what you own. Read-only access to your brokerage, nothing more.",
+          "clear": 1.57,
+          "accurate": 0.84
+        }
+      ],
+      "latency_ms": 128
+    },
+    "step3": {
+      "pick": "Get one trade, or none. You place it yourself, if you want it.",
+      "rows": [
+        {
+          "text": "Get one trade, or none. Only when options disagree with the odds.",
+          "clear": 1.03,
+          "accurate": 0.79
+        },
+        {
+          "text": "Get one trade, or none. Most weeks, none.",
+          "clear": 1.42,
+          "accurate": 0.83
+        },
+        {
+          "text": "Get one trade, or none. You place it yourself, if you want it.",
+          "clear": 1.6,
+          "accurate": 0.82
+        }
+      ],
+      "latency_ms": 226
+    },
+    "why1": {
+      "pick": "Markets called every Fed meeting in one Fed study.",
+      "rows": [
+        {
+          "text": "Prediction markets forecast the Fed well.",
+          "clear": 0.5,
+          "accurate": 0.46
+        },
+        {
+          "text": "The odds are usually right.",
+          "clear": 0.51,
+          "accurate": 0.21
+        },
+        {
+          "text": "Markets called every Fed meeting in one Fed study.",
+          "clear": 0.6,
+          "accurate": 0.63
+        }
+      ],
+      "latency_ms": 196
+    },
+    "why2": {
+      "pick": "They rarely beat stocks to the news.",
+      "rows": [
+        {
+          "text": "They rarely beat stocks to the news.",
+          "clear": 0.58,
+          "accurate": 0.58
+        },
+        {
+          "text": "Being right is not the same as being early.",
+          "clear": 0.37,
+          "accurate": 0.53
+        },
+        {
+          "text": "Stocks usually move just as fast.",
+          "clear": 0.48,
+          "accurate": 0.37
+        }
+      ],
+      "latency_ms": 150
+    },
+    "why3": {
+      "pick": "The edge is two prices that disagree.",
+      "rows": [
+        {
+          "text": "So we trade disagreement, not forecasts.",
+          "clear": 1.02,
+          "accurate": 0.82
+        },
+        {
+          "text": "The edge is two prices that disagree.",
+          "clear": 1.1,
+          "accurate": 0.82
+        },
+        {
+          "text": "We look for prices that do not add up.",
+          "clear": 0.69,
+          "accurate": 0.77
+        }
+      ],
+      "latency_ms": 147
+    },
+    "odds": {
+      "pick": "What the market expects this week",
+      "rows": [
+        {
+          "text": "This week's odds",
+          "clear": 1.49,
+          "accurate": 0.49
+        },
+        {
+          "text": "What the market expects this week",
+          "clear": 1.55,
+          "accurate": 0.48
+        },
+        {
+          "text": "This week",
+          "clear": 1.33,
+          "accurate": 0.34
+        }
+      ],
+      "latency_ms": 160
+    },
+    "limit1": {
+      "pick": "Read-only. You place every trade.",
+      "rows": [
+        {
+          "text": "It never places orders. You do.",
+          "clear": 0.83,
+          "accurate": 0.86
+        },
+        {
+          "text": "Read-only. You place every trade.",
+          "clear": 1.25,
+          "accurate": 0.91
+        },
+        {
+          "text": "It cannot trade for you.",
+          "clear": 1.15,
+          "accurate": 0.87
+        }
+      ],
+      "latency_ms": 181
+    },
+    "limit2": {
+      "pick": "It sees positions, not your goals or taxes.",
+      "rows": [
+        {
+          "text": "It sees positions, not your goals or taxes.",
+          "clear": 0.58,
+          "accurate": 0.76
+        },
+        {
+          "text": "It does not know your situation.",
+          "clear": 0.09,
+          "accurate": 0.76
+        },
+        {
+          "text": "Your goals and taxes are yours to judge.",
+          "clear": 0.3,
+          "accurate": 0.64
+        }
+      ],
+      "latency_ms": 172
+    },
+    "limit3": {
+      "pick": "Its weakest step: turning a surprise into a price move.",
+      "rows": [
+        {
+          "text": "Its weakest step: turning a surprise into a price move.",
+          "clear": 0.36,
+          "accurate": 0.77
+        },
+        {
+          "text": "Distrust the move estimate first.",
+          "clear": 0.25,
+          "accurate": 0.39
+        },
+        {
+          "text": "Price-move estimates rest on short history.",
+          "clear": 0.35,
+          "accurate": 0.81
+        }
+      ],
+      "latency_ms": 153
+    },
+    "close": {
+      "pick": "Local and read-only. Your keys never leave your computer.",
+      "rows": [
+        {
+          "text": "Runs on your machine. Your keys stay with you.",
+          "clear": 1.64,
+          "accurate": 0.57
+        },
+        {
+          "text": "Local and read-only. Your keys never leave your computer.",
+          "clear": 1.65,
+          "accurate": 0.55
+        },
+        {
+          "text": "Your keys and positions never leave your machine.",
+          "clear": 1.5,
+          "accurate": 0.5
+        }
+      ],
+      "latency_ms": 184
+    }
+  }
+}

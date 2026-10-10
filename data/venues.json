@@ -1,0 +1,706 @@
+{
+ "surveyed_at": "2026-10-09T21:46:45+00:00",
+ "tool": "Scrapling Fetcher (plain HTTP)",
+ "venues": [
+  {
+   "name": "Kalshi",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": false,
+   "statuses": [
+    "SSLError: Failed to perform, curl: (35) Recv failure: Connection was reset. See https://curl.se/libcurl/c/libcurl-errors.html firs"
+   ]
+  },
+  {
+   "name": "Polymarket",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": false,
+   "statuses": [
+    "SSLError: Failed to perform, curl: (35) Recv failure: Connection was reset. See https://curl.se/libcurl/c/libcurl-errors.html firs"
+   ]
+  },
+  {
+   "name": "Manifold",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": false,
+   "statuses": [
+    "SSLError: Failed to perform, curl: (35) Recv failure: Connection was reset. See https://curl.se/libcurl/c/libcurl-errors.html firs"
+   ]
+  },
+  {
+   "name": "Limitless",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 2,
+     "markets": [
+      {
+       "title": "September Inflation US - Annual",
+       "price": {},
+       "url": "september-inflation-us-annual-1789462576803"
+      },
+      {
+       "title": "South Korea Annual Inflation 2026",
+       "price": {},
+       "url": "south-korea-annual-inflation-2026-1782140945081"
+      }
+     ]
+    },
+    "fomc": {
+     "count": 5,
+     "markets": [
+      {
+       "title": "Fed Decision in October?",
+       "price": {},
+       "url": "fed-decision-in-october-1786349804918"
+      },
+      {
+       "title": "Fed rate cut by __?",
+       "price": {},
+       "url": "fed-rate-cut-by-1779881657530"
+      },
+      {
+       "title": "Another Fed rate hike in 2026?",
+       "price": {
+        "prices": [
+         0.77,
+         0.23
+        ]
+       },
+       "url": "another-fed-rate-hike-in-2026-1789636928078"
+      },
+      {
+       "title": "ECB Interest Rates: October 2026",
+       "price": {},
+       "url": "ecb-interest-rates-october-2026-1789050608644"
+      },
+      {
+       "title": "ECB Interest Rates: December 2026",
+       "price": {},
+       "url": "ecb-interest-rates-december-2026-1789566905551"
+      }
+     ]
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": true,
+   "statuses": [
+    "200"
+   ]
+  },
+  {
+   "name": "PredictIt",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": true,
+   "statuses": [
+    "200"
+   ]
+  },
+  {
+   "name": "Metaculus",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": false,
+   "statuses": [
+    "403"
+   ]
+  },
+  {
+   "name": "Smarkets",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": false,
+   "statuses": [
+    "SSLError: Failed to perform, curl: (35) Recv failure: Connection was reset. See https://curl.se/libcurl/c/libcurl-errors.html firs"
+   ]
+  },
+  {
+   "name": "Futuur",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 10,
+     "markets": [
+      {
+       "title": "US headline inflation rate in September (month-over-month CPI)",
+       "price": {},
+       "url": "us-headline-inflation-rate-in-september-month-over-month-cpi"
+      },
+      {
+       "title": "Inflation",
+       "price": {},
+       "url": "inflation"
+      },
+      {
+       "title": "US Core CPI inflation (month-over-month): September",
+       "price": {},
+       "url": "us-core-cpi-inflation-month-over-month-september"
+      },
+      {
+       "title": "US annual inflation rate (CPI) at the end of 2026?",
+       "price": {},
+       "url": "us-annual-inflation-rate-cpi-at-the-end-of-2026"
+      },
+      {
+       "title": "Brazil's to rank better in the next Corruption Perception Index (CPI)?",
+       "price": {},
+       "url": "brazils-to-rank-better-in-the-next-corruption-perception-index-cpi"
+      },
+      {
+       "title": "CPI Corruption Perceptions Index",
+       "price": {},
+       "url": "cpi-corruption-perceptions-index"
+      },
+      {
+       "title": "Argentina monthly inflation: September",
+       "price": {},
+       "url": "argentina-monthly-inflation-september"
+      },
+      {
+       "title": "US Core PCE inflation (year-over-year) \u2014 September",
+       "price": {},
+       "url": "us-core-pce-inflation-year-over-year-september"
+      },
+      {
+       "title": "Euro area\u2019s inflation rate in 2026",
+       "price": {},
+       "url": "euro-areas-inflation-rate-in-2026"
+      },
+      {
+       "title": "US Core PCE inflation (month-over-month) \u2014 September",
+       "price": {},
+       "url": "us-core-pce-inflation-month-over-month-september"
+      }
+     ]
+    },
+    "fomc": {
+     "count": 11,
+     "markets": [
+      {
+       "title": "Fed interest rate decision \u2014 October 2026",
+       "price": {},
+       "url": "fed-interest-rate-decision-october-2026"
+      },
+      {
+       "title": "Fed",
+       "price": {},
+       "url": "fed"
+      },
+      {
+       "title": "Interest rate",
+       "price": {},
+       "url": "interest-rate"
+      },
+      {
+       "title": "Interest Rates",
+       "price": {},
+       "url": "interest-rates"
+      },
+      {
+       "title": "Emergency Fed meeting in 2026?",
+       "price": {},
+       "url": "emergency-fed-meeting-in-2026"
+      },
+      {
+       "title": "Number of FOMC meetings with FED interest rate cuts in the US in 2026",
+       "price": {},
+       "url": "number-of-fomc-meetings-with-fed-interest-rate-cuts-in-the-us-in-2026"
+      },
+      {
+       "title": "Will Lisa Cook leave the office of Federal Reserve governor in 2026?",
+       "price": {},
+       "url": "will-lisa-cook-leave-the-office-of-federal-reserve-governor-in-2026"
+      },
+      {
+       "title": "US basic interest rate at the end of 2026",
+       "price": {},
+       "url": "us-basic-interest-rate-at-the-end-of-2026"
+      },
+      {
+       "title": "Bank of Japan interest rate decision \u2014 October 2026",
+       "price": {},
+       "url": "bank-of-japan-interest-rate-decision-october-2026"
+      },
+      {
+       "title": "United Kingdom\u2019s interest rate at the end of 2026",
+       "price": {},
+       "url": "united-kingdoms-interest-rate-at-the-end-of-2026"
+      },
+      {
+       "title": "Russia\u2019s interest rate at the end of 2026",
+       "price": {},
+       "url": "russias-interest-rate-at-the-end-of-2026"
+      }
+     ]
+    },
+    "nfp": {
+     "count": 2,
+     "markets": [
+      {
+       "title": "US nonfarm payrolls: October",
+       "price": {},
+       "url": "us-nonfarm-payrolls-october"
+      },
+      {
+       "title": "Jobs report",
+       "price": {},
+       "url": "jobs-report"
+      }
+     ]
+    }
+   },
+   "reachable": true,
+   "statuses": [
+    "200"
+   ]
+  },
+  {
+   "name": "SX Bet",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": false,
+   "statuses": [
+    "SSLError: Failed to perform, curl: (35) Recv failure: Connection was reset. See https://curl.se/libcurl/c/libcurl-errors.html firs"
+   ]
+  },
+  {
+   "name": "Myriad",
+   "kind": "page",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 2,
+     "markets": [
+      {
+       "title": "FED",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "interest rate",
+       "price": {},
+       "url": null
+      }
+     ]
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": true,
+   "statuses": [
+    "200"
+   ]
+  },
+  {
+   "name": "Drift BET",
+   "kind": "page",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": false,
+   "statuses": [
+    "DNSError: Failed to perform, curl: (6) Could not resolve host: bet.drift.trade. See https://curl.se/libcurl/c/libcurl-errors.html "
+   ]
+  },
+  {
+   "name": "Hedgehog",
+   "kind": "page",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": true,
+   "statuses": [
+    "200"
+   ]
+  },
+  {
+   "name": "Insight Prediction",
+   "kind": "page",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": true,
+   "statuses": [
+    "200"
+   ]
+  },
+  {
+   "name": "ForecastEx + Kalshi + CME (IBKR ForecastTrader)",
+   "kind": "api",
+   "releases": {
+    "cpi": {
+     "count": 19,
+     "markets": [
+      {
+       "title": "CPI Core",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Chicago CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "US Core CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Western US CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Los Angeles CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Atlanta CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Northeastern US CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Southern US CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Midwestern US CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Boston CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Detroit CPI",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Washington DC CPI",
+       "price": {},
+       "url": null
+      }
+     ]
+    },
+    "fomc": {
+     "count": 67,
+     "markets": [
+      {
+       "title": "Fed Decision",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Cut rates by 25bps at their January 2028 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Cut rates by >25bps at their January 2028 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Fed Maintains Rate",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Hike rates by 0bps at their January 2028 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Hike rates by 25bps at their January 2028 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Hike rates by >25bps at their January 2028 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Cut rates by 25bps at their April 2027 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Cut rates by >25bps at their April 2027 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Hike rates by 0bps at their April 2027 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Hike rates by 25bps at their April 2027 meeting?",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Will the Federal Reserve Hike rates by >25bps at their April 2027 meeting?",
+       "price": {},
+       "url": null
+      }
+     ]
+    },
+    "nfp": {
+     "count": 4,
+     "markets": [
+      {
+       "title": "US Payroll Employment",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "US Unemployment Rate",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Canada Unemployment Rate",
+       "price": {},
+       "url": null
+      },
+      {
+       "title": "Eurozone Unemployment Rate",
+       "price": {},
+       "url": null
+      }
+     ]
+    }
+   },
+   "reachable": true,
+   "statuses": [
+    "200"
+   ]
+  },
+  {
+   "name": "Betfair Exchange",
+   "kind": "page",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": false,
+   "statuses": [
+    "SSLError: Failed to perform, curl: (35) Recv failure: Connection was reset. See https://curl.se/libcurl/c/libcurl-errors.html firs"
+   ]
+  },
+  {
+   "name": "Crypto.com Predictions",
+   "kind": "page",
+   "releases": {
+    "cpi": {
+     "count": 0,
+     "markets": []
+    },
+    "fomc": {
+     "count": 0,
+     "markets": []
+    },
+    "nfp": {
+     "count": 0,
+     "markets": []
+    }
+   },
+   "reachable": true,
+   "statuses": [
+    "200"
+   ]
+  }
+ ],
+ "browser_discovery": [
+  {
+   "status": 200,
+   "url": "https://www.interactivebrokers.com/tws.proxy/public/forecasttrader/prediction/category/tree"
+  },
+  {
+   "status": 200,
+   "url": "https://www.interactivebrokers.com/tws.proxy/public/forecasttrader/prediction/product/popular?sortBy=open_interest"
+  },
+  {
+   "status": 200,
+   "url": "https://www.interactivebrokers.com/tws.proxy/public/forecasttrader/prediction/product/list?categories=g137904&sortBy=open_interest"
+  },
+  {
+   "status": 200,
+   "url": "https://www.interactivebrokers.com/tws.proxy/public/forecasttrader/prediction/contract/list?conid=791099758&exchange=FORECASTX"
+  },
+  {
+   "status": 200,
+   "url": "https://www.interactivebrokers.com/tws.proxy/public/forecasttrader/prediction/category/tree"
+  },
+  {
+   "status": 200,
+   "url": "https://www.interactivebrokers.com/tws.proxy/public/forecasttrader/prediction/contract/list?conid=791099758&exchange=FORECASTX"
+  },
+  {
+   "status": 200,
+   "url": "https://www.interactivebrokers.com/tws.proxy/public/forecasttrader/contract/rules?conid=853761606"
+  },
+  {
+   "status": 200,
+   "url": "https://www.interactivebrokers.com/tws.proxy/public/forecasttrader/contract/rules?conid=906378118"
+  }
+ ]
+}

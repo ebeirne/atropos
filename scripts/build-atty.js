@@ -1,0 +1,39 @@
+// Stage Atty's page and its saved data in dist/atty for its own artifact, with her
+// walkthrough lines checked by Jev and pre-recorded so the page can speak offline.
+// Run the server first so the agent and benchmark snapshots are fresh:
+//   curl /api/agent?run=1 > public/atty/agent.json ; curl /api/funds?tickers=... > public/atty/funds.json
+//   node scripts/build-atty.js            (add --no-voice to skip recording)
+require('../lib/env').load(require('path').join(__dirname, '..', '.env'));
+const fs = require('fs'); const path = require('path');
+const pub = path.join(__dirname, '..', 'public');
+const out = path.join(__dirname, '..', 'dist', 'atty');
+
+(async () => {
+  fs.mkdirSync(out, { recursive: true });
+  for (const f of ['index.html', 'agent.json', 'funds.json', 'beats.js']) fs.copyFileSync(path.join(pub, 'atty', f), path.join(out, f));
+  for (const f of ['tape.json', 'news-sample.json']) fs.copyFileSync(path.join(pub, f), path.join(out, f));
+  // in the artifact the shared snapshots sit next to the page, not one folder up
+  const page = path.join(out, 'index.html');
+  fs.writeFileSync(page, fs.readFileSync(page, 'utf8').split("'../tape.json'").join("'tape.json'").split("'../news-sample.json'").join("'news-sample.json'"));
+
+  // the walkthrough exactly as the saved page will build it
+  const { beats } = require(path.join(pub, 'atty', 'beats.js'));
+  const read = (f) => JSON.parse(fs.readFileSync(path.join(out, f), 'utf8'));
+  const list = beats({ agent: read('agent.json'), funds: read('funds.json'), tape: read('tape.json') });
+  list.forEach((b, i) => console.log(`${i + 1}. ${b.say}${b.sub ? '  / ' + b.sub : ''}`));
+
+  const jev = require('../lib/jev');
+  if (jev.configured()) {
+    const r = await jev.checkRationales(list.filter((b) => Object.keys(b.numbers).length).map((b) => ({ id: b.id, text: [b.say, b.sub].filter(Boolean).join(' '), numbers: b.numbers })));
+    console.log('jev check:', Object.entries(r.checks).map(([k, v]) => `${k} ${v}`).join(' · '));
+  }
+
+  if (!process.argv.includes('--no-voice')) {
+    const voice = require('../lib/voice');
+    const dir = path.join(out, 'voice');
+    fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
+    for (const b of list) fs.writeFileSync(path.join(dir, b.hash + '.mp3'), await voice.speak(b.say));
+    console.log('recorded', list.length, 'lines with voice', voice.voiceId());
+  }
+  console.log('staged', fs.readdirSync(out).join(', '));
+})().catch((e) => { console.error(e.message); process.exit(1); });

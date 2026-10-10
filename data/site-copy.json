@@ -1,0 +1,995 @@
+{
+  "judged_at": "2026-10-09T21:14:43.447Z",
+  "name": "Horizon Desk",
+  "slots": {
+    "hero": {
+      "pick": "See what the market expects before it happens.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "See what the market expects before it happens.",
+          "clear": 1.03,
+          "accurate": 0.72
+        },
+        {
+          "text": "Know the odds before the number.",
+          "clear": 0.84,
+          "accurate": 0.54
+        },
+        {
+          "text": "What the market expects, before the number prints.",
+          "clear": 0.83,
+          "accurate": 0.6
+        }
+      ],
+      "latency_ms": 213
+    },
+    "hero_sub": {
+      "pick": "Reads the odds. Checks your holdings. Suggests one trade, or none.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Reads the odds. Checks your holdings. Suggests one trade, or none.",
+          "clear": 1.46,
+          "accurate": 0.91
+        },
+        {
+          "text": "Prediction-market odds, checked against your portfolio. One trade, or none.",
+          "clear": 0.87,
+          "accurate": 0.79
+        },
+        {
+          "text": "Odds on inflation, the Fed and jobs, matched to what you own.",
+          "clear": 1.03,
+          "accurate": 0.84
+        }
+      ],
+      "latency_ms": 136
+    },
+    "cta": {
+      "pick": "Check my portfolio",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Check my portfolio",
+          "clear": 1.57,
+          "accurate": 0.51
+        },
+        {
+          "text": "Open the console",
+          "clear": 0.8,
+          "accurate": 0.22
+        },
+        {
+          "text": "See this week",
+          "clear": 1.19,
+          "accurate": 0.39
+        }
+      ],
+      "latency_ms": 129
+    },
+    "step1": {
+      "pick": "Read the odds. What traders are betting on inflation, the Fed and jobs.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Read the odds. What traders are betting on inflation, the Fed and jobs.",
+          "clear": 1.21,
+          "accurate": 0.81
+        },
+        {
+          "text": "Read the odds. Live prices on every outcome of each release.",
+          "clear": 0.77,
+          "accurate": 0.41
+        }
+      ],
+      "latency_ms": 158
+    },
+    "step2": {
+      "pick": "Check what you own. Read-only access to your brokerage, nothing more.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Check what you own. Read-only access to your brokerage, nothing more.",
+          "clear": 1.66,
+          "accurate": 0.89
+        },
+        {
+          "text": "Check what you own. See how each release could move each holding.",
+          "clear": 1.43,
+          "accurate": 0.9
+        }
+      ],
+      "latency_ms": 169
+    },
+    "step3": {
+      "pick": "Get one trade, or none. You place it yourself, if you want it.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Get one trade, or none. You place it yourself, if you want it.",
+          "clear": 1.48,
+          "accurate": 0.82
+        },
+        {
+          "text": "Get one trade, or none. Only when two prices disagree.",
+          "clear": 1.05,
+          "accurate": 0.71
+        }
+      ],
+      "latency_ms": 134
+    },
+    "why1": {
+      "pick": "In a Fed study, the odds called every Fed meeting the day before.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Markets called every Fed meeting in one Fed study.",
+          "clear": 0.54,
+          "accurate": 0.63
+        },
+        {
+          "text": "In a Fed study, the odds called every Fed meeting the day before.",
+          "clear": 0.57,
+          "accurate": 0.76
+        }
+      ],
+      "latency_ms": 133
+    },
+    "why2": {
+      "pick": "They rarely beat stocks to the news.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "They rarely beat stocks to the news.",
+          "clear": 0.34,
+          "accurate": 0.61
+        },
+        {
+          "text": "Stocks usually move just as fast.",
+          "clear": 0.12,
+          "accurate": 0.47
+        }
+      ],
+      "latency_ms": 126
+    },
+    "why3": {
+      "pick": "The edge is two prices that disagree.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "The edge is two prices that disagree.",
+          "clear": 0.67,
+          "accurate": 0.56
+        },
+        {
+          "text": "So we trade disagreement, not forecasts.",
+          "clear": 0.58,
+          "accurate": 0.55
+        }
+      ],
+      "latency_ms": 135
+    },
+    "odds_head": {
+      "pick": "What the market expects this week",
+      "passed": false,
+      "rows": [
+        {
+          "text": "What the market expects this week",
+          "clear": 1.76,
+          "accurate": 0.41
+        },
+        {
+          "text": "This week's odds",
+          "clear": 1.71,
+          "accurate": 0.41
+        },
+        {
+          "text": "The odds, this week",
+          "clear": 1.68,
+          "accurate": 0.4
+        }
+      ],
+      "latency_ms": 126
+    },
+    "ticker": {
+      "pick": "Odds this week",
+      "passed": false,
+      "rows": [
+        {
+          "text": "This week",
+          "clear": 1.13,
+          "accurate": 0.3
+        },
+        {
+          "text": "Odds this week",
+          "clear": 1.58,
+          "accurate": 0.46
+        },
+        {
+          "text": "Market odds",
+          "clear": 1.55,
+          "accurate": 0.44
+        }
+      ],
+      "latency_ms": 117
+    },
+    "limit1": {
+      "pick": "Read-only. You place every trade.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Read-only. You place every trade.",
+          "clear": 1.21,
+          "accurate": 0.92
+        },
+        {
+          "text": "It cannot trade for you.",
+          "clear": 0.84,
+          "accurate": 0.9
+        }
+      ],
+      "latency_ms": 171
+    },
+    "limit2": {
+      "pick": "It sees positions, not your goals or taxes.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "It sees positions, not your goals or taxes.",
+          "clear": 0.34,
+          "accurate": 0.83
+        },
+        {
+          "text": "It does not know your goals or taxes.",
+          "clear": 0.17,
+          "accurate": 0.9
+        }
+      ],
+      "latency_ms": 130
+    },
+    "limit3": {
+      "pick": "Its move estimates rest on a short history. Treat them as rough.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Its weakest step: turning a surprise into a price move.",
+          "clear": 1.2,
+          "accurate": 0.78
+        },
+        {
+          "text": "How far prices move on a surprise is our least certain number.",
+          "clear": 1.31,
+          "accurate": 0.82
+        },
+        {
+          "text": "We estimate how far a surprise moves prices. That estimate is the weakest part.",
+          "clear": 1.64,
+          "accurate": 0.87
+        },
+        {
+          "text": "Move sizes come from a short history, so treat them as rough.",
+          "clear": 1.7,
+          "accurate": 0.68
+        },
+        {
+          "text": "Its move estimates rest on a short history. Treat them as rough.",
+          "clear": 1.73,
+          "accurate": 0.8
+        }
+      ],
+      "latency_ms": 203,
+      "rejudged_at": "2026-10-09T21:23:14.311Z"
+    },
+    "close": {
+      "pick": "Runs on your machine. Your keys stay with you.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Local and read-only. Your keys never leave your computer.",
+          "clear": 1.74,
+          "accurate": 0.8
+        },
+        {
+          "text": "Runs on your machine. Your keys stay with you.",
+          "clear": 1.81,
+          "accurate": 0.9
+        }
+      ],
+      "latency_ms": 125
+    },
+    "footer": {
+      "pick": "Not investment advice. Read-only brokerage access.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Not investment advice.",
+          "clear": 1.47,
+          "accurate": 0.69
+        },
+        {
+          "text": "Not investment advice. Read-only brokerage access.",
+          "clear": 1.83,
+          "accurate": 0.93
+        }
+      ],
+      "latency_ms": 134
+    },
+    "run": {
+      "pick": "Check this week",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Read the week",
+          "clear": 1.08,
+          "accurate": 0.34
+        },
+        {
+          "text": "Refresh",
+          "clear": 1.12,
+          "accurate": 0.38
+        },
+        {
+          "text": "Check this week",
+          "clear": 1.18,
+          "accurate": 0.39
+        }
+      ],
+      "latency_ms": 143
+    },
+    "copy_order": {
+      "pick": "Copy to clipboard",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Copy order",
+          "clear": 1.65,
+          "accurate": 0.22
+        },
+        {
+          "text": "Copy",
+          "clear": 1.63,
+          "accurate": 0.26
+        },
+        {
+          "text": "Copy to clipboard",
+          "clear": 1.94,
+          "accurate": 0.35
+        }
+      ],
+      "latency_ms": 148
+    },
+    "orders_head": {
+      "pick": "Suggested orders",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Orders",
+          "clear": 1.99,
+          "accurate": 0.44
+        },
+        {
+          "text": "Suggested orders",
+          "clear": 1.93,
+          "accurate": 0.57
+        },
+        {
+          "text": "This week's trade",
+          "clear": 1.89,
+          "accurate": 0.39
+        }
+      ],
+      "latency_ms": 169
+    },
+    "orders_note": {
+      "pick": "You place these yourself, at your broker",
+      "passed": true,
+      "rows": [
+        {
+          "text": "You place these yourself, at your broker",
+          "clear": 1.98,
+          "accurate": 0.85
+        },
+        {
+          "text": "Placed by you, at your broker",
+          "clear": 1.94,
+          "accurate": 0.84
+        },
+        {
+          "text": "Nothing is placed for you",
+          "clear": 1.55,
+          "accurate": 0.85
+        }
+      ],
+      "latency_ms": 116
+    },
+    "holdings_head": {
+      "pick": "Your holdings",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Your holdings",
+          "clear": 1.96,
+          "accurate": 0.45
+        },
+        {
+          "text": "What you own",
+          "clear": 1.89,
+          "accurate": 0.42
+        },
+        {
+          "text": "Holdings",
+          "clear": 1.96,
+          "accurate": 0.43
+        }
+      ],
+      "latency_ms": 253
+    },
+    "console_odds_head": {
+      "pick": "The odds",
+      "passed": false,
+      "rows": [
+        {
+          "text": "The odds behind it",
+          "clear": 1.25,
+          "accurate": 0.43
+        },
+        {
+          "text": "The odds",
+          "clear": 1.92,
+          "accurate": 0.36
+        },
+        {
+          "text": "Where the numbers come from",
+          "clear": 1.33,
+          "accurate": 0.41
+        }
+      ],
+      "latency_ms": 132
+    },
+    "empty": {
+      "pick": "No orders this week.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "No orders this week.",
+          "clear": 1.74,
+          "accurate": 0.74
+        },
+        {
+          "text": "Nothing to trade this week.",
+          "clear": 1.7,
+          "accurate": 0.68
+        },
+        {
+          "text": "No trade this week.",
+          "clear": 1.69,
+          "accurate": 0.7
+        }
+      ],
+      "latency_ms": 174
+    },
+    "why_h": {
+      "pick": "Why this trade",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Why",
+          "clear": 0.54,
+          "accurate": 0.28
+        },
+        {
+          "text": "Why this trade",
+          "clear": 0.62,
+          "accurate": 0.41
+        },
+        {
+          "text": "The reason",
+          "clear": 0.61,
+          "accurate": 0.2
+        }
+      ],
+      "latency_ms": 154
+    },
+    "risk_h": {
+      "pick": "What you can lose",
+      "passed": false,
+      "rows": [
+        {
+          "text": "What you can lose",
+          "clear": 1.65,
+          "accurate": 0.45
+        },
+        {
+          "text": "Risk",
+          "clear": 1.89,
+          "accurate": 0.32
+        },
+        {
+          "text": "Worst case",
+          "clear": 1.13,
+          "accurate": 0.27
+        }
+      ],
+      "latency_ms": 134
+    },
+    "wrong_h": {
+      "pick": "What breaks it",
+      "passed": false,
+      "rows": [
+        {
+          "text": "What would make it wrong",
+          "clear": 0.88,
+          "accurate": 0.33
+        },
+        {
+          "text": "When it fails",
+          "clear": 1.19,
+          "accurate": 0.22
+        },
+        {
+          "text": "What breaks it",
+          "clear": 1.07,
+          "accurate": 0.28
+        }
+      ],
+      "latency_ms": 173
+    },
+    "f_risk": {
+      "pick": "Max loss",
+      "passed": true,
+      "rows": [
+        {
+          "text": "At risk",
+          "clear": 1.66,
+          "accurate": 0.45
+        },
+        {
+          "text": "Max loss",
+          "clear": 1.76,
+          "accurate": 0.51
+        },
+        {
+          "text": "You can lose",
+          "clear": 1.62,
+          "accurate": 0.56
+        }
+      ],
+      "latency_ms": 128
+    },
+    "f_pays": {
+      "pick": "Max payout",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Most it pays",
+          "clear": 1.52,
+          "accurate": 0.2
+        },
+        {
+          "text": "Max payout",
+          "clear": 1.89,
+          "accurate": 0.41
+        },
+        {
+          "text": "Best case",
+          "clear": 1.84,
+          "accurate": 0.27
+        }
+      ],
+      "latency_ms": 133
+    },
+    "f_ev": {
+      "pick": "Expected value",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Expected",
+          "clear": 1.1,
+          "accurate": 0.36
+        },
+        {
+          "text": "Expected value",
+          "clear": 1.28,
+          "accurate": 0.49
+        },
+        {
+          "text": "On average",
+          "clear": 0.56,
+          "accurate": 0.22
+        }
+      ],
+      "latency_ms": 114
+    },
+    "v_shape": {
+      "pick": "Prices disagree",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Options mispriced",
+          "clear": 1.34,
+          "accurate": 0.33
+        },
+        {
+          "text": "Prices disagree",
+          "clear": 1.67,
+          "accurate": 0.52
+        },
+        {
+          "text": "Worth a trade",
+          "clear": 1.63,
+          "accurate": 0.21
+        }
+      ],
+      "latency_ms": 125
+    },
+    "v_none": {
+      "pick": "Nothing to do",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Nothing to do",
+          "clear": 1.77,
+          "accurate": 0.28
+        },
+        {
+          "text": "Prices agree",
+          "clear": 1.74,
+          "accurate": 0.17
+        },
+        {
+          "text": "No edge",
+          "clear": 1.69,
+          "accurate": 0.19
+        }
+      ],
+      "latency_ms": 130
+    },
+    "v_unpriced": {
+      "pick": "No reference price",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Nothing to compare",
+          "clear": 1.82,
+          "accurate": 0.24
+        },
+        {
+          "text": "No reference price",
+          "clear": 1.72,
+          "accurate": 0.31
+        },
+        {
+          "text": "Live, unpriced",
+          "clear": 1.42,
+          "accurate": 0.2
+        }
+      ],
+      "latency_ms": 132
+    },
+    "v_thin": {
+      "pick": "Too thin",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Too thin",
+          "clear": 1.36,
+          "accurate": 0.23
+        },
+        {
+          "text": "Too thin to trust",
+          "clear": 1.65,
+          "accurate": 0.16
+        },
+        {
+          "text": "Thin market",
+          "clear": 1.33,
+          "accurate": 0.17
+        }
+      ],
+      "latency_ms": 155
+    },
+    "v_direction": {
+      "pick": "Slight edge",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Lean, thin",
+          "clear": 1.21,
+          "accurate": 0.29
+        },
+        {
+          "text": "Small lean",
+          "clear": 1.43,
+          "accurate": 0.23
+        },
+        {
+          "text": "Slight edge",
+          "clear": 1.53,
+          "accurate": 0.3
+        }
+      ],
+      "latency_ms": 152
+    },
+    "h_in": {
+      "pick": "Sized in",
+      "passed": false,
+      "rows": [
+        {
+          "text": "In the order",
+          "clear": 0.67,
+          "accurate": 0.25
+        },
+        {
+          "text": "Sized in",
+          "clear": 0.99,
+          "accurate": 0.36
+        },
+        {
+          "text": "Covered by the order",
+          "clear": 0.8,
+          "accurate": 0.2
+        }
+      ],
+      "latency_ms": 137
+    },
+    "h_avoid": {
+      "pick": "No hedge",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Skip the puts",
+          "clear": 1.35,
+          "accurate": 0.12
+        },
+        {
+          "text": "Puts cost too much",
+          "clear": 1.36,
+          "accurate": 0.13
+        },
+        {
+          "text": "No hedge",
+          "clear": 1.66,
+          "accurate": 0.43
+        }
+      ],
+      "latency_ms": 127
+    },
+    "h_hold": {
+      "pick": "No change",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Hold",
+          "clear": 1.6,
+          "accurate": 0.43
+        },
+        {
+          "text": "No change",
+          "clear": 1.64,
+          "accurate": 0.42
+        },
+        {
+          "text": "Nothing to do",
+          "clear": 1.7,
+          "accurate": 0.28
+        }
+      ],
+      "latency_ms": 139
+    },
+    "note_sample": {
+      "pick": "Shown until you link a brokerage. You sign in on SnapTrade's page; Horizon Desk never sees your password.",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Shown until you link a brokerage. You sign in on SnapTrade's page; Horizon Desk never sees your password.",
+          "clear": 1.5,
+          "accurate": 0.32
+        },
+        {
+          "text": "A sample portfolio until you link one. Your password goes to SnapTrade, never here.",
+          "clear": 1.74,
+          "accurate": 0.21
+        }
+      ],
+      "latency_ms": 126
+    },
+    "note_writer": {
+      "pick": "Sonnet is not connected, so a plain-text writer explains. The numbers are the same.",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Sonnet is not connected, so a plain-text writer explains. The numbers are the same.",
+          "clear": 1.18,
+          "accurate": 0.83
+        },
+        {
+          "text": "Plain-text explanations: Sonnet is not connected. Numbers unchanged.",
+          "clear": 1.07,
+          "accurate": 0.68
+        }
+      ],
+      "latency_ms": 147
+    },
+    "note_static": {
+      "pick": "A preview with sample data. Run Horizon Desk locally to link your brokerage.",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Sample portfolio and dated odds. Linking a brokerage needs the local server.",
+          "clear": 1.43,
+          "accurate": 0.29
+        },
+        {
+          "text": "A preview with sample data. Run Horizon Desk locally to link your brokerage.",
+          "clear": 1.57,
+          "accurate": 0.42
+        }
+      ],
+      "latency_ms": 150
+    },
+    "board_head": {
+      "pick": "This week's releases",
+      "passed": false,
+      "rows": [
+        {
+          "text": "This week's releases",
+          "clear": 1.88,
+          "accurate": 0.44
+        },
+        {
+          "text": "The week at a glance",
+          "clear": 1.68,
+          "accurate": 0.29
+        },
+        {
+          "text": "Market board",
+          "clear": 1.73,
+          "accurate": 0.26
+        },
+        {
+          "text": "Release board",
+          "clear": 1.86,
+          "accurate": 0.35
+        }
+      ],
+      "latency_ms": 280,
+      "rejudged_at": "2026-10-09T21:26:25.555Z"
+    },
+    "tile_top": {
+      "pick": "Most likely outcome",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Likeliest",
+          "clear": 1.43,
+          "accurate": 0.25
+        },
+        {
+          "text": "Most likely outcome",
+          "clear": 1.58,
+          "accurate": 0.24
+        },
+        {
+          "text": "Top outcome",
+          "clear": 1.38,
+          "accurate": 0.22
+        },
+        {
+          "text": "Market's pick",
+          "clear": 1.15,
+          "accurate": 0.24
+        }
+      ],
+      "latency_ms": 239,
+      "rejudged_at": "2026-10-09T21:26:25.891Z"
+    },
+    "venues_head": {
+      "pick": "Across venues",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Across venues",
+          "clear": 1.21,
+          "accurate": 0.37
+        },
+        {
+          "text": "Same question, every market",
+          "clear": 1.29,
+          "accurate": 0.23
+        },
+        {
+          "text": "Every market we can reach",
+          "clear": 1.13,
+          "accurate": 0.22
+        },
+        {
+          "text": "The same odds, venue by venue",
+          "clear": 1.52,
+          "accurate": 0.27
+        }
+      ],
+      "latency_ms": 265,
+      "rejudged_at": "2026-10-09T21:36:32.786Z"
+    },
+    "venues_gap": {
+      "pick": "Gap between venues",
+      "passed": false,
+      "rows": [
+        {
+          "text": "Gap between venues",
+          "clear": 1.45,
+          "accurate": 0.39
+        },
+        {
+          "text": "Venues disagree by",
+          "clear": 1.66,
+          "accurate": 0.26
+        },
+        {
+          "text": "Spread across venues",
+          "clear": 1.29,
+          "accurate": 0.34
+        }
+      ],
+      "latency_ms": 211,
+      "rejudged_at": "2026-10-09T21:36:33.086Z"
+    },
+    "news_head": {
+      "pick": "News",
+      "passed": true,
+      "rows": [
+        {
+          "text": "News",
+          "clear": 1.99,
+          "accurate": 0.5
+        },
+        {
+          "text": "The news desk",
+          "clear": 1.96,
+          "accurate": 0.6
+        },
+        {
+          "text": "Search the news",
+          "clear": 1.9,
+          "accurate": 0.6
+        },
+        {
+          "text": "News on anything",
+          "clear": 1.84,
+          "accurate": 0.61
+        }
+      ],
+      "latency_ms": 212,
+      "rejudged_at": "2026-10-09T21:50:15.638Z"
+    },
+    "news_hint": {
+      "pick": "Type any topic",
+      "passed": true,
+      "rows": [
+        {
+          "text": "Type any topic",
+          "clear": 1.99,
+          "accurate": 0.75
+        },
+        {
+          "text": "Search any topic, e.g. tariffs",
+          "clear": 1.93,
+          "accurate": 0.74
+        },
+        {
+          "text": "What do you want news on?",
+          "clear": 1.88,
+          "accurate": 0.65
+        },
+        {
+          "text": "Try: oil prices, the Fed, layoffs",
+          "clear": 1.88,
+          "accurate": 0.36
+        }
+      ],
+      "latency_ms": 262,
+      "rejudged_at": "2026-10-09T21:50:15.987Z"
+    }
+  }
+}

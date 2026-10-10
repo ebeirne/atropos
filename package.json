@@ -1,0 +1,18 @@
+{
+  "name": "atropos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prediction-market odds on economic releases, turned into per-holding protection quotes with a helper who says when not to buy.",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "snaptrade-typescript-sdk": "^12.2.21"
+  }
+}

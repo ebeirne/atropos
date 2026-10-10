@@ -1,0 +1,20 @@
+{
+  "judged_at": "2026-10-10T03:29:09.711Z",
+  "choices": {
+    "character": {
+      "cat_yarn": 0.47,
+      "owl": 0.42666666666666664,
+      "fox": 0.02,
+      "spider": 0.04,
+      "bear": 0.01,
+      "robot": 0.03333333333333333
+    },
+    "name": {
+      "Atty": 1,
+      "Spindle": 0,
+      "Knot": 0,
+      "Clo": 0,
+      "Moira": 0
+    }
+  }
+}

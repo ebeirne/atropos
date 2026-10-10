@@ -1,0 +1,14 @@
+{
+  "judged_at": "2026-10-10T04:17:02.203Z",
+  "avg": {
+    "sarah": 0.39,
+    "matilda": 0.03666666666666667,
+    "alice": 0,
+    "lily": 0.01,
+    "bella": 0.043333333333333335,
+    "jessica": 0.5,
+    "river": 0.02
+  },
+  "pick": "jessica",
+  "voice_id": "cgSgspJ2msm6clMCkdW9"
+}

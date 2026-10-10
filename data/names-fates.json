@@ -1,0 +1,45 @@
+{
+  "judged_at": "2026-10-09T21:55:14.003Z",
+  "names": [
+    {
+      "name": "Horizon Desk",
+      "art": 1.92,
+      "finance": 1.02,
+      "simple": 1.7,
+      "honest": 0.68,
+      "total": 1.55
+    },
+    {
+      "name": "Moira",
+      "art": 1.6,
+      "finance": 0.59,
+      "simple": 1.29,
+      "honest": 0.73,
+      "total": 1.16
+    },
+    {
+      "name": "Lachesis",
+      "art": 1.58,
+      "finance": 0.99,
+      "simple": 0.44,
+      "honest": 0.7,
+      "total": 1
+    },
+    {
+      "name": "Clotho",
+      "art": 1.46,
+      "finance": 0.46,
+      "simple": 0.51,
+      "honest": 0.61,
+      "total": 0.81
+    },
+    {
+      "name": "Atropos",
+      "art": 1.17,
+      "finance": 0.81,
+      "simple": 0.4,
+      "honest": 0.54,
+      "total": 0.79
+    }
+  ]
+}

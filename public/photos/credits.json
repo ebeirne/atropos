@@ -1,0 +1,23 @@
+{
+ "fomc": {
+  "file": "photos/fed.jpg",
+  "alt": "The Eccles Building, home of the Federal Reserve Board",
+  "license": "Public domain",
+  "artist": "Federalreserve",
+  "page": "https://commons.wikimedia.org/wiki/File:Eccles_Building_(26088200676).jpg"
+ },
+ "cpi": {
+  "file": "photos/cpi.jpg",
+  "alt": "Supermarket produce and its price tags",
+  "license": "CC0",
+  "artist": "MatthewHoobin",
+  "page": "https://commons.wikimedia.org/wiki/File:Parsley_for_99_cents,_and_other_vegetables,_in_supermarket_in_Clearwater,_Florida,_US_on_25_September_2020.jpg"
+ },
+ "nfp": {
+  "file": "photos/nfp.jpg",
+  "alt": "A construction crew at the end of a job",
+  "license": "CC0",
+  "artist": "Fons Heijnsbroek",
+  "page": "https://commons.wikimedia.org/wiki/File:2025_-_free_download_photo_of_a_group_of_construction_workers_in_working_clothes,_inspecting_the_last_detals_of_their_big_finished_job_here,_the_renovation_of_c._500_meter_old_quay_along_the_canal_street_Nieuwe_Herengracht_in_Amsterdam.tif"
+ }
+}
