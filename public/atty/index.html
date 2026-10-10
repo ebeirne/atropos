@@ -1,124 +1,101 @@
-<title>Atty</title>
+<title>Atropos</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap">
 <style>
-  /* The thread is the interface. One line across the screen is time: past report days
-     hang off it as beads, Atty stands at today, and the reports ahead are knots she has
-     tied (worth protecting) or cut (skip). One face, one size, black and white. */
+  /* No character: Atty is a voice. The thread of what you own is a rod of glass in the
+     dark, and it moves with her: it brightens, ripples and sends light along itself as
+     she speaks, and splits in two when she tells you to skip. Electric blue on black,
+     white-hot light, thin rainbow edges, like the reference loop. */
   :root {
     color-scheme: dark;
-    --bg: #000000;
-    --ink: #f2f2f2;
-    --grey: #808080;
-    --dim: #3a3a3a;
-    --rule: #242424;
-    --up: #4fd18f;
-    --down: #ff6150;
-    --t: clamp(17px, 1.72vw, 28px);      /* the one size */
-    --lh: 1.12;
-    --gut: clamp(16px, 2vw, 32px);
-    --f: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    --bg: #010208;
+    --ink: #eef1ff;
+    --grey: #8b93b8;
+    --dim: #4a5279;
+    --rule: rgba(120, 150, 255, .16);
+    --glass: rgba(40, 70, 255, .10);
+    --edge: rgba(150, 175, 255, .28);
+    --up: #4be3a3;
+    --down: #ff5c8a;
+    --f: "Geist", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    --m: "Geist Mono", ui-monospace, monospace;
+    --t: clamp(15px, 1.15vw, 18px);
+    --gut: clamp(16px, 2.2vw, 36px);
   }
   * { box-sizing: border-box; }
   html { background: var(--bg); }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--t)/var(--lh) var(--f); letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--t)/1.4 var(--f); -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-decoration: none; }
-  a:hover, button:hover { color: var(--grey); }
+  a:hover { color: #fff; }
   :focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
   .g { color: var(--grey); }
   .up { color: var(--up); } .down { color: var(--down); }
-  .num { font-variant-numeric: tabular-nums; }
+  .num { font-family: var(--m); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
   p { margin: 0; }
 
-  #dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-  .page { position: relative; z-index: 1; padding-inline: var(--gut); padding-block: var(--gut) calc(var(--gut) * 3); }
+  /* the glass thread lives behind the first screen */
+  #glass { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero { position: relative; height: 100svh; min-height: 560px; overflow: hidden; background: radial-gradient(70% 45% at 50% 50%, #0b1fb0 0%, #030620 55%, var(--bg) 100%); }
+  .top { position: absolute; inset: 0 0 auto 0; display: flex; justify-content: space-between; align-items: baseline; padding: var(--gut); z-index: 2; }
+  .brand { font-weight: 500; letter-spacing: .01em; }
+  .top nav { display: flex; gap: 1.6em; color: var(--grey); }
+  .status { position: absolute; left: var(--gut); top: calc(var(--gut) + 1.6em); color: var(--grey); z-index: 2; }
 
-  /* the four columns */
-  .top { display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); align-items: start; }
-  .top nav { display: grid; }
-  .copy { text-align: right; }
-
-  /* the thread */
-  .threadScroll { margin-top: 5vh; margin-inline: calc(var(--gut) * -1); padding-inline: var(--gut); overflow-x: auto; scrollbar-width: none; }
-  .threadScroll::-webkit-scrollbar { display: none; }
-  .threadBox { position: relative; width: 100%; min-width: 820px; aspect-ratio: 1000 / 300; }
-  .threadBox svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .threadBox .lbl { position: absolute; white-space: nowrap; pointer-events: none; }
-  .threadBox .lbl.k { pointer-events: auto; cursor: pointer; }
-  .threadBox .lbl.up1 { transform: translateY(-100%); }
-  #thread .line { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
-  #thread .year { stroke: #161616; stroke-width: 1; }
-  #thread .hang { stroke: #2c2c2c; stroke-width: 1; }
-  #thread .bead { fill: var(--ink); stroke: var(--ink); stroke-width: 1.4; cursor: pointer; transition: opacity .3s; }
-  #thread .bead.hollow { fill: var(--bg); stroke: #9a9a9a; }
-  #thread .bead.dim, #thread .hang.dim { opacity: .12; }
-  #thread .bead.sel { stroke-width: 3; }
-  #thread .knot { cursor: pointer; outline: none; }
-  #thread .knot:focus-visible .hit { stroke: var(--grey); stroke-width: 1; }
-  #thread .knot .loop { fill: var(--bg); stroke: var(--ink); stroke-width: 2.4; }
-  #thread .knot .tick { stroke: var(--grey); stroke-width: 2; }
-  #thread .knot .end { stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
-  #thread .knot.on .loop { stroke-width: 4; }
-  #thread .knot .hit { fill: transparent; }
-  #thread .atty .blade { fill: none; stroke: var(--ink); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
-  #thread .atty .eye { fill: var(--ink); }
-  #thread .atty .eyes { animation: blink 5.5s linear infinite; transform-box: fill-box; transform-origin: center; }
-  @keyframes blink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
-  .lbl.k.on .nm { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; }
-  .legend { margin-top: .4em; max-width: 46ch; }
-
-  /* Atty talking: one sentence at a time, lit word by word as she says it */
-  .guide { display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); margin-top: 4vh; align-items: start; }
-  .guide .side { grid-column: 1; }
-  .guide .body { grid-column: 2 / -1; }
-  .guide .line { max-width: 30ch; }
-  .guide .w { opacity: .2; transition: opacity .18s; }
-  .guide .w.on { opacity: 1; }
-  .guide .sub { margin-top: .5em; max-width: 34ch; transition: opacity .4s; }
-  .guide .show { margin-top: 1.2em; border-top: 1px solid var(--rule); max-width: 36em; }
-  .mini { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--gut); padding-block: .32em; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  /* what she says, under the glass */
+  .voice { position: absolute; left: 50%; top: 61%; transform: translateX(-50%); width: min(880px, calc(100% - 2 * var(--gut))); text-align: center; z-index: 2; }
+  .line { font-weight: 300; font-size: clamp(22px, 2.6vw, 40px); line-height: 1.18; letter-spacing: -.02em; min-height: 2.4em; }
+  .w { opacity: .14; transition: opacity .16s, filter .16s; filter: blur(1.5px); }
+  .w.on { opacity: 1; filter: none; }
+  .sub { margin-top: .7em; color: var(--grey); transition: opacity .4s; }
+  .show { margin: 1.4em auto 0; max-width: 560px; text-align: left; }
+  .card { background: var(--glass); border: 1px solid var(--edge); border-radius: 14px; padding: .35em 1em; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .mini { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 1.2em; padding: .5em 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .mini:last-child { border-bottom: 0; }
   .mini > * { min-width: 0; }
-  .mini .bar { margin-top: 0; align-self: center; width: 8em; }
-  .controls { margin-top: .6em; display: flex; flex-wrap: wrap; gap: .3em 1.1em; }
-  .controls button { font: inherit; letter-spacing: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
+  .mini .bar { width: 7em; align-self: center; }
+  .controls { position: absolute; left: 50%; bottom: var(--gut); transform: translateX(-50%); display: flex; gap: 1.4em; align-items: center; z-index: 2; color: var(--grey); white-space: nowrap; }
+  .controls button { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
   .controls button:disabled { color: var(--dim); cursor: default; }
-  .controls #play { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; }
+  .play { display: inline-flex; align-items: center; gap: .6em; padding: .7em 1.3em !important; border-radius: 999px; border: 1px solid var(--edge) !important; background: var(--glass) !important; backdrop-filter: blur(10px); }
+  .play i { width: 0; height: 0; border-left: 9px solid currentColor; border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+  .play.on i { width: 9px; height: 11px; border: 0; border-left: 3px solid currentColor; border-right: 3px solid currentColor; }
+  .note { position: absolute; left: 50%; bottom: calc(var(--gut) + 3.2em); transform: translateX(-50%); color: var(--grey); z-index: 2; }
 
-  /* the detail below, as plain indexes */
-  section { margin-top: calc(var(--gut) * 3.5); }
-  .sec { display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); padding-bottom: .5em; border-bottom: 1px solid var(--rule); }
-  .row { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.9fr) 6.5em; gap: var(--gut); padding-block: .42em; border-bottom: 1px solid var(--rule);
-    align-items: baseline; width: 100%; background: none; border-left: 0; border-right: 0; border-top: 0; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
+  /* the detail, below */
+  .page { padding: 0 var(--gut) calc(var(--gut) * 3); max-width: 1180px; margin: 0 auto; }
+  section { margin-top: calc(var(--gut) * 3.2); }
+  .sec { display: grid; grid-template-columns: 1fr 2fr; gap: var(--gut); padding-bottom: .7em; border-bottom: 1px solid var(--rule); }
+  .sec h2 { margin: 0; font-weight: 400; font-size: 1.5em; letter-spacing: -.02em; }
+  .row { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.9fr) 6.5em; gap: var(--gut); padding-block: .62em; border-bottom: 1px solid var(--rule);
+    align-items: baseline; width: 100%; background: none; border-left: 0; border-right: 0; border-top: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
   .row > * { min-width: 0; }
   .row .v { text-align: right; }
   .row[aria-expanded="true"] { color: var(--grey); }
-  .detail { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.9fr) 6.5em; gap: var(--gut); padding-block: .3em .9em; border-bottom: 1px solid var(--rule); }
+  .detail { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.9fr) 6.5em; gap: var(--gut); padding-block: .4em 1em; border-bottom: 1px solid var(--rule); }
   .detail[hidden] { display: none; }
   .detail .say { grid-column: 2 / span 2; }
   .detail .nums { grid-column: 4 / span 2; color: var(--grey); }
-  .plain { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 2.15fr) 6.5em; gap: var(--gut); padding-block: .42em; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .plain { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 2.15fr) 6.5em; gap: var(--gut); padding-block: .62em; border-bottom: 1px solid var(--rule); align-items: baseline; }
   .plain > * { min-width: 0; }
   .plain .v { text-align: right; }
-  .bar { display: block; height: 1px; background: var(--rule); margin-top: .35em; }
-  .bar i { display: block; height: 1px; background: var(--ink); }
-  .bar i.you { background: var(--down); }
-  .ask { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto; gap: var(--gut); padding-block: .42em; border-bottom: 1px solid var(--rule); align-items: baseline; }
-  .ask input { font: inherit; letter-spacing: inherit; color: var(--ink); background: transparent; border: 0; outline: none; width: 100%; padding: 0; caret-color: var(--down); }
+  .bar { display: block; height: 2px; border-radius: 2px; background: var(--rule); margin-top: .4em; }
+  .bar i { display: block; height: 2px; border-radius: 2px; background: linear-gradient(90deg, #3d6bff, #b9c8ff); }
+  .bar i.you { background: linear-gradient(90deg, #ff5c8a, #ffb3c8); }
+  .ask { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto; gap: var(--gut); padding-block: .62em; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .ask input { font: inherit; color: var(--ink); background: transparent; border: 0; outline: none; width: 100%; padding: 0; caret-color: #6f8cff; }
   .ask input::placeholder { color: var(--grey); }
-  .ask button, .chips button { font: inherit; letter-spacing: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
-  .chips { display: flex; flex-wrap: wrap; gap: .2em .8em; padding-block: .42em; border-bottom: 1px solid var(--rule); padding-left: calc(2.2em + var(--gut)); }
+  .ask button, .chips button { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
+  .chips { display: flex; flex-wrap: wrap; gap: .3em 1em; padding-block: .62em; border-bottom: 1px solid var(--rule); padding-left: calc(2.2em + var(--gut)); }
   .chips button { color: var(--grey); }
   .chips button:hover { color: var(--ink); }
-  footer { margin-top: calc(var(--gut) * 3); display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); color: var(--grey); }
+  footer { margin-top: calc(var(--gut) * 3); display: grid; grid-template-columns: 1fr 2fr 1fr; gap: var(--gut); color: var(--grey); }
 
   @media (max-width: 760px) {
-    .top, .sec, footer, .guide { grid-template-columns: 1fr 1fr; }
-    .copy { text-align: left; }
-    .guide .side { grid-column: 1 / -1; grid-row: 2; }
-    .guide .body { grid-column: 1 / -1; grid-row: 1; }
-    .mini .bar { width: 4em; }
+    .top nav { display: none; }
+    .voice { top: 57%; }
+    .sec, footer { grid-template-columns: 1fr; }
     .row, .detail { grid-template-columns: 1.6em minmax(0, 1fr) auto; }
     .wide { display: none; }
     .row .c3 { grid-column: 2; grid-row: 2; color: var(--grey); }
@@ -128,57 +105,48 @@
     .plain { grid-template-columns: 1.6em minmax(0, 1fr) auto; }
     .plain .c3 { grid-column: 2 / span 2; color: var(--grey); }
     .plain .v { grid-column: 3; grid-row: 1; }
+    .mini .bar { width: 4em; }
   }
-  @media (prefers-reduced-motion: reduce) { #dust { display: none; } #thread .atty .eyes { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .w { transition: none; filter: none; } }
 </style>
 
-<canvas id="dust" aria-hidden="true"></canvas>
+<div class="hero" id="top">
+  <canvas id="glass" aria-hidden="true"></canvas>
+  <header class="top">
+    <span class="brand">Atropos</span>
+    <nav aria-label="Sections"><a href="#quotes">Quotes</a><a href="#public">Public funds</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
+  </header>
+  <p class="status num" id="status">Checking…</p>
+  <div class="voice">
+    <p class="line" id="line" aria-live="polite">I'm Atty. I watch the reports that could hurt what you own, and I'll tell you when protection isn't worth it.</p>
+    <p class="sub" id="sub"></p>
+    <div class="show" id="show"></div>
+  </div>
+  <p class="note" id="voiceNote"></p>
+  <div class="controls">
+    <button type="button" id="prev">Back</button>
+    <button type="button" class="play" id="play" aria-pressed="false"><i></i><span id="playLabel">Listen to Atty</span></button>
+    <button type="button" id="next">Next</button>
+    <span class="num" id="step"></span>
+  </div>
+</div>
 
 <div class="page">
-  <header class="top">
-    <p><a href="#top">Atropos</a><br><span class="g">Atty looks after<br>the thread of<br>what you own.</span></p>
-    <p id="status"><span class="g">Checking…</span></p>
-    <nav aria-label="Sections"><a href="#quotes">Quotes</a><a href="#public">Public funds</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
-    <p class="copy">©2026</p>
-  </header>
-
-  <div id="top">
-    <div class="threadScroll" id="threadScroll">
-      <div class="threadBox" id="threadBox">
-        <svg id="thread" viewBox="0 0 1000 300" role="group" aria-label="Your thread: past report days, Atty at today, and the reports ahead"></svg>
-      </div>
-    </div>
-    <p class="g legend" id="legend">Past report days hang off the thread: below it when you lost, above when you gained. A filled bead means protection would have paid.</p>
-
-    <div class="guide">
-      <div class="side">
-        <p class="g" id="step">Atty</p>
-        <p class="controls"><button type="button" id="prev">Back</button><button type="button" id="next">Next</button><button type="button" id="play" aria-pressed="false">Listen</button></p>
-        <p class="g" id="voiceNote"></p>
-      </div>
-      <div class="body">
-        <p class="line" id="line" aria-live="polite">Each week a few numbers can pull at your thread. I price protection on every venue I can reach, and I tell you when it is not worth buying.</p>
-        <p class="g sub" id="sub"></p>
-        <div class="show" id="show"></div>
-      </div>
-    </div>
-  </div>
-
   <section id="quotes" aria-labelledby="qH">
-    <div class="sec"><span id="qH">Quotes</span><span class="g">What would hurt each holding most,<br>and what it costs to protect it</span><span></span><span></span></div>
+    <div class="sec"><h2 id="qH">Quotes</h2><span class="g">What would hurt each holding most, and what it costs to protect it.</span></div>
     <div id="quoteList"></div>
     <div class="plain" id="knot"></div>
   </section>
 
   <section id="public" aria-labelledby="pH">
-    <div class="sec"><span id="pH">Public funds</span><span class="g" id="pSub">State and city pensions and public<br>universities, same model as you</span><span></span><span></span></div>
+    <div class="sec"><h2 id="pH">Public funds</h2><span class="g" id="pSub">State and city pensions and public universities, measured with the same model as you.</span></div>
     <div id="bars"></div>
-    <div class="sec" style="margin-top:1.5em"><span>Who else holds<br>what you hold</span><span class="g">Shares bought or sold<br>last quarter, from 13F</span><span></span><span></span></div>
+    <div class="sec" style="margin-top:2em"><h2>Who else holds what you hold</h2><span class="g">Shares bought or sold last quarter, from 13F filings.</span></div>
     <div id="holders"></div>
   </section>
 
   <section id="news" aria-labelledby="nH">
-    <div class="sec"><span id="nH">News</span><span class="g">Any topic, ranked by Jev</span><span class="g" id="newsState"></span><span></span></div>
+    <div class="sec"><h2 id="nH">News</h2><span class="g"><span>Any topic, ranked by Jev.</span> <span id="newsState"></span></span></div>
     <form class="ask" id="newsForm" role="search"><span class="g">?</span><input id="newsQ" type="search" placeholder="Ask Atty about anything" aria-label="Ask Atty about anything" autocomplete="off" maxlength="200"><button type="submit">Search</button></form>
     <div class="chips" id="newsChips"><button type="button">The Fed</button><button type="button">Inflation</button><button type="button">Layoffs</button><button type="button">Tariffs</button><button type="button">Oil prices</button><button type="button">Nvidia</button></div>
     <div id="newsList"></div>
@@ -187,8 +155,7 @@
   <footer>
     <span>Not investment advice. Read-only: Atty never trades.</span>
     <span>Every number comes from code, and Jev checks every sentence against it. Odds from Kalshi, ForecastEx and CME via Interactive Brokers, Limitless and Futuur; public funds from SEC 13F; history from BLS, ALFRED and Yahoo.</span>
-    <span id="asof"></span>
-    <span>©2026</span>
+    <span id="asof" class="num"></span>
   </footer>
 </div>
 
@@ -199,13 +166,11 @@
   var DATA = {};
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
-  var money = function (x, signed) { var s = '$' + Math.abs(Math.round(x)).toLocaleString('en-US'); return signed ? (x >= 0 ? '+' : '−') + s : (x < 0 ? '−' + s : s); };
+  var money = function (x) { var s = '$' + Math.abs(Math.round(x)).toLocaleString('en-US'); return x < 0 ? '−' + s : s; };
   var money2 = function (x) { return '$' + Number(x).toFixed(2); };
   var big = function (x) { return x >= 1e9 ? '$' + (x / 1e9).toFixed(1) + 'B' : x >= 1e6 ? '$' + (x / 1e6).toFixed(0) + 'M' : money(x); };
   var CODE = { cpi: 'CPI', fomc: 'FOMC', nfp: 'NFP' };
   var VERDICT = { good: 'Good price', fair: 'Fair price', overpriced: 'Skip', too_small: 'Too small', no_fair_value: 'No price', none: 'No quote' };
-  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  function day(iso, withYear) { var p = String(iso).split('-'); return MON[+p[1] - 1] + ' ' + (+p[2]) + (withYear ? ', ' + p[0] : ''); }
   function ago(iso) { var m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
   function getJSON(live, fallback) {
     return fetch(live).then(function (r) { if (!r.ok) throw 0; return r.json(); })
@@ -226,16 +191,11 @@
 
   /* ------------------------------------------------------------ the agent */
   function renderAgent(a, live) {
-    var r = a.result, hs = r.holdings;
-    var total = hs.reduce(function (s, h) { return s + h.value; }, 0);
+    var r = a.result, hs = r.holdings, total = hs.reduce(function (s, h) { return s + h.value; }, 0);
     DATA.agent = a; DATA.total = total; DATA.live = live;
-    var st = $('status'); st.textContent = '';
-    st.append(money(total)); st.appendChild(document.createElement('br'));
-    st.appendChild(el('span', 'g', (live ? 'Checked ' : 'Saved check, ') + ago(r.at))); st.appendChild(document.createElement('br'));
-    st.appendChild(el('span', 'g', live && a.everyMinutes ? 'every ' + a.everyMinutes + ' min' : r.log.length + ' steps, ' + (r.log[r.log.length - 1].ms / 1000).toFixed(1) + 's'));
+    $('status').textContent = money(total) + ' · ' + (live ? 'checked ' : 'saved check, ') + ago(r.at);
     renderQuotes(hs); renderKnot(r.portfolio); loadFunds(hs, total); maybeStart();
   }
-
   function renderQuotes(hs) {
     var host = $('quoteList'); host.textContent = '';
     hs.forEach(function (h, i) {
@@ -257,13 +217,12 @@
       if (h.atty.checked != null) say.appendChild(el('span', 'g', ' Checked ' + Math.round(h.atty.checked * 100) + '%.'));
       d.appendChild(say);
       if (w) {
-        var nums = el('p', 'nums');
-        var lines = ['If ' + w.releaseName + ' prints ' + (w.side === 'high' ? 'at or above ' : 'at or below ') + printOf(w) + ', ' + Math.round(w.odds * 100) + '% odds'];
+        var nums = el('p', 'nums num');
+        var lines = ['If ' + w.releaseName + ' prints ' + (w.side === 'high' ? '≥ ' : '≤ ') + printOf(w) + ', ' + Math.round(w.odds * 100) + '% odds'];
         if (w.best) {
           lines.push(w.knot.contracts + ' × ' + w.best.contract + ', ' + w.best.venue);
           lines.push('Ask ' + money2(w.best.ask) + ', fair ' + (w.best.fair != null ? money2(w.best.fair) : 'n/a') + ', ' + w.best.openInterest.toLocaleString('en-US') + ' open');
           lines.push('Pays ' + money(w.knot.payout) + ' if it happens');
-          (w.alternatives || []).forEach(function (q) { lines.push('Also ' + q.venue + ' at ' + money2(q.ask)); });
         }
         lines.forEach(function (t, k) { if (k) nums.appendChild(document.createElement('br')); nums.append(t); });
         d.appendChild(nums);
@@ -272,13 +231,12 @@
       host.appendChild(row); host.appendChild(d);
     });
   }
-
   function renderKnot(port) {
     var host = $('knot'), k = port.filter(function (p) { return p.knot; })[0];
     host.textContent = '';
     host.appendChild(el('span', 'g', '∞'));
     if (!k) { host.appendChild(el('span', null, 'No knot needed this week.')); return; }
-    host.appendChild(el('span', null, 'One knot for everything'));
+    host.appendChild(el('span', null, 'One trade for everything'));
     host.appendChild(el('span', 'c3 g', 'A ' + k.word + ' ' + k.releaseName + ' hurts ' + k.holdings.length + ' holdings at once. ' + k.knot.contracts + ' × ' + k.best.contract + ' on ' + k.best.venue + ' covers ' + money(k.loss) + ' and pays ' + money(k.knot.payout) + '.'));
     host.appendChild(el('span', 'v num', money2(k.knot.cost)));
   }
@@ -288,9 +246,9 @@
     var tickers = hs.map(function (h) { return h.symbol; }).join(',');
     getJSON('/api/funds?tickers=' + encodeURIComponent(tickers), 'funds.json').then(function (res) {
       var f = res.data; if (!f || !f.ready) return;
+      DATA.funds = f;
       var you = hs.reduce(function (s, h) { var e = h.exposures.filter(function (x) { return x.release === 'cpi' && x.side === 'high'; })[0]; return s + (e ? e.loss : 0); }, 0);
       var rows = [{ who: 'You', pct: -you / total * 100, you: true }];
-      DATA.funds = f;
       f.byKind.forEach(function (k) { if (k.exposure.cpi) rows.push({ who: k.label + ' (' + k.count + ')', pct: k.exposure.cpi.high }); });
       var bySize = f.funds.slice().sort(function (a, b) { return b.total - a.total; });
       bySize.filter(function (x) { return x.kind === 'state_pension'; }).slice(0, 3)
@@ -310,7 +268,7 @@
         host.appendChild(row);
       });
       var periods = Array.from(new Set(f.funds.map(function (x) { return x.period; }))).sort();
-      $('pSub').textContent = f.funds.length + ' funds, US stocks and ETFs disclosed for ' + periods[periods.length - 1] + '. Same model as you.';
+      $('pSub').textContent = f.funds.length + ' funds, US stocks and ETFs disclosed for ' + periods[periods.length - 1] + ', measured with the same model as you.';
       var hl = $('holders'); hl.textContent = '';
       f.holders.filter(function (x) { return x.funds; }).sort(function (a, b) { return b.value - a.value; }).forEach(function (x, i) {
         var row = el('div', 'plain'), b = x.biggest[0];
@@ -330,12 +288,12 @@
       var row = el('div', 'plain');
       row.appendChild(el('span', 'g num', String(i + 1)));
       var link = el('a', null, a.title); link.href = a.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
-      var t = el('span', 'c-title'); t.style.gridColumn = '2 / span 2'; t.appendChild(link); t.appendChild(el('span', 'g', ' ' + [a.source, a.published ? ago(a.published) : ''].filter(Boolean).join(', ')));
+      var t = el('span'); t.style.gridColumn = '2 / span 2'; t.appendChild(link); t.appendChild(el('span', 'g', ' ' + [a.source, a.published ? ago(a.published) : ''].filter(Boolean).join(', ')));
       row.appendChild(t);
-      row.appendChild(el('span', 'v g', a.bearsOn ? CODE[a.bearsOn] : ''));
+      row.appendChild(el('span', 'v g num', a.bearsOn ? CODE[a.bearsOn] : ''));
       host.appendChild(row);
     });
-    $('newsState').textContent = (saved ? 'Saved search: ' : '') + '“' + r.query + '”, ' + r.articles.length + ' articles';
+    $('newsState').textContent = (saved ? 'Saved search: ' : '') + '“' + r.query + '”, ' + r.articles.length + ' articles.';
   }
   var busy = false;
   function search(q) {
@@ -353,331 +311,255 @@
   getJSON('/api/agent', 'agent.json').then(function (res) { renderAgent(res.data, res.live); }).catch(function () { $('status').textContent = 'Atty could not load her last check.'; });
   getJSON('/api/events', '../tape.json').then(function (res) {
     var s = (res.data.signals || []).map(function (x) { var i = x.p.indexOf(Math.max.apply(null, x.p)); return CODE[x.id] + ' ' + Math.round(x.p[i] * 100) + '%'; });
-    $('asof').textContent = s.join(', ') + (res.live ? '' : ' (saved)');
+    $('asof').textContent = s.join(' · ') + (res.live ? '' : ' (saved)');
     DATA.tape = res.data; maybeStart();
   }).catch(function () { DATA.tape = { signals: [] }; maybeStart(); });
 
-  /* ------------------------------------------------------------ the thread
-     Time runs left to right. The past is to scale, one bead per CPI or jobs report since
-     2021, hanging below the thread on days your holdings fell and above on days they rose,
-     filled when the protection Atty quotes today would have paid. Atty stands at today.
-     The reports ahead are spaced evenly: a loop where she would tie a knot (protect, or
-     your call), a cut where she says skip, a tick for one she only watches. */
-  var NAME = { cpi: 'Inflation', nfp: 'Jobs', fomc: 'Fed' };
-  var Y = 150, TODAY_X = 600, ATTY_S = 0.5;
-  var T = { knots: [], beads: [], sel: null };
-  function svgEl(tag, attrs) { var n = document.createElementNS('http://www.w3.org/2000/svg', tag); for (var k in attrs) n.setAttribute(k, attrs[k]); return n; }
-  function lbl(x, y, cls, parts) {
-    var n = el('div', 'lbl ' + (cls || '')); n.style.left = (x / 10) + '%'; n.style.top = (y / 3) + '%';
-    parts.forEach(function (p, i) { if (i) n.appendChild(document.createElement('br')); n.appendChild(typeof p === 'string' ? document.createTextNode(p) : p); });
-    $('threadBox').appendChild(n); return n;
-  }
-  function renderThread() {
-    var svg = $('thread'), box = $('threadBox');
-    svg.textContent = ''; [].slice.call(box.querySelectorAll('.lbl')).forEach(function (n) { n.remove(); });
-    var r = DATA.agent.result, th = DATA.thread || {}, days = (th.history && th.history.days) || { cpi: [], nfp: [] };
-    var sideOf = function (rel, d) { var p = r.portfolio.filter(function (x) { return x.release === rel && x.knot; })[0] || r.portfolio.filter(function (x) { return x.release === rel; })[0]; return p ? p.side : d; };
-    var side = { cpi: sideOf('cpi', 'high'), nfp: sideOf('nfp', 'low') };
-    var word = { cpi: side.cpi === 'high' ? 'hot' : 'soft', nfp: side.nfp === 'low' ? 'weak' : 'strong' };
-    var today = new Date().toISOString().slice(0, 10);
-
-    // the past, to scale
-    T.beads = [].concat(days.cpi.map(function (d) { return Object.assign({ rel: 'cpi' }, d); }), days.nfp.map(function (d) { return Object.assign({ rel: 'nfp' }, d); }))
-      .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
-    var t0 = T.beads.length ? Date.parse(T.beads[0].date) : Date.now() - 3 * 365 * 864e5, tN = Date.now();
-    var X = function (iso) { return 30 + (Date.parse(iso) - t0) / (tN - t0) * (TODAY_X - 70); };
-    var y0 = new Date(t0).getUTCFullYear() + 1;
-    for (var yr = y0; yr <= new Date().getUTCFullYear(); yr++) {
-      var xx = X(yr + '-01-01'); svg.appendChild(svgEl('line', { class: 'year', x1: xx, x2: xx, y1: 40, y2: 270 }));
-      lbl(xx, 36, 'g up1', [String(yr)]);
-    }
-
-    // the reports ahead, from Atty's calls (merged per release day) plus anything she only watches
-    var calls = (th.ledger || []).filter(function (c) { return !c.settled && c.releaseDate >= today; });
-    var ahead = {};
-    calls.forEach(function (c) {
-      var k = c.release + ':' + c.releaseDate, a = ahead[k] || (ahead[k] = { release: c.release, date: c.releaseDate, calls: [] });
-      a.calls.push(c);
-    });
-    ((DATA.tape && DATA.tape.signals) || []).forEach(function (s) {
-      if (s.date >= today && !Object.keys(ahead).some(function (k) { return k.indexOf(s.id + ':') === 0; })) ahead[s.id + ':' + s.date] = { release: s.id, date: s.date, calls: [] };
-    });
-    T.knots = Object.keys(ahead).map(function (k) { return ahead[k]; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
-    T.knots.forEach(function (k, i) {
-      var main = k.calls.filter(function (c) { return c.side === side[k.release]; })[0] || k.calls[0];
-      k.kind = !main ? 'watch' : main.call === 'skip' ? 'cut' : 'tie';
-      k.call = main ? main.call : 'watching';
-      k.x = 700 + i * (230 / Math.max(1, T.knots.length - 1));
-    });
-
-    // the thread itself, broken where Atty cut it
-    var cuts = T.knots.filter(function (k) { return k.kind === 'cut'; }).map(function (k) { return k.x; });
-    var segs = [], from = 20;
-    cuts.forEach(function (x) { segs.push([from, x - 9]); from = x + 9; });
-    segs.push([from, 995]);
-    segs.forEach(function (s) { svg.appendChild(svgEl('path', { class: 'line', d: 'M' + s[0] + ' ' + Y + ' L' + s[1] + ' ' + Y })); });
-
-    // beads
-    T.beads.forEach(function (b, i) {
-      var x = X(b.date), m = Math.abs(b.ret), off = (b.ret < 0 ? 1 : -1) * (12 + Math.min(92, m * 26)), rad = 2.2 + Math.min(4.6, m * 1.4);
-      b.happened = side[b.rel] === 'high' ? b.value > b.before : b.value < b.before;
-      b.hang = svgEl('line', { class: 'hang', x1: x, x2: x, y1: Y, y2: Y + off });
-      b.node = svgEl('circle', { class: 'bead' + (b.happened ? '' : ' hollow'), cx: x, cy: Y + off, r: rad });
-      var tt = svgEl('title', {}); tt.textContent = day(b.date, true) + ': ' + NAME[b.rel].toLowerCase() + ' ' + b.value + (b.rel === 'cpi' ? '%' : 'K') + ' after ' + b.before + (b.rel === 'cpi' ? '%' : 'K') + ', you ' + (b.ret < 0 ? '−' : '+') + Math.abs(b.ret).toFixed(2) + '%';
-      b.node.appendChild(tt);
-      b.node.addEventListener('click', function () { aboutBead(b, word); });
-      svg.appendChild(b.hang); svg.appendChild(b.node);
-    });
-
-    // knots and their labels
-    T.knots.forEach(function (k, i) {
-      var g = svgEl('g', { class: 'knot', tabindex: '0', role: 'button', 'aria-label': NAME[k.release] + ', ' + day(k.date) + ', ' + k.call });
-      g.appendChild(svgEl('circle', { class: 'hit', cx: k.x, cy: Y, r: 22 }));
-      if (k.kind === 'tie') g.appendChild(svgEl('circle', { class: 'loop', cx: k.x, cy: Y, r: 10 }));
-      if (k.kind === 'cut') { g.appendChild(svgEl('path', { class: 'end', d: 'M' + (k.x - 9) + ' ' + Y + ' l-5 -7 M' + (k.x + 9) + ' ' + Y + ' l5 7' })); }
-      if (k.kind === 'watch') g.appendChild(svgEl('line', { class: 'tick', x1: k.x, x2: k.x, y1: Y - 9, y2: Y + 9 }));
-      g.addEventListener('click', function () { aboutKnot(k); });
-      g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); aboutKnot(k); } });
-      svg.appendChild(g); k.node = g;
-      var nm = el('span', 'nm', NAME[k.release]);
-      k.lbl = lbl(k.x - 10, i % 2 ? Y - 24 : Y + 24, 'k' + (i % 2 ? ' up1' : ''), [day(k.date), nm, el('span', 'g', k.call)]);
-      k.lbl.addEventListener('click', function () { aboutKnot(k); });
-    });
-
-    // Atty at today, the thread running between her open blades
-    var a = svgEl('g', { class: 'atty', id: 'atty', transform: 'translate(' + TODAY_X + ' ' + (Y + 104 * ATTY_S) + ') scale(' + ATTY_S + ')' });
-    a.innerHTML = '<g id="bladeA"><path class="blade" d="M44.4 -156 L-31 58 A30 30 0 1 0 -61 110 A30 30 0 1 0 -31 58"/><g class="look" data-x="-46" data-y="84"><g class="eyes"><circle class="eye" cx="-46" cy="84" r="7"/></g></g></g>' +
-      '<g id="bladeB"><path class="blade" d="M-44.4 -156 L31 58 A30 30 0 1 1 61 110 A30 30 0 1 1 31 58"/><g class="look" data-x="46" data-y="84"><g class="eyes"><circle class="eye" cx="46" cy="84" r="7"/></g></g></g>';
-    svg.appendChild(a);
-    lbl(TODAY_X - 14, Y - 70, 'g up1', ['Today']);
-    T.atty = a; T.bladeA = $('bladeA'); T.bladeB = $('bladeB'); T.looks = [].slice.call(a.querySelectorAll('.look'));
-    var sc = $('threadScroll'); sc.scrollLeft = Math.max(0, $('threadBox').offsetWidth * TODAY_X / 1000 - sc.clientWidth * 0.45);   // phones: start with Atty in view
-  }
-  function light(release, dimOthers) {
-    T.knots.forEach(function (k) { var on = k.release === release; k.node.classList.toggle('on', on); k.lbl.classList.toggle('on', on); });
-    T.beads.forEach(function (b) { var d = dimOthers && b.rel !== release; b.node.classList.toggle('dim', d); b.hang.classList.toggle('dim', d); });
-    var k = T.knots.filter(function (x) { return x.release === release; })[0];
-    T.sel = k ? k.node : null;
-  }
-  function aboutKnot(k) {
-    var i = -1; G.beats.some(function (b, j) { if (b.release === k.release) { i = j; return true; } return false; });
-    if (i >= 0) return showBeat(i);
-    // nothing to say in the walkthrough: a line built from the odds
-    var s = ((DATA.tape && DATA.tape.signals) || []).filter(function (x) { return x.id === k.release; })[0], fav = '';
-    if (s) { var j = s.p.indexOf(Math.max.apply(null, s.p)); fav = ' Markets make "' + s.labels[j] + '" the favourite, ' + Math.round(s.p[j] * 100) + '%.'; }
-    say('The ' + (k.release === 'fomc' ? 'Fed decides' : NAME[k.release].toLowerCase() + ' report is out') + ' on ' + day(k.date) + '.' + fav, 'I watch it, but I am not quoting protection on it this week.', k.release);
-  }
-  function aboutBead(b, word) {
-    T.beads.forEach(function (x) { x.node.classList.toggle('sel', x === b); });
-    var unit = b.rel === 'cpi' ? '%' : 'K', what = b.rel === 'cpi' ? 'inflation' : 'job growth';
-    say(day(b.date, true) + ': ' + what + ' came in at ' + b.value + unit + ' after ' + b.before + unit + ', and your holdings ' + (b.ret < 0 ? 'fell ' : 'rose ') + Math.abs(b.ret).toFixed(2) + '%.',
-      'Protection against a ' + word[b.rel] + ' ' + (b.rel === 'cpi' ? 'inflation' : 'jobs') + ' report would ' + (b.happened ? '' : 'not ') + 'have paid.', b.rel);
-    T.sel = b.node;
-  }
-
-  /* ------------------------------------------------------- the walkthrough
-     Atty talks you through the week one sentence at a time (lines from beats.js, all
-     built from computed numbers). Words light up as she says them; Listen plays her
-     recorded voice and moves on by itself. When she says skip, she snips. */
-  var G = { beats: [], i: 0, playing: false, audio: null, started: false, words: [], speaking: false };
-  var snipAt = -1;
+  /* ------------------------------------------------------------ her voice
+     Lines come from beats.js (built from the numbers, checked by Jev, pre-recorded).
+     Audio is decoded and played through an analyser so the glass can follow how loud
+     she is, syllable by syllable. Without audio the words still light up in time. */
+  var G = { beats: [], i: 0, playing: false, started: false, words: [], speaking: false, token: 0, src: null };
+  var AC = null, analyser = null, abuf = null, decoded = {}, envelope = 0;
   function maybeStart() {
     if (G.started || !DATA.agent || !DATA.tape || !DATA.fundsDone || !DATA.threadDone || !window.AttyBeats) return;
     G.beats = AttyBeats.beats(DATA); if (!G.beats.length) return;
-    G.started = true; renderThread(); showBeat(0);
+    G.started = true; showBeat(0, true);
   }
   function miniRow(a, b, c, cls) { var r = el('div', 'mini'); r.appendChild(el('span', null, a)); r.appendChild(typeof b === 'string' ? el('span', 'g', b) : b); r.appendChild(el('span', cls || null, c)); return r; }
   function renderShow(s) {
     var host = $('show'); host.textContent = '';
-    if (!s) return;
-    if (s.kind === 'reports') s.rows.forEach(function (x) { host.appendChild(miniRow(x.name, x.date + ', most likely ' + x.fav, x.p, 'num')); });
-    if (s.kind === 'hits') s.rows.forEach(function (x) { host.appendChild(miniRow(x.sym, 'could lose', '−' + x.loss, 'down num')); });
+    if (!s || s.kind === 'end' && false) return;
+    var card = el('div', 'card');
+    if (s.kind === 'reports') s.rows.forEach(function (x) { card.appendChild(miniRow(x.name, x.date + ', most likely ' + x.fav, x.p, 'num')); });
+    if (s.kind === 'hits') s.rows.forEach(function (x) { card.appendChild(miniRow(x.sym, 'could lose', '−' + x.loss, 'down num')); });
     if (s.kind === 'trade') {
-      host.appendChild(miniRow(s.contract, s.venue, '', ''));
-      host.appendChild(miniRow('Price with fee', 'fair ' + s.fair, s.ask, 'num'));
-      host.appendChild(miniRow('Cost', 'pays ' + s.payout + ' if it happens', s.cost, 'num'));
+      card.appendChild(miniRow(s.contract, s.venue, '', ''));
+      card.appendChild(miniRow('Price with fee', 'fair ' + s.fair, s.ask, 'num'));
+      card.appendChild(miniRow('Cost', 'pays ' + s.payout + ' if it happens', s.cost, 'num'));
     }
     if (s.kind === 'skip') {
-      if (s.contract) host.appendChild(miniRow(s.contract + ', with fee', 'fair ' + s.fair, s.ask, 'down num'));
-      host.appendChild(miniRow('Atty’s call', '', 'Skip', 'down'));
+      if (s.contract) card.appendChild(miniRow(s.contract + ', with fee', 'fair ' + s.fair, s.ask, 'down num'));
+      card.appendChild(miniRow('Atty’s call', '', 'Skip', 'down'));
     }
     if (s.kind === 'bars') {
       var max = Math.max.apply(null, s.rows.map(function (b) { return Math.abs(b.v); })) || 1;
       s.rows.forEach(function (b) {
         var bar = el('span', 'bar'), i2 = el('i', b.you ? 'you' : null); i2.style.width = (Math.abs(b.v) / max * 100).toFixed(1) + '%'; bar.appendChild(i2);
-        host.appendChild(miniRow(b.who, bar, (b.v < 0 ? '−' : '+') + Math.abs(b.v).toFixed(2) + '%', 'num' + (b.you ? ' down' : '')));
+        card.appendChild(miniRow(b.who, bar, (b.v < 0 ? '−' : '+') + Math.abs(b.v).toFixed(2) + '%', 'num' + (b.you ? ' down' : '')));
       });
     }
     if (s.kind === 'fit') s.rows.forEach(function (x) {
-      host.appendChild(miniRow(x.date, x.value + s.unit + ' after ' + x.before + s.unit + (x.happened ? ', paid' : ', missed'), (x.ret < 0 ? '−' : '+') + Math.abs(x.ret).toFixed(2) + '%', 'num ' + (x.ret < 0 ? 'down' : 'up')));
+      card.appendChild(miniRow(x.date, x.value + s.unit + ' after ' + x.before + s.unit + (x.happened ? ', paid' : ', missed'), (x.ret < 0 ? '−' : '+') + Math.abs(x.ret).toFixed(2) + '%', 'num ' + (x.ret < 0 ? 'down' : 'up')));
     });
     if (s.kind === 'fine') {
-      host.appendChild(miniRow('Trading stops', '', s.stops));
-      host.appendChild(miniRow('If never published', s.fallback, s.pays ? 'pays' : 'no payout', s.pays ? 'up' : 'down'));
-      if (s.latest) host.appendChild(miniRow('Latest it can settle', '', s.latest));
+      card.appendChild(miniRow('Trading stops', '', s.stops, 'num'));
+      card.appendChild(miniRow('If never published', s.fallback, s.pays ? 'pays' : 'no payout', s.pays ? 'up' : 'down'));
+      if (s.latest) card.appendChild(miniRow('Latest it can settle', '', s.latest, 'num'));
       var src = el('div', 'mini'), a3 = el('a', 'g', 'Kalshi’s contract terms'); a3.href = s.url; a3.target = '_blank'; a3.rel = 'noopener noreferrer';
-      src.appendChild(a3); src.appendChild(el('span')); src.appendChild(el('span')); host.appendChild(src);
+      src.appendChild(a3); src.appendChild(el('span')); src.appendChild(el('span')); card.appendChild(src);
     }
-    if (s.kind === 'ledger') s.rows.forEach(function (x) { host.appendChild(miniRow(x.date + ', ' + x.what, x.call, x.status, x.status === 'open' ? 'g' : '')); });
+    if (s.kind === 'ledger') s.rows.forEach(function (x) { card.appendChild(miniRow(x.date + ', ' + x.what, x.call, x.status, x.status === 'open' ? 'g' : '')); });
     if (s.kind === 'end') {
       var r = el('div', 'mini'), a1 = el('a', null, 'Ask about the news'), a2 = el('a', 'g', 'See every quote');
       a1.href = '#news'; a2.href = '#quotes';
       a1.addEventListener('click', function () { setTimeout(function () { $('newsQ').focus({ preventScroll: true }); }, 500); });
-      r.appendChild(a1); r.appendChild(el('span')); r.appendChild(a2); host.appendChild(r);
+      r.appendChild(a1); r.appendChild(el('span')); r.appendChild(a2); card.appendChild(r);
     }
+    if (card.childNodes.length) host.appendChild(card);
   }
   function setLine(text, sub) {
     var line = $('line'); line.textContent = '';
     G.words = text.split(' ').map(function (w, k) { var s = el('span', 'w', (k ? ' ' : '') + w); line.appendChild(s); return s; });
     $('sub').textContent = sub || ''; $('sub').style.opacity = 0;
-    G.revealStart = performance.now(); G.revealDur = reduce ? 0 : G.words.length * 165; G.revealDone = false;
-  }
-  /** Atty says something outside the walkthrough (about a bead or a knot); not recorded, so text only. */
-  function say(text, sub, release) {
-    stopAudio(); if (G.playing) setPlaying(false);
-    $('step').textContent = 'Atty';
-    G.custom = true; setLine(text, sub); renderShow(null);
-    light(release, true);
+    G.revealStart = performance.now(); G.revealDur = reduce ? 0 : G.words.length * 170; G.revealDone = false;
   }
   function voiceUrl(text) { return DATA.live ? '/api/voice?t=' + encodeURIComponent(text) : 'voice/' + AttyBeats.hash(text) + '.mp3'; }
-  function stopAudio() { clearTimeout(G.advance); if (G.audio) { G.audio.pause(); G.audio = null; } }
-  function showBeat(i) {
-    stopAudio(); G.custom = false;
-    T.beads.forEach(function (x) { x.node.classList.remove('sel'); });
+  function ensureAudio() {
+    if (!AC) {
+      var C = window.AudioContext || window.webkitAudioContext; if (!C) return false;
+      AC = new C(); analyser = AC.createAnalyser(); analyser.fftSize = 1024; abuf = new Float32Array(analyser.fftSize); analyser.connect(AC.destination);
+    }
+    if (AC.state === 'suspended') AC.resume();
+    return true;
+  }
+  function decode(url) {
+    if (decoded[url]) return decoded[url];
+    decoded[url] = fetch(url).then(function (r) { if (!r.ok) throw new Error('no voice'); return r.arrayBuffer(); })
+      .then(function (ab) { return new Promise(function (res, rej) { AC.decodeAudioData(ab, res, rej); }); });
+    decoded[url].catch(function () { delete decoded[url]; });
+    return decoded[url];
+  }
+  function stopAudio() { G.token++; clearTimeout(G.advance); if (G.src) { try { G.src.stop(); } catch (_) {} G.src = null; } }
+  function showBeat(i, quiet) {
+    stopAudio();
     G.i = Math.max(0, Math.min(G.beats.length - 1, i));
     var b = G.beats[G.i];
-    $('step').textContent = 'Atty, ' + (G.i + 1) + ' of ' + G.beats.length;
+    $('step').textContent = (G.i + 1) + ' / ' + G.beats.length;
     setLine(b.say, b.sub);
     renderShow(b.show);
-    light(b.release, b.id === 'fit');
+    GL.hue = b.id === 'skip' ? 1 : b.id === 'risk' || b.id === 'fit' ? 0.62 : b.id === 'fine' ? 0.45 : b.id === 'trade' ? 0.15 : 0;
+    GL.cutTarget = 0;
     $('prev').disabled = G.i === 0;
     $('next').textContent = G.i === G.beats.length - 1 ? 'Start over' : 'Next';
-    if (G.playing) playLine(b);
+    if (G.playing && !quiet) playLine(b);
+    // the next line, ready before she needs it
+    if (AC && G.beats[G.i + 1]) decode(voiceUrl(G.beats[G.i + 1].say));
   }
   function playLine(b) {
-    var a = new Audio(voiceUrl(b.say)); G.audio = a; G.revealDur = 1e9;
-    a.addEventListener('loadedmetadata', function () {
-      if (G.audio !== a || !isFinite(a.duration)) return;
-      G.revealStart = performance.now(); G.revealDur = reduce ? 0 : a.duration * 920;
-    });
-    a.addEventListener('ended', function () {
-      if (G.audio !== a) return; G.audio = null;
-      if (G.playing && G.i < G.beats.length - 1) G.advance = setTimeout(function () { showBeat(G.i + 1); }, b.snip ? 1700 : 900);
-      else setPlaying(false);
-    });
-    a.addEventListener('error', function () {
-      if (G.audio !== a) return; G.audio = null;
+    if (!ensureAudio()) { $('voiceNote').textContent = 'This browser cannot play her voice, so the words will have to do.'; return setPlaying(false); }
+    var token = ++G.token; G.revealDur = 1e9;
+    decode(voiceUrl(b.say)).then(function (buffer) {
+      if (token !== G.token) return;
+      var s = AC.createBufferSource(); s.buffer = buffer; s.connect(analyser);
+      s.onended = function () {
+        if (token !== G.token) return; G.src = null;
+        if (G.playing && G.i < G.beats.length - 1) G.advance = setTimeout(function () { showBeat(G.i + 1); }, b.snip ? 1700 : 850);
+        else setPlaying(false);
+      };
+      G.src = s; s.start();
+      G.revealStart = performance.now(); G.revealDur = reduce ? 0 : buffer.duration * 920;
+    }).catch(function () {
+      if (token !== G.token) return;
       $('voiceNote').textContent = 'Her voice is not available here, so the words will have to do.';
-      G.revealStart = performance.now(); G.revealDur = reduce ? 0 : G.words.length * 165; setPlaying(false);
+      G.revealStart = performance.now(); G.revealDur = reduce ? 0 : G.words.length * 170; setPlaying(false);
     });
-    a.play().catch(function () { if (G.audio === a) setPlaying(false); });
   }
   function setPlaying(on) {
-    G.playing = on; $('play').textContent = on ? 'Pause' : 'Listen'; $('play').setAttribute('aria-pressed', String(on));
-    if (on) { $('voiceNote').textContent = ''; if (G.custom) showBeat(G.i); else playLine(G.beats[G.i]); } else stopAudio();
+    G.playing = on; $('play').classList.toggle('on', on); $('play').setAttribute('aria-pressed', String(on));
+    $('playLabel').textContent = on ? 'Pause' : (G.i ? 'Keep listening' : 'Listen to Atty');
+    if (on) { $('voiceNote').textContent = ''; playLine(G.beats[G.i]); } else stopAudio();
   }
-  $('next').addEventListener('click', function () { if (G.started) showBeat(G.custom ? G.i : G.i === G.beats.length - 1 ? 0 : G.i + 1); });
-  $('prev').addEventListener('click', function () { if (G.started) showBeat(G.custom ? G.i : G.i - 1); });
+  $('next').addEventListener('click', function () { if (G.started) showBeat(G.i === G.beats.length - 1 ? 0 : G.i + 1); });
+  $('prev').addEventListener('click', function () { if (G.started) showBeat(G.i - 1); });
   $('play').addEventListener('click', function () { if (G.started) setPlaying(!G.playing); });
   addEventListener('keydown', function (e) {
     if (!G.started || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
-    if (e.key === 'ArrowRight') showBeat(Math.min(G.beats.length - 1, G.i + (G.custom ? 0 : 1)));
-    if (e.key === 'ArrowLeft') showBeat(G.i - (G.custom ? 0 : 1));
+    if (e.key === 'ArrowRight') showBeat(Math.min(G.beats.length - 1, G.i + 1));
+    if (e.key === 'ArrowLeft') showBeat(G.i - 1);
   });
-  (function revealTick(now) {
+
+  /* ------------------------------------------------------------ the glass
+     A rod of glass across the dark: thin bright rims split into red, green and blue
+     (the rainbow edge), a darker see-through body, a blue bloom behind it and a white
+     light that travels along it. Her voice drives it: louder means brighter, thicker,
+     faster light and a ripple through the rod. When she says skip, it splits. */
+  var GL = { hue: 0, hueNow: 0, cut: 0, cutTarget: 0 };
+  var cv = $('glass'), gl = cv.getContext('webgl', { antialias: false, premultipliedAlpha: false });
+  var FRAG = [
+    'precision highp float;',
+    'uniform vec2 uRes; uniform float uTime; uniform float uAmp; uniform float uCut; uniform float uHue;',
+    'float rod(vec2 p, float a, float b, float r) { p.x -= clamp(p.x, a, b); return length(p) - r; }',
+    'float scene(vec2 p, float r, float hl, float gap) {',
+    '  if (gap < 0.0005) return rod(p, -hl, hl, r);',
+    '  return min(rod(p, -hl, -gap, r), rod(p, gap, hl, r));',
+    '}',
+    'vec3 tint(float t) {',
+    '  vec3 blue = vec3(0.10, 0.28, 1.0), violet = vec3(0.50, 0.24, 1.0), rose = vec3(1.0, 0.28, 0.62);',
+    '  return mix(mix(blue, violet, clamp(t * 1.6, 0.0, 1.0)), rose, clamp(t * 1.6 - 0.6, 0.0, 1.0));',
+    '}',
+    'float chan(vec2 q, float o, float r, float hl, float gap) {',
+    '  float d = scene(q + vec2(o * 0.5, o), r, hl, gap);',
+    '  float inside = smoothstep(0.0016, -0.0016, d);',
+    '  float rim = exp(-abs(d) * 240.0);',
+    '  float inner = inside * pow(clamp(1.0 + d / r, 0.0, 1.0), 5.0);',
+    '  return rim * 1.25 + inner * 0.6 + inside * 0.05;',
+    '}',
+    'void main() {',
+    '  vec2 uv = gl_FragCoord.xy / uRes;',
+    '  vec2 p = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;',
+    '  p.y -= 0.06;',
+    '  float aspect = uRes.x / uRes.y, t = uTime;',
+    '  vec3 tc = tint(uHue);',
+    '  vec3 col = vec3(0.003, 0.005, 0.02);',
+    '  col += tc * 0.62 * exp(-length(p * vec2(0.55, 1.5)) * 2.4) * (0.5 + 1.0 * uAmp);',
+    '  col += vec3(0.0, 0.015, 0.09) * (1.0 - uv.y);',
+    '  float hl = 0.5 * aspect - 0.08;',
+    '  float fade = smoothstep(hl, hl - 0.35, abs(p.x));',
+    '  float wave = 0.05 * sin(p.x * 1.3 + t * 0.32) + uAmp * 0.04 * sin(p.x * 11.0 - t * 8.0) * fade;',
+    '  vec2 q = vec2(p.x, p.y - wave);',
+    '  float r = 0.026 + 0.02 * uAmp;',
+    '  float gap = uCut * 0.1;',
+    '  float sp = 0.0035 + 0.007 * uAmp;',
+    '  vec3 g = vec3(chan(q, -sp, r, hl, gap), chan(q, 0.0, r, hl, gap), chan(q, sp, r, hl, gap));',
+    '  float d0 = scene(q, r, hl, gap);',
+    '  float body = smoothstep(0.002, -0.002, d0);',
+    '  col *= 1.0 - 0.55 * body;',
+    '  col += tc * body * 0.22;',
+    '  float hiL = exp(-pow((q.y - r * 0.45) / (r * 0.13), 2.0)) * body;',
+    '  float loL = exp(-pow((q.y + r * 0.55) / (r * 0.2), 2.0)) * body;',
+    '  col += vec3(0.85, 0.92, 1.0) * hiL * (0.35 + 0.9 * uAmp) + tc * loL * 0.35;',
+    '  col += vec3(g.r * 1.05, g.g * 0.95, g.b * 1.3) * mix(vec3(1.0), tc * 1.7, 0.3);',
+    '  float span = 2.0 * hl + 0.8;',
+    '  float sx = mod(t * (0.16 + 0.75 * uAmp), span) - hl - 0.4;',
+    '  float sweep = exp(-pow((p.x - sx) * 3.5, 2.0)) * exp(-max(d0, 0.0) * 34.0);',
+    '  col += vec3(0.8, 0.88, 1.0) * sweep * (0.3 + 1.6 * uAmp);',
+    '  col += tc * exp(-max(d0, 0.0) * 12.0) * (0.1 + 0.6 * uAmp);',
+    '  if (gap > 0.0005) {',
+    '    float e = min(length(q - vec2(-gap, 0.0)), length(q - vec2(gap, 0.0)));',
+    '    col += vec3(1.0, 0.6, 0.95) * exp(-e * 16.0) * uCut * 1.4;',
+    '  }',
+    '  col = 1.0 - exp(-col * 1.7);',
+    '  float n = fract(sin(dot(gl_FragCoord.xy + fract(t) * 91.0, vec2(12.9898, 78.233))) * 43758.5453);',
+    '  col += (n - 0.5) * 0.018;',
+    '  gl_FragColor = vec4(col, 1.0);',
+    '}'].join('\n');
+  var prog = null, U = {};
+  if (gl) {
+    var sh = function (type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null; } return s; };
+    var vs = sh(gl.VERTEX_SHADER, 'attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }'), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+    if (vs && fs) {
+      prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); prog = null; }
+    }
+    if (prog) {
+      gl.useProgram(prog);
+      var vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      ['uRes', 'uTime', 'uAmp', 'uCut', 'uHue'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+    }
+  }
+  function size() {
+    var dpr = Math.min(1.5, window.devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight;
+    cv.width = Math.max(1, Math.round(w * dpr)); cv.height = Math.max(1, Math.round(h * dpr));
+    if (gl) gl.viewport(0, 0, cv.width, cv.height);
+  }
+  size(); addEventListener('resize', size);
+
+  var last = performance.now(), t0 = last, snipAt = -1;
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000); last = now;
+    // words light up in time with her voice (or at reading pace without it)
     if (G.started && G.words.length) {
       var n = G.revealDur ? Math.floor((now - G.revealStart) / G.revealDur * G.words.length) + 1 : G.words.length;
       for (var k = 0; k < G.words.length; k++) G.words[k].classList.toggle('on', k < n);
-      G.speaking = n < G.words.length || !!(G.audio && !G.audio.paused);
+      G.speaking = n < G.words.length || !!G.src;
       if (n >= G.words.length && !G.revealDone) {
         G.revealDone = true; $('sub').style.opacity = 1;
-        if (!G.custom && G.beats[G.i].snip) snipAt = now;
+        if (G.beats[G.i].snip) GL.cutTarget = 1;
       }
     }
-    requestAnimationFrame(revealTick);
-  })(performance.now());
-
-  /* ---------------------------------------------------------------- dust
-     Dust streams out from behind Atty in faint rays and leans away from your cursor like
-     grains in wind. Her blades move a little while she talks and close when she snips;
-     her eyes follow whatever she is talking about, or your cursor when you move it. */
-  var cv = $('dust'), ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), W = 0, H = 0;
-  function size() { W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; }
-  size(); addEventListener('resize', size);
-  var mouse = null;
-  addEventListener('pointermove', function (e) { mouse = { x: e.clientX, y: e.clientY, t: performance.now() }; }, { passive: true });
-  document.addEventListener('pointerleave', function () { mouse = null; });
-  var RAYS = 24, P = [], NP = Math.min(W, H) < 600 ? 420 : 900, spin = 0, grains = [], last = performance.now();
-  function reach() { return Math.hypot(W, H) * 0.42; }
-  function seed(p, anywhere) {
-    p.ray = Math.random() < 0.7;
-    p.a = p.ray ? Math.floor(Math.random() * RAYS) / RAYS * Math.PI * 2 + (Math.random() - 0.5) * 0.07 : Math.random() * Math.PI * 2;
-    p.r = anywhere ? Math.random() * reach() : 20 + Math.random() * 50;
-    p.v = 10 + Math.random() * 34; p.s = Math.random() < 0.07 ? 2 : 0.7 + Math.random() * 1; p.ox = 0; p.oy = 0;
-  }
-  for (var i = 0; i < NP; i++) { var p0 = {}; seed(p0, true); P.push(p0); }
-  function centre(node) { var b = node.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }
-
-  function frame(now) {
-    var dt = Math.min(0.05, (now - last) / 1000); last = now;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-    if (T.atty) {
-      var o = centre(T.atty), R = reach();
-      var glow = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, R * 0.6);
-      glow.addColorStop(0, 'rgba(255,255,255,0.09)'); glow.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.globalAlpha = 1; ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
-      spin += dt * 0.012; ctx.fillStyle = '#f2f2f2';
-      for (var k = 0; k < P.length; k++) {
-        var p = P[k];
-        p.r += p.v * dt * (1 + p.r / R);
-        if (p.r > R) seed(p, false);
-        var a = p.a + spin, x = o.x + Math.cos(a) * p.r + p.ox, y = o.y + Math.sin(a) * p.r + p.oy;
-        if (mouse) {
-          var dx = x - mouse.x, dy = y - mouse.y, d2 = dx * dx + dy * dy;
-          if (d2 < 8100) { var d = Math.sqrt(d2) || 1, f = (1 - d / 90) * 36 * dt; p.ox += dx / d * f; p.oy += dy / d * f; }
-        }
-        p.ox *= 0.985; p.oy *= 0.985;
-        if (x < -4 || y < -4 || x > W + 4 || y > H + 4) continue;
-        ctx.globalAlpha = Math.min(1, p.r / 60) * (1 - p.r / R) * (p.ray ? 0.75 : 0.4);
-        ctx.fillRect(x, y, p.s, p.s);
-      }
-
-      // talking and snipping
-      var talk = G.speaking ? (0.5 + 0.5 * Math.sin(now / 55)) * (0.6 + 0.4 * Math.sin(now / 190)) : 0, close = 0;
-      if (snipAt > 0) {
-        var st = now - snipAt;
-        close = st < 150 ? st / 150 : st < 520 ? 1 : st < 900 ? 1 - (st - 520) / 380 : 0;
-        if (st >= 130 && !G.didCut) {
-          G.didCut = true;
-          for (var e = 0; e < 40; e++) grains.push({ x: o.x + (Math.random() - 0.3) * 120, y: o.y - 20 + (Math.random() - 0.5) * 6, vx: (Math.random() - 0.5) * 30, vy: Math.random() * 20, life: 1.4 });
-        }
-        if (st >= 900) { snipAt = -1; G.didCut = false; }
-      }
-      var ang = talk * 3 - close * 18;
-      T.bladeA.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ' 0 -30)');
-      T.bladeB.setAttribute('transform', 'rotate(' + (-ang).toFixed(2) + ' 0 -30)');
-      for (var g = grains.length - 1; g >= 0; g--) {
-        var gr = grains[g]; gr.life -= dt; if (gr.life <= 0) { grains.splice(g, 1); continue; }
-        gr.vy += 14 * dt; gr.x += gr.vx * dt; gr.y += gr.vy * dt;
-        ctx.globalAlpha = gr.life / 1.4 * 0.8; ctx.fillRect(gr.x, gr.y, 1.4, 1.4);
-      }
-      ctx.globalAlpha = 1;
-
-      // her eyes: your cursor while you move it, otherwise what she is talking about
-      var target = mouse && now - mouse.t < 1600 ? mouse : T.sel ? centre(T.sel) : null;
-      T.looks.forEach(function (lk) {
-        var m = lk.parentNode.getScreenCTM(); if (!m) return;
-        var dx2 = 0, dy2 = 0;
-        if (target) {
-          var inv = m.inverse(), lx = target.x * inv.a + target.y * inv.c + inv.e, ly = target.x * inv.b + target.y * inv.d + inv.f;
-          dx2 = lx - +lk.dataset.x; dy2 = ly - +lk.dataset.y;
-        }
-        var l = Math.hypot(dx2, dy2) || 1, rr = target ? Math.min(12, l / 12) : 0;
-        lk.setAttribute('transform', 'translate(' + (dx2 / l * rr).toFixed(2) + ' ' + (dy2 / l * rr).toFixed(2) + ')');
-      });
+    // how loud she is right now
+    var target = 0;
+    if (G.src && analyser) {
+      analyser.getFloatTimeDomainData(abuf);
+      var sum = 0; for (var j = 0; j < abuf.length; j++) sum += abuf[j] * abuf[j];
+      target = Math.min(1, Math.sqrt(sum / abuf.length) * 5.5);
+    } else if (G.speaking) target = 0.22 + 0.12 * Math.sin(now / 90) * Math.sin(now / 230);
+    envelope += (target - envelope) * (target > envelope ? 0.45 : 0.08);
+    GL.hueNow += (GL.hue - GL.hueNow) * Math.min(1, dt * 2.5);
+    GL.cut += (GL.cutTarget - GL.cut) * Math.min(1, dt * (GL.cutTarget > GL.cut ? 9 : 3));
+    if (prog) {
+      gl.uniform2f(U.uRes, cv.width, cv.height);
+      gl.uniform1f(U.uTime, reduce ? 4 : (now - t0) / 1000);
+      gl.uniform1f(U.uAmp, reduce ? Math.min(envelope, 0.3) : envelope);
+      gl.uniform1f(U.uCut, GL.cut);
+      gl.uniform1f(U.uHue, GL.hueNow);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
     requestAnimationFrame(frame);
   }
-  if (!reduce) requestAnimationFrame(frame);
+  requestAnimationFrame(frame);
 })();
 </script>
