@@ -30,3 +30,6 @@ data/history-cache.json
 data/ledger.json
 # full contract-term texts are re-fetched by scripts/fetch_rules.py; data/rules.json keeps the clauses we use
 data/rules/*.txt
+
+# GitHub Pages build output
+_site/

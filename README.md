@@ -2,6 +2,13 @@
 
 **See what the market expects before it happens.**
 
+**Live site: [ebeirne.github.io/atropos](https://ebeirne.github.io/atropos/)** ·
+[Console](https://ebeirne.github.io/atropos/console.html) ·
+[Atty's walkthrough](https://ebeirne.github.io/atropos/atty/)
+
+The live site is static: it runs on saved odds and the sample portfolio. Run it yourself (below)
+for live odds, your own tickers and a linked brokerage.
+
 Atropos reads what prediction markets expect from the next economic releases (inflation, the
 Fed, jobs), works out what each outcome would do to *your* holdings, and suggests one trade, or
 none. Read-only: you place every trade yourself.
@@ -84,7 +91,15 @@ node scripts/snapshot-tape.js
 node scripts/build-atty.js  # dist/atty/
 ```
 
-## Put it online (Fly.io)
+## The GitHub Pages site
+
+Every push to `main` publishes `public/` to [ebeirne.github.io/atropos](https://ebeirne.github.io/atropos/)
+(`.github/workflows/pages.yml`, built by `scripts/build-pages.js`). With no server behind it, the
+pages use the saved snapshots: `public/tape.json`, `public/demo.json`, `public/atty/*.json` and
+Atty's recorded lines in `public/atty/voice/`. Refresh those by running the server and then
+`node scripts/build-atty.js`, and push.
+
+## Put it online with a server (Fly.io)
 
 `ATROPOS_PUBLIC=1` (set in the Dockerfile) turns on the public demo: sample portfolio only, no
 brokerage linking, per-visitor and hourly limits on portfolio checks, news and voice, and Atty only

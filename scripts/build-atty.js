@@ -35,7 +35,13 @@ const out = path.join(__dirname, '..', 'dist', 'atty');
     const voice = require('../lib/voice');
     const dir = path.join(out, 'voice');
     fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
-    for (const b of list) fs.writeFileSync(path.join(dir, b.hash + '.mp3'), await voice.speak(b.say));
+    // a second copy next to the page in public/, so the GitHub Pages site can speak too
+    const site = path.join(pub, 'atty', 'voice');
+    fs.rmSync(site, { recursive: true, force: true }); fs.mkdirSync(site, { recursive: true });
+    for (const b of list) {
+      const mp3 = await voice.speak(b.say);
+      fs.writeFileSync(path.join(dir, b.hash + '.mp3'), mp3); fs.writeFileSync(path.join(site, b.hash + '.mp3'), mp3);
+    }
     console.log('recorded', list.length, 'lines with voice', voice.voiceId());
   }
   console.log('staged', fs.readdirSync(out).join(', '));
