@@ -1,0 +1,17 @@
+{
+  "judged_at": "2026-10-10T05:27:32.353Z",
+  "options": {
+    "unbounded": "Unbounded (wide, bold geometric display) for headlines, Geist for text, Geist Mono for labels and numbers.",
+    "syne": "Syne (quirky, art-school display) for headlines, Inter for text and numbers.",
+    "space": "Space Grotesk for headlines and text, IBM Plex Mono for labels and numbers.",
+    "serif": "Instrument Serif (elegant editorial serif) for headlines, Geist for text, Geist Mono for numbers.",
+    "archivo": "Archivo (extra-condensed, heavy) for headlines, Archivo for text, JetBrains Mono for numbers."
+  },
+  "avg": {
+    "unbounded": 0.5433333333333334,
+    "syne": 0.28,
+    "space": 0.13,
+    "serif": 0.01,
+    "archivo": 0.03666666666666667
+  }
+}

@@ -2,161 +2,252 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@500&display=swap">
 <style>
-  /* No character: Atty is a voice. The thread of what you own is a rod of glass in the
-     dark, and it moves with her: it brightens, ripples and sends light along itself as
-     she speaks, and splits in two when she tells you to skip. Electric blue on black,
-     white-hot light, thin rainbow edges, like the reference loop. */
+  /* Atty is glass. On arrival a bar of glowing glass slides in and folds into her: a
+     square glass head with two eyes of light and no mouth. As you scroll she unfolds back
+     into the bar, which follows you down the page along the bottom, where her voice plays;
+     it ripples and brightens as she speaks. Sharp corners everywhere, wide display type
+     (Unbounded, Jev's pick) for what matters, mono labels, and big photos. */
   :root {
     color-scheme: dark;
-    --bg: #010208;
-    --ink: #eef1ff;
-    --grey: #8b93b8;
-    --dim: #4a5279;
-    --rule: rgba(120, 150, 255, .16);
-    --glass: rgba(40, 70, 255, .10);
-    --edge: rgba(150, 175, 255, .28);
-    --up: #4be3a3;
-    --down: #ff5c8a;
+    --bg: #02030f;
+    --ink: #f4f6ff;
+    --mute: #98a1c8;
+    --dim: #555d88;
+    --panel: rgba(6, 10, 38, .8);
+    --edge: rgba(140, 165, 255, .22);
+    --rule: rgba(140, 165, 255, .14);
+    --up: #3ee6a0;
+    --down: #ff4f74;
+    --amber: #ffc857;
+    --d: "Unbounded", "Geist", system-ui, sans-serif;
     --f: "Geist", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
     --m: "Geist Mono", ui-monospace, monospace;
-    --t: clamp(15px, 1.15vw, 18px);
-    --gut: clamp(16px, 2.2vw, 36px);
+    --gut: clamp(18px, 3.2vw, 56px);
   }
-  * { box-sizing: border-box; }
-  html { background: var(--bg); }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--t)/1.4 var(--f); -webkit-font-smoothing: antialiased; }
-  a { color: inherit; text-decoration: none; }
-  a:hover { color: #fff; }
-  :focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
-  .g { color: var(--grey); }
-  .up { color: var(--up); } .down { color: var(--down); }
-  .num { font-family: var(--m); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  * { box-sizing: border-box; border-radius: 0 !important; }
+  html { background: var(--bg); scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 20px/1.45 var(--f); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid #8fa6ff; outline-offset: 3px; }
   p { margin: 0; }
+  .mute { color: var(--mute); }
+  .up { color: var(--up); } .down { color: var(--down); } .amber { color: var(--amber); }
+  .n { font-variant-numeric: tabular-nums; }
+  .lab { font: 500 13px/1.2 var(--m); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
 
-  /* the glass thread lives behind the first screen */
-  #glass { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .hero { position: relative; height: 100svh; min-height: 560px; overflow: hidden; background: radial-gradient(70% 45% at 50% 50%, #0b1fb0 0%, #030620 55%, var(--bg) 100%); }
-  .top { position: absolute; inset: 0 0 auto 0; display: flex; justify-content: space-between; align-items: baseline; padding: var(--gut); z-index: 2; }
-  .brand { font-weight: 500; letter-spacing: .01em; }
-  .top nav { display: flex; gap: 1.6em; color: var(--grey); }
-  .status { position: absolute; left: var(--gut); top: calc(var(--gut) + 1.6em); color: var(--grey); z-index: 2; }
+  .headhit { position: fixed; left: 0; top: 0; z-index: 2; background: transparent; border: 0; padding: 0; cursor: pointer; }
+  #glass { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; }
+  .wrap { position: relative; z-index: 1; }
+  .shell { max-width: 1320px; margin: 0 auto; padding: 0 var(--gut); }
 
-  /* what she says, under the glass */
-  .voice { position: absolute; left: 50%; top: 61%; transform: translateX(-50%); width: min(880px, calc(100% - 2 * var(--gut))); text-align: center; z-index: 2; }
-  .line { font-weight: 300; font-size: clamp(22px, 2.6vw, 40px); line-height: 1.18; letter-spacing: -.02em; min-height: 2.4em; }
-  .w { opacity: .14; transition: opacity .16s, filter .16s; filter: blur(1.5px); }
-  .w.on { opacity: 1; filter: none; }
-  .sub { margin-top: .7em; color: var(--grey); transition: opacity .4s; }
-  .show { margin: 1.4em auto 0; max-width: 560px; text-align: left; }
-  .card { background: var(--glass); border: 1px solid var(--edge); border-radius: 14px; padding: .35em 1em; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
-  .mini { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 1.2em; padding: .5em 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
-  .mini:last-child { border-bottom: 0; }
-  .mini > * { min-width: 0; }
-  .mini .bar { width: 7em; align-self: center; }
-  .controls { position: absolute; left: 50%; bottom: var(--gut); transform: translateX(-50%); display: flex; gap: 1.4em; align-items: center; z-index: 2; color: var(--grey); white-space: nowrap; }
-  .controls button { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
-  .controls button:disabled { color: var(--dim); cursor: default; }
-  .play { display: inline-flex; align-items: center; gap: .6em; padding: .7em 1.3em !important; border-radius: 999px; border: 1px solid var(--edge) !important; background: var(--glass) !important; backdrop-filter: blur(10px); }
-  .play i { width: 0; height: 0; border-left: 9px solid currentColor; border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
-  .play.on i { width: 9px; height: 11px; border: 0; border-left: 3px solid currentColor; border-right: 3px solid currentColor; }
-  .note { position: absolute; left: 50%; bottom: calc(var(--gut) + 3.2em); transform: translateX(-50%); color: var(--grey); z-index: 2; }
+  /* top bar */
+  .bar { position: absolute; inset: 0 0 auto 0; z-index: 3; }
+  .bar .shell { display: flex; justify-content: space-between; align-items: center; height: 84px; }
+  .brand { font: 600 20px var(--d); letter-spacing: -.01em; }
+  .bar nav { display: flex; gap: 30px; }
+  .bar nav a { text-decoration: none; font: 500 13px var(--m); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+  .bar nav a:hover { color: var(--ink); }
 
-  /* the detail, below */
-  .page { padding: 0 var(--gut) calc(var(--gut) * 3); max-width: 1180px; margin: 0 auto; }
-  section { margin-top: calc(var(--gut) * 3.2); }
-  .sec { display: grid; grid-template-columns: 1fr 2fr; gap: var(--gut); padding-bottom: .7em; border-bottom: 1px solid var(--rule); }
-  .sec h2 { margin: 0; font-weight: 400; font-size: 1.5em; letter-spacing: -.02em; }
-  .row { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.9fr) 6.5em; gap: var(--gut); padding-block: .62em; border-bottom: 1px solid var(--rule);
-    align-items: baseline; width: 100%; background: none; border-left: 0; border-right: 0; border-top: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-  .row > * { min-width: 0; }
-  .row .v { text-align: right; }
-  .row[aria-expanded="true"] { color: var(--grey); }
-  .detail { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.9fr) 6.5em; gap: var(--gut); padding-block: .4em 1em; border-bottom: 1px solid var(--rule); }
-  .detail[hidden] { display: none; }
-  .detail .say { grid-column: 2 / span 2; }
-  .detail .nums { grid-column: 4 / span 2; color: var(--grey); }
-  .plain { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 2.15fr) 6.5em; gap: var(--gut); padding-block: .62em; border-bottom: 1px solid var(--rule); align-items: baseline; }
-  .plain > * { min-width: 0; }
-  .plain .v { text-align: right; }
-  .bar { display: block; height: 2px; border-radius: 2px; background: var(--rule); margin-top: .4em; }
-  .bar i { display: block; height: 2px; border-radius: 2px; background: linear-gradient(90deg, #3d6bff, #b9c8ff); }
-  .bar i.you { background: linear-gradient(90deg, #ff5c8a, #ffb3c8); }
-  .ask { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto; gap: var(--gut); padding-block: .62em; border-bottom: 1px solid var(--rule); align-items: baseline; }
-  .ask input { font: inherit; color: var(--ink); background: transparent; border: 0; outline: none; width: 100%; padding: 0; caret-color: #6f8cff; }
-  .ask input::placeholder { color: var(--grey); }
-  .ask button, .chips button { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
-  .chips { display: flex; flex-wrap: wrap; gap: .3em 1em; padding-block: .62em; border-bottom: 1px solid var(--rule); padding-left: calc(2.2em + var(--gut)); }
-  .chips button { color: var(--grey); }
-  .chips button:hover { color: var(--ink); }
-  footer { margin-top: calc(var(--gut) * 3); display: grid; grid-template-columns: 1fr 2fr 1fr; gap: var(--gut); color: var(--grey); }
+  /* landing */
+  .land { min-height: 100svh; display: flex; align-items: center; }
+  .land .shell { width: 100%; }
+  .land .copy { max-width: 700px; padding-block: 110px 210px; }
+  h1 { font: 600 clamp(42px, 5.4vw, 92px)/.95 var(--d); letter-spacing: -.045em; margin: 18px 0 26px; }
+  .lead { font-size: clamp(20px, 1.7vw, 25px); color: #c9d0f0; max-width: 30ch; }
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 36px; }
+  .btn { font: 500 15px var(--m); letter-spacing: .08em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 12px; padding: 18px 24px; text-decoration: none; cursor: pointer;
+    color: var(--ink); background: rgba(255,255,255,.04); border: 1px solid var(--edge); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .btn.main { background: var(--ink); color: #050a35; border-color: var(--ink); }
+  .btn:hover { filter: brightness(1.12); }
+  .tri { width: 0; height: 0; border-left: 10px solid currentColor; border-top: 6.5px solid transparent; border-bottom: 6.5px solid transparent; }
+  .facts { display: flex; gap: 0; margin-top: 54px; flex-wrap: wrap; border-top: 1px solid var(--edge); }
+  .facts > div { padding: 16px 28px 0 0; margin-right: 28px; }
+  .facts b { display: block; font: 500 24px var(--d); white-space: nowrap; letter-spacing: -.03em; }
+  .facts span { display: block; margin-top: 6px; }
 
-  @media (max-width: 760px) {
-    .top nav { display: none; }
-    .voice { top: 57%; }
-    .sec, footer { grid-template-columns: 1fr; }
-    .row, .detail { grid-template-columns: 1.6em minmax(0, 1fr) auto; }
-    .wide { display: none; }
-    .row .c3 { grid-column: 2; grid-row: 2; color: var(--grey); }
-    .row .c4 { grid-column: 3; grid-row: 2; color: var(--grey); text-align: right; }
-    .row .v { grid-column: 3; grid-row: 1; }
-    .detail .say, .detail .nums { grid-column: 2 / span 2; }
-    .plain { grid-template-columns: 1.6em minmax(0, 1fr) auto; }
-    .plain .c3 { grid-column: 2 / span 2; color: var(--grey); }
-    .plain .v { grid-column: 3; grid-row: 1; }
-    .mini .bar { width: 4em; }
+  /* sections */
+  section { padding-top: 140px; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 34px; border-bottom: 1px solid var(--edge); padding-bottom: 22px; }
+  h2 { font: 600 clamp(36px, 4.6vw, 76px)/.95 var(--d); letter-spacing: -.045em; margin: 0; }
+  .sub { color: var(--mute); font-size: 19px; max-width: 40ch; text-align: right; }
+  .panel { background: var(--panel); border: 1px solid var(--edge); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  .lit { box-shadow: 0 0 0 1px rgba(170, 190, 255, .7), 0 0 70px rgba(60, 100, 255, .38); }
+  .tag { display: inline-block; padding: 8px 12px 7px; font: 600 13px var(--m); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--edge); background: rgba(255,255,255,.04); }
+  .tag.buy { color: var(--up); border-color: rgba(62,230,160,.55); background: rgba(62,230,160,.08); }
+  .tag.call { color: var(--amber); border-color: rgba(255,200,87,.55); background: rgba(255,200,87,.08); }
+  .tag.skip { color: var(--down); border-color: rgba(255,79,116,.55); background: rgba(255,79,116,.08); }
+  .tag.watch { color: var(--mute); }
+
+  /* this week */
+  .week { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--edge); }
+  .rep { text-decoration: none; display: block; border-right: 1px solid var(--edge); background: var(--panel); transition: background .25s; }
+  .rep:last-child { border-right: 0; }
+  .rep:hover { background: rgba(14, 22, 80, .85); }
+  .ph { position: relative; aspect-ratio: 4 / 3; background: #0b1240 center / cover no-repeat; }
+  .ph::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(2,3,15,0) 45%, rgba(2,3,15,.9)); }
+  .ph .when { position: absolute; left: 20px; bottom: 16px; z-index: 1; }
+  .ph .when.lab { color: var(--ink); }
+  .rep .in { padding: 22px 22px 26px; }
+  .rep h3 { margin: 0; font: 600 26px/1.05 var(--d); letter-spacing: -.035em; }
+  .rep .fav { color: var(--mute); margin: 10px 0 18px; font-size: 18px; }
+
+  /* the trade ticket */
+  .ticket { display: grid; grid-template-columns: 0.8fr 1.2fr; margin-bottom: 24px; }
+  .ticket .ph { aspect-ratio: auto; min-height: 100%; }
+  .ticket .ph::after { background: linear-gradient(90deg, rgba(2,3,15,0) 55%, rgba(6,10,38,.96)); }
+  .tk { padding: 34px 36px 36px; }
+  .tk h3 { margin: 12px 0 28px; font: 600 clamp(28px, 2.8vw, 44px)/1 var(--d); letter-spacing: -.04em; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--edge); margin-bottom: 26px; }
+  .kpi { padding: 18px 20px; border-right: 1px solid var(--edge); }
+  .kpi:last-child { border-right: 0; }
+  .kpi b { display: block; font: 600 clamp(30px, 2.8vw, 46px)/1 var(--d); letter-spacing: -.04em; margin-top: 12px; }
+  .kpi .tag { margin-top: 12px; font-size: 14px; }
+  .rows .r { display: flex; justify-content: space-between; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--rule); font-size: 20px; }
+  .rows .r:last-child { border-bottom: 0; }
+  .rows .r > span { color: var(--mute); }
+  .rows .r b { font-weight: 500; text-align: right; }
+  .rows .r em { font-style: normal; color: var(--mute); font-weight: 400; margin-left: 10px; }
+  .rows .r.tot b { font: 600 28px var(--d); letter-spacing: -.03em; }
+  .checks { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); margin-top: 22px; }
+  .chk { padding: 14px 16px; border-right: 1px solid var(--rule); }
+  .chk:last-child { border-right: 0; }
+  .chk b { display: block; font-size: 22px; font-weight: 500; margin-top: 8px; }
+  .chk em { font-style: normal; color: var(--mute); font-size: 15px; }
+  .why { margin-top: 22px; color: #c9d0f0; font-size: 21px; max-width: 46ch; }
+  .tk .ctas { margin-top: 26px; }
+
+  /* holdings, public money */
+  .list .li { display: grid; grid-template-columns: 1fr 1.3fr 1fr auto; gap: 20px; align-items: center; padding: 18px 24px; border-bottom: 1px solid var(--rule); }
+  .list .li > * { min-width: 0; }
+  .list .li:last-child { border-bottom: 0; }
+  .list .li .sym { font: 600 24px var(--d); letter-spacing: -.03em; }
+  .list .li small { display: block; color: var(--mute); font-size: 16px; margin-top: 2px; }
+  .barline { height: 8px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .barline i { display: block; height: 100%; background: linear-gradient(90deg, #2f5cff, #b9c8ff); }
+  .barline i.you { background: linear-gradient(90deg, #ff4f74, #ffb3c8); }
+  .pct { font: 600 26px var(--d); letter-spacing: -.03em; }
+
+  /* news: pictures first */
+  .ask { display: flex; gap: 0; }
+  .ask input { flex: 1; min-width: 0; font: 400 24px var(--f); color: var(--ink); background: transparent; border: 0; outline: none; padding: 20px 22px; }
+  .ask input::placeholder { color: var(--dim); }
+  .ask .btn { border-top: 0; border-bottom: 0; border-right: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0; margin: 0 0 26px; border: 1px solid var(--edge); border-top: 0; }
+  .chips button { font: 500 13px var(--m); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); background: transparent; border: 0; border-right: 1px solid var(--edge); padding: 14px 18px; cursor: pointer; }
+  .chips button:hover { color: var(--ink); background: rgba(255,255,255,.04); }
+  .feed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--edge); }
+  .story { display: flex; flex-direction: column; text-decoration: none; background: var(--panel); border-right: 1px solid var(--edge); border-bottom: 1px solid var(--edge); }
+  .story:hover h3 { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .story .pic { position: relative; aspect-ratio: 16 / 10; background: linear-gradient(135deg, #0a1a8a, #1c46ff 45%, #a8b8ff 52%, #0a1a8a 60%, #020414); overflow: hidden; }
+  .story .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .story .pic .lab { position: absolute; left: 16px; top: 14px; color: var(--ink); background: rgba(2,3,15,.65); padding: 6px 8px; }
+  .story .txt { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .story h3 { margin: 0; font: 500 21px/1.25 var(--f); letter-spacing: -.01em; }
+  .story.top { grid-column: span 2; grid-row: span 2; }
+  .story.top .pic { aspect-ratio: 16 / 9; }
+  .story.top h3 { font: 600 clamp(26px, 2.6vw, 40px)/1.05 var(--d); letter-spacing: -.035em; }
+  footer { padding: 110px 0 160px; color: var(--mute); font-size: 15px; }
+  footer .shell { display: grid; gap: 10px; }
+
+  /* her voice, along the bottom, on the glass */
+  .player { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 5; width: min(1040px, calc(100% - 24px)); display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
+    padding: 10px; background: rgba(4, 7, 30, .86); border: 1px solid var(--edge); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .player .pp { width: 52px; height: 52px; border: 0; background: var(--ink); color: #050a35; display: grid; place-items: center; cursor: pointer; }
+  .player .pp.on .tri { width: 12px; height: 14px; border: 0; border-left: 4px solid currentColor; border-right: 4px solid currentColor; }
+  .cap { font-size: 19px; line-height: 1.25; max-height: 2.5em; overflow: hidden; }
+  .cap .w { opacity: .25; transition: opacity .15s; } .cap .w.on { opacity: 1; }
+  .nav { display: flex; align-items: center; gap: 0; white-space: nowrap; border: 1px solid var(--edge); }
+  .nav span { font: 500 13px var(--m); letter-spacing: .1em; color: var(--mute); padding: 0 12px; }
+  .nav button { font: inherit; font-size: 22px; width: 46px; height: 46px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+  .nav button:disabled { color: var(--dim); cursor: default; }
+
+  @media (max-width: 880px) {
+    body { font-size: 18px; }
+    .bar nav { display: none; }
+    .land { align-items: flex-end; }
+    .land .copy { padding-block: 34vh 130px; }
+    h1 { font-size: 40px; }
+    .head { display: block; }
+    .sub { text-align: left; margin-top: 12px; }
+    .week, .feed { grid-template-columns: 1fr; }
+    .rep { border-right: 0; border-bottom: 1px solid var(--edge); }
+    .story.top { grid-column: auto; grid-row: auto; }
+    .ticket { grid-template-columns: 1fr; }
+    .ticket .ph { aspect-ratio: 16 / 9; }
+    .ticket .ph::after { background: linear-gradient(180deg, rgba(2,3,15,0) 45%, rgba(6,10,38,.96)); }
+    .tk { padding: 24px 20px 26px; }
+    .kpis, .checks { grid-template-columns: 1fr 1fr; }
+    .kpi:nth-child(2) { border-right: 0; }
+    .kpi:nth-child(3) { grid-column: 1 / -1; border-top: 1px solid var(--edge); }
+    .chk:nth-child(3) { grid-column: 1 / -1; border-top: 1px solid var(--rule); }
+    .list .li { grid-template-columns: 1fr auto; }
+    .list .li .hide-s { display: none; }
+    .player { gap: 10px; bottom: 10px; }
+    .player .pp { width: 44px; height: 44px; }
+    .player #prev, .player .nav span { display: none; }
+    .cap { font-size: 15px; }
+    .facts > div { padding-right: 0; margin-right: 22px; }
   }
-  @media (prefers-reduced-motion: reduce) { .w { transition: none; filter: none; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .rep { transition: none; } }
 </style>
 
-<div class="hero" id="top">
-  <canvas id="glass" aria-hidden="true"></canvas>
-  <header class="top">
+<canvas id="glass" aria-hidden="true"></canvas>
+<button class="headhit" id="headHit" type="button" aria-label="Say hi to Atty"></button>
+
+<div class="wrap">
+  <header class="bar"><div class="shell">
     <span class="brand">Atropos</span>
-    <nav aria-label="Sections"><a href="#quotes">Quotes</a><a href="#public">Public funds</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
-  </header>
-  <p class="status num" id="status">Checking…</p>
-  <div class="voice">
-    <p class="line" id="line" aria-live="polite">I'm Atty. I watch the reports that could hurt what you own, and I'll tell you when protection isn't worth it.</p>
-    <p class="sub" id="sub"></p>
-    <div class="show" id="show"></div>
-  </div>
-  <p class="note" id="voiceNote"></p>
-  <div class="controls">
-    <button type="button" id="prev">Back</button>
-    <button type="button" class="play" id="play" aria-pressed="false"><i></i><span id="playLabel">Listen to Atty</span></button>
-    <button type="button" id="next">Next</button>
-    <span class="num" id="step"></span>
-  </div>
+    <nav aria-label="Sections"><a href="#week">This week</a><a href="#trade">Next trade</a><a href="#holdings">Holdings</a><a href="#public">Public money</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
+  </div></header>
+
+  <section class="land" id="top" style="padding-top:0"><div class="shell"><div class="copy">
+    <h1>Know what could hit your money this week.</h1>
+    <p class="lead">Atty reads the prediction markets, checks them against what you own, and tells you the one trade worth making, or to skip it.</p>
+    <div class="ctas"><button class="btn main" type="button" id="heroPlay"><i class="tri"></i>Listen to Atty</button><a class="btn" href="#trade">See the next trade</a></div>
+    <div class="facts" id="facts"></div>
+  </div></div></section>
+
+  <section id="week"><div class="shell">
+    <div class="head"><h2>This week</h2><p class="sub">The reports that could move what you own, what the markets expect, and what Atty would do.</p></div>
+    <div class="week" id="weekCards"></div>
+  </div></section>
+
+  <section id="trade"><div class="shell">
+    <div class="head"><h2>Your next trade</h2><p class="sub">Sized to what you could lose, priced on every venue Atty can reach, and checked against how you actually lose money.</p></div>
+    <div id="tickets"></div>
+  </div></section>
+
+  <section id="holdings"><div class="shell">
+    <div class="head"><h2>Your holdings</h2><p class="sub" id="holdSub">What could hurt each one most, and what protecting it would cost.</p></div>
+    <div class="panel list" id="holdList"></div>
+  </div></section>
+
+  <section id="public"><div class="shell">
+    <div class="head"><h2>Public money</h2><p class="sub" id="pubSub">State and city pensions and public universities, from their SEC 13F filings, measured with the same model as you.</p></div>
+    <div class="panel list" id="pubList"></div>
+  </div></section>
+
+  <section id="news"><div class="shell">
+    <div class="head"><h2>The news</h2><p class="sub"><span>Any topic, ranked by Jev for what bears on what you own.</span> <span id="newsState"></span></p></div>
+    <form class="panel ask" id="newsForm" role="search"><input id="newsQ" type="search" placeholder="The Fed, layoffs, Nvidia…" aria-label="Ask Atty about anything" autocomplete="off" maxlength="200"><button class="btn main" type="submit">Ask</button></form>
+    <div class="chips" id="newsChips"><button type="button">The Fed</button><button type="button">Inflation</button><button type="button">Layoffs</button><button type="button">Tariffs</button><button type="button">Oil prices</button><button type="button">Nvidia</button></div>
+    <div class="feed" id="newsList"></div>
+  </div></section>
+
+  <footer><div class="shell">
+    <p>Not investment advice. Atty never trades: brokerage access is read-only.</p>
+    <p>Every number comes from code, and Jev checks every sentence against it. Odds from Kalshi, ForecastEx and CME via Interactive Brokers, Limitless and Futuur. Public funds from SEC 13F. History from BLS, ALFRED and Yahoo.</p>
+    <p id="credits"></p>
+    <p id="asof"></p>
+  </div></footer>
 </div>
 
-<div class="page">
-  <section id="quotes" aria-labelledby="qH">
-    <div class="sec"><h2 id="qH">Quotes</h2><span class="g">What would hurt each holding most, and what it costs to protect it.</span></div>
-    <div id="quoteList"></div>
-    <div class="plain" id="knot"></div>
-  </section>
-
-  <section id="public" aria-labelledby="pH">
-    <div class="sec"><h2 id="pH">Public funds</h2><span class="g" id="pSub">State and city pensions and public universities, measured with the same model as you.</span></div>
-    <div id="bars"></div>
-    <div class="sec" style="margin-top:2em"><h2>Who else holds what you hold</h2><span class="g">Shares bought or sold last quarter, from 13F filings.</span></div>
-    <div id="holders"></div>
-  </section>
-
-  <section id="news" aria-labelledby="nH">
-    <div class="sec"><h2 id="nH">News</h2><span class="g"><span>Any topic, ranked by Jev.</span> <span id="newsState"></span></span></div>
-    <form class="ask" id="newsForm" role="search"><span class="g">?</span><input id="newsQ" type="search" placeholder="Ask Atty about anything" aria-label="Ask Atty about anything" autocomplete="off" maxlength="200"><button type="submit">Search</button></form>
-    <div class="chips" id="newsChips"><button type="button">The Fed</button><button type="button">Inflation</button><button type="button">Layoffs</button><button type="button">Tariffs</button><button type="button">Oil prices</button><button type="button">Nvidia</button></div>
-    <div id="newsList"></div>
-  </section>
-
-  <footer>
-    <span>Not investment advice. Read-only: Atty never trades.</span>
-    <span>Every number comes from code, and Jev checks every sentence against it. Odds from Kalshi, ForecastEx and CME via Interactive Brokers, Limitless and Futuur; public funds from SEC 13F; history from BLS, ALFRED and Yahoo.</span>
-    <span id="asof" class="num"></span>
-  </footer>
+<div class="player" role="region" aria-label="Atty's voice">
+  <button class="pp" type="button" id="play" aria-pressed="false" aria-label="Play Atty"><i class="tri"></i></button>
+  <p class="cap" id="line" aria-live="polite">Press play and Atty will walk you through your week.</p>
+  <div class="nav"><button type="button" id="prev" aria-label="Back">‹</button><span class="n" id="step"></span><button type="button" id="next" aria-label="Next">›</button></div>
 </div>
 
 <script src="beats.js"></script>
@@ -166,22 +257,30 @@
   var DATA = {};
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function h(html) { var t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   var money = function (x) { var s = '$' + Math.abs(Math.round(x)).toLocaleString('en-US'); return x < 0 ? '−' + s : s; };
   var money2 = function (x) { return '$' + Number(x).toFixed(2); };
+  var cents = function (x) { var c = x * 100; return (Math.abs(c - Math.round(c)) > 1e-6 ? c.toFixed(1) : Math.round(c)) + '¢'; };
   var big = function (x) { return x >= 1e9 ? '$' + (x / 1e9).toFixed(1) + 'B' : x >= 1e6 ? '$' + (x / 1e6).toFixed(0) + 'M' : money(x); };
-  var CODE = { cpi: 'CPI', fomc: 'FOMC', nfp: 'NFP' };
-  var VERDICT = { good: 'Good price', fair: 'Fair price', overpriced: 'Skip', too_small: 'Too small', no_fair_value: 'No price', none: 'No quote' };
+  var NAME = { cpi: 'Inflation report', nfp: 'Jobs report', fomc: 'Fed decision' };
+  var SHORTNAME = { cpi: 'inflation', nfp: 'jobs', fomc: 'Fed' };
+  var TIME = { cpi: '8:30 AM ET', nfp: '8:30 AM ET', fomc: '2:00 PM ET' };
+  var PHOTO = { cpi: '../photos/cpi.jpg', nfp: '../photos/nfp.jpg', fomc: '../photos/fed.jpg' };
+  var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function when(iso) { var d = new Date(iso + 'T12:00:00'); return DAYS[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate(); }
+  function inDays(iso) { var n = Math.round((Date.parse(iso + 'T12:00:00') - Date.now()) / 864e5); return n <= 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'; }
   function ago(iso) { var m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
   function getJSON(live, fallback) {
     return fetch(live).then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (j) { if (j && j.result === null) throw 0; return { data: j, live: true }; })
       .catch(function () { return fetch(fallback).then(function (r) { return r.json(); }).then(function (j) { return { data: j, live: false }; }); });
   }
-  function printOf(w) {
-    if (w.unit === '%') return (w.side === 'high' ? Math.ceil(w.threshold * 10 - 1e-9) : Math.floor(w.threshold * 10 + 1e-9)) / 10 + '%';
-    if (w.unit === 'k') return Math.round(w.threshold) + 'K';
-    return String(w.threshold);
+  function threshold(p) {
+    if (p.unit === '%') return (p.side === 'high' ? Math.ceil(p.threshold * 10 - 1e-9) : Math.floor(p.threshold * 10 + 1e-9)) / 10 + '%';
+    return Math.round(p.threshold) + 'K jobs';
   }
+  var CALL = { good: ['buy', 'Buy protection'], fair: ['call', 'Your call'], overpriced: ['skip', 'Skip'], too_small: ['skip', 'Too small'], none: ['watch', 'Watching'] };
   var SHORT = { 'CALIFORNIA PUBLIC EMPLOYEES RETIREMENT SYSTEM': 'CalPERS', 'NEW YORK STATE COMMON RETIREMENT FUND': 'NY State Common',
     'STATE BOARD OF ADMINISTRATION OF FLORIDA RETIREMENT SYSTEM': 'Florida SBA', 'NEW YORK STATE TEACHERS RETIREMENT SYSTEM': 'NY State Teachers',
     'STATE OF WISCONSIN INVESTMENT BOARD': 'Wisconsin SWIB', 'TEACHER RETIREMENT SYSTEM OF TEXAS': 'Texas Teachers', 'REGENTS OF THE UNIVERSITY OF CALIFORNIA': 'UC Regents',
@@ -189,111 +288,152 @@
     'ILLINOIS MUNICIPAL RETIREMENT FUND': 'Illinois Municipal', "MUNICIPAL EMPLOYEES' RETIREMENT SYSTEM OF MICHIGAN": 'Michigan MERS' };
   function short(n) { return SHORT[String(n).toUpperCase()] || String(n).replace(/\b(\w)(\w*)/g, function (m, a, b) { return a + b.toLowerCase(); }); }
 
-  /* ------------------------------------------------------------ the agent */
-  function renderAgent(a, live) {
-    var r = a.result, hs = r.holdings, total = hs.reduce(function (s, h) { return s + h.value; }, 0);
-    DATA.agent = a; DATA.total = total; DATA.live = live;
-    $('status').textContent = money(total) + ' · ' + (live ? 'checked ' : 'saved check, ') + ago(r.at);
-    renderQuotes(hs); renderKnot(r.portfolio); loadFunds(hs, total); maybeStart();
+  /* ------------------------------------------------------------- loading */
+  getJSON('/api/agent', 'agent.json').then(function (res) {
+    DATA.agent = res.data; DATA.live = res.live;
+    var hs = res.data.result.holdings; DATA.total = hs.reduce(function (s, x) { return s + x.value; }, 0);
+    loadFunds(hs, DATA.total); maybeRender();
+  }).catch(function () { $('facts').textContent = 'Atty could not load her last check.'; });
+  getJSON('/api/thread', 'thread.json').then(function (r) { DATA.thread = r.data; }).catch(function () { DATA.thread = {}; }).then(function () { DATA.threadDone = true; maybeRender(); });
+  getJSON('/api/events', '../tape.json').then(function (r) { DATA.tape = r.data; $('asof').textContent = 'Odds ' + (r.live ? 'live' : 'saved') + '.'; }).catch(function () { DATA.tape = { signals: [] }; }).then(maybeRender);
+  fetch('../photos/credits.json').then(function (r) { return r.json(); }).then(function (c) {
+    $('credits').textContent = 'Photos: ' + Object.keys(c).map(function (k) { return c[k].alt + ' by ' + c[k].artist + ' (' + c[k].license + ', Wikimedia Commons)'; }).join('; ') + '.';
+  }).catch(function () {});
+
+  var rendered = false;
+  function maybeRender() {
+    if (rendered || !DATA.agent || !DATA.tape || !DATA.threadDone) return;
+    rendered = true;
+    renderFacts(); renderWeek(); renderTickets(); renderHoldings();
+    maybeStart();
   }
-  function renderQuotes(hs) {
-    var host = $('quoteList'); host.textContent = '';
-    hs.forEach(function (h, i) {
-      var w = h.exposures[0] || null, verdict = w && w.knot ? w.knot.verdict : 'none';
-      var row = el('button', 'row'); row.type = 'button'; row.setAttribute('aria-expanded', 'false');
-      row.appendChild(el('span', 'g num', String(i + 1)));
-      row.appendChild(el('span', null, h.symbol + ', ' + money(h.value)));
-      var c3 = el('span', 'c3');
-      if (w) { c3.append(w.word.charAt(0).toUpperCase() + w.word.slice(1) + ' ' + (w.release === 'cpi' ? 'inflation' : w.release === 'nfp' ? 'jobs' : 'Fed') + ' '); c3.appendChild(el('span', 'down num', money(-w.loss))); }
-      else c3.textContent = 'Nothing pulls at it';
-      row.appendChild(c3);
-      var c4 = el('span', 'c4 num', w && w.knot ? money2(w.knot.cost) : '');
-      if (w && w.knot) c4.appendChild(el('span', 'wide', ' to protect'));
-      row.appendChild(c4);
-      row.appendChild(el('span', 'v' + (verdict === 'good' ? ' up' : verdict === 'overpriced' ? ' down' : ' g'), VERDICT[verdict] || verdict));
-      var d = el('div', 'detail'); d.hidden = true;
-      d.appendChild(el('span'));
-      var say = el('p', 'say', h.atty.text);
-      if (h.atty.checked != null) say.appendChild(el('span', 'g', ' Checked ' + Math.round(h.atty.checked * 100) + '%.'));
-      d.appendChild(say);
-      if (w) {
-        var nums = el('p', 'nums num');
-        var lines = ['If ' + w.releaseName + ' prints ' + (w.side === 'high' ? '≥ ' : '≤ ') + printOf(w) + ', ' + Math.round(w.odds * 100) + '% odds'];
-        if (w.best) {
-          lines.push(w.knot.contracts + ' × ' + w.best.contract + ', ' + w.best.venue);
-          lines.push('Ask ' + money2(w.best.ask) + ', fair ' + (w.best.fair != null ? money2(w.best.fair) : 'n/a') + ', ' + w.best.openInterest.toLocaleString('en-US') + ' open');
-          lines.push('Pays ' + money(w.knot.payout) + ' if it happens');
-        }
-        lines.forEach(function (t, k) { if (k) nums.appendChild(document.createElement('br')); nums.append(t); });
-        d.appendChild(nums);
-      }
-      row.addEventListener('click', function () { var open = d.hidden; d.hidden = !open; row.setAttribute('aria-expanded', String(open)); });
-      host.appendChild(row); host.appendChild(d);
-    });
+  function sig(id) { return (DATA.tape.signals || []).filter(function (s) { return s.id === id; })[0]; }
+  function mainCall(rel) {
+    var port = DATA.agent.result.portfolio;
+    return port.filter(function (p) { return p.release === rel && p.knot; })[0] || null;
   }
-  function renderKnot(port) {
-    var host = $('knot'), k = port.filter(function (p) { return p.knot; })[0];
-    host.textContent = '';
-    host.appendChild(el('span', 'g', '∞'));
-    if (!k) { host.appendChild(el('span', null, 'No knot needed this week.')); return; }
-    host.appendChild(el('span', null, 'One trade for everything'));
-    host.appendChild(el('span', 'c3 g', 'A ' + k.word + ' ' + k.releaseName + ' hurts ' + k.holdings.length + ' holdings at once. ' + k.knot.contracts + ' × ' + k.best.contract + ' on ' + k.best.venue + ' covers ' + money(k.loss) + ' and pays ' + money(k.knot.payout) + '.'));
-    host.appendChild(el('span', 'v num', money2(k.knot.cost)));
+  function oddsOf(p) { var o = null; DATA.agent.result.holdings.forEach(function (h) { h.exposures.forEach(function (e) { if (o == null && e.release === p.release && e.side === p.side) o = e.odds; }); }); return o; }
+
+  function renderFacts() {
+    var r = DATA.agent.result, n = (DATA.tape.signals || []).length;
+    var p = r.portfolio.filter(function (x) { return x.knot; })[0];
+    $('facts').innerHTML = '<div><b class="n">' + money(DATA.total) + '</b><span class="lab">' + r.holdings.length + ' holdings</span></div>' +
+      '<div><b class="n">' + n + '</b><span class="lab">reports ahead</span></div>' +
+      (p ? '<div><b class="n down">' + money(-p.loss) + '</b><span class="lab">most at stake</span></div>' : '') +
+      '';
   }
 
-  /* -------------------------------------------------------- public funds */
+  function renderWeek() {
+    var host = $('weekCards'); host.textContent = '';
+    ['cpi', 'fomc', 'nfp'].map(sig).filter(Boolean).sort(function (a, b) { return a.date < b.date ? -1 : 1; }).forEach(function (s) {
+      var i = s.p.indexOf(Math.max.apply(null, s.p)), p = mainCall(s.id), c = CALL[p ? p.knot.verdict : 'none'] || CALL.none;
+      var fav = s.id === 'cpi' ? s.labels[i].replace('-', '–') + '%' : s.id === 'nfp' ? s.labels[i].replace('-', 'K–') + 'K jobs' : s.labels[i];
+      var card = h('<a class="panel rep" id="w-' + s.id + '" href="' + (p ? '#t-' + s.id : '#trade') + '">' +
+        '<div class="ph" style="background-image:url(' + PHOTO[s.id] + ')"><span class="when lab">' + when(s.date) + ' · ' + TIME[s.id] + '</span></div>' +
+        '<div class="in"><h3>' + NAME[s.id] + '</h3><p class="fav">Most likely ' + esc(fav) + ', <span class="n">' + Math.round(s.p[i] * 100) + '%</span> · ' + inDays(s.date) + '</p>' +
+        '<span class="tag ' + c[0] + '">' + c[1] + '</span></div></a>');
+      host.appendChild(card);
+    });
+  }
+
+  function renderTickets() {
+    var host = $('tickets'); host.textContent = '';
+    var r = DATA.agent.result, th = DATA.thread || {}, fits = (th.history && th.history.fits) || {}, fine = th.fine || {};
+    var list = r.portfolio.filter(function (p) { return p.knot && p.best; });
+    var seen = {};
+    list = list.filter(function (p) { if (seen[p.release]) return false; seen[p.release] = 1; return true; });
+    list.forEach(function (p, k) {
+      var s = sig(p.release), date = (s && s.date) || p.best.expiry, odds = oddsOf(p), c = CALL[p.knot.verdict] || CALL.none, skip = c[0] === 'skip';
+      var f = fits[p.release + ':' + p.side], fn = fine[p.release + ':' + p.side], yes = /^YES/.test(p.best.contract);
+      var strike = p.best.contract.replace(/^(YES|NO) on /, '').replace(/"/g, '');
+      var protection = (yes ? 'Buy YES · ' : 'Buy NO · ') + SHORTNAME[p.release] + ' ' + strike.toLowerCase().replace(/^above /, 'above ');
+      var fitTxt = f && f.lossDays ? (f.paidOnLoss + ' of ' + f.lossDays) : 'n/a';
+      var fitNote = f && f.lossDays ? (f.paidOnLoss / f.lossDays >= 0.6 ? 'usually lines up' : f.paidOnLoss / f.lossDays >= 0.4 ? 'about a coin flip' : 'usually misses') : '';
+      var fb = fn && fn.fallback && fn.fallback.basedOn ? fn.fallback : null;
+      var why = skip ? 'Protection costs ' + cents(p.knot.overFair) + ' more per contract than the odds say it is worth, so Atty would not buy it.'
+        : p.knot.verdict === 'good' ? 'It costs less than the odds say it is worth. Atty would buy it.'
+        : 'The price is about what the odds say it is worth. It is your call.';
+      var t = h('<article class="panel ticket" id="t-' + p.release + '">' +
+        '<div class="ph" style="background-image:url(' + PHOTO[p.release] + ')"><span class="when lab">' + NAME[p.release] + ' · ' + when(date) + ' · ' + inDays(date) + '</span></div>' +
+        '<div class="tk">' +
+          
+          '<h3>If ' + SHORTNAME[p.release] + ' comes in ' + p.word + ' (' + threshold(p) + (p.side === 'high' ? ' or more' : ' or less') + ')</h3>' +
+          '<div class="kpis">' +
+            '<div class="kpi"><span class="lab">You could lose</span><b class="n down">' + money(-p.loss) + '</b></div>' +
+            '<div class="kpi"><span class="lab">Chance</span><b class="n">' + (odds != null ? Math.round(odds * 100) + '%' : '–') + '</b></div>' +
+            '<div class="kpi"><span class="lab">Atty’s call</span><span class="tag ' + c[0] + '">' + c[1] + '</span></div>' +
+          '</div>' +
+          '<div class="rows">' +
+            '<div class="r"><span>Protection</span><b>' + esc(protection) + '</b></div>' +
+            '<div class="r"><span>Where</span><b>' + esc(p.best.venue) + '</b></div>' +
+            '<div class="r"><span>Contracts</span><b class="n">' + p.knot.contracts.toLocaleString('en-US') + '</b></div>' +
+            '<div class="r"><span>Price each, with fee</span><b class="n' + (skip ? ' down' : '') + '">' + cents(p.best.ask + 0.01) + '<em>fair ' + cents(p.best.fair) + '</em></b></div>' +
+            '<div class="r tot"><span>Total cost</span><b class="n">' + money2(p.knot.cost) + '</b></div>' +
+            '<div class="r"><span>Pays if it happens</span><b class="n up">' + money(p.knot.payout) + '</b></div>' +
+          '</div>' +
+          '<div class="checks">' +
+            '<div class="chk"><span class="lab">Paid on your bad days</span><b class="n">' + fitTxt + '</b><em>' + fitNote + '</em></div>' +
+            '<div class="chk"><span class="lab">If the report is skipped</span><b class="' + (fb ? (fb.pays ? 'up' : 'down') : '') + '">' + (fb ? (fb.pays ? 'Still pays' : 'Won’t pay') : '–') + '</b><em>' + (fb ? (fb.kind === 'formula' ? 'formula gives ' + fb.value + '%' : 'uses ' + fb.basedOn.split(' ')[0] + ', ' + fb.value + 'K') : '') + '</em></div>' +
+            '<div class="chk"><span class="lab">Trading stops</span><b class="n">' + ((fn && fn.stopsTrading) || '–') + '</b><em>' + when(date) + '</em></div>' +
+          '</div>' +
+          '<p class="why">' + esc(why) + '</p>' +
+          '<div class="ctas"><button class="btn" type="button" data-rel="' + p.release + '"><i class="tri"></i>Hear Atty explain</button></div>' +
+        '</div></article>');
+      t.querySelector('[data-rel]').addEventListener('click', function () { jumpTo(p.release, true); });
+      host.appendChild(t);
+    });
+  }
+
+  function renderHoldings() {
+    var hs = DATA.agent.result.holdings, host = $('holdList'); host.textContent = '';
+    hs.forEach(function (x) {
+      var w = x.exposures[0], c = CALL[w && w.knot ? w.knot.verdict : 'none'] || CALL.none;
+      host.appendChild(h('<div class="li"><div><span class="sym">' + esc(x.symbol) + '</span><small class="n">' + money(x.value) + '</small></div>' +
+        '<div>' + (w ? 'If ' + SHORTNAME[w.release] + ' runs ' + w.word + '<small class="n down">' + money(-w.loss) + '</small>' : 'Nothing pulls at it') + '</div>' +
+        '<div class="hide-s">' + (w && w.knot ? 'Protect for<small class="n">' + money2(w.knot.cost) + '</small>' : '') + '</div>' +
+        '<span class="tag ' + c[0] + '">' + c[1] + '</span></div>'));
+    });
+  }
+
   function loadFunds(hs, total) {
-    var tickers = hs.map(function (h) { return h.symbol; }).join(',');
+    var tickers = hs.map(function (x) { return x.symbol; }).join(',');
     getJSON('/api/funds?tickers=' + encodeURIComponent(tickers), 'funds.json').then(function (res) {
       var f = res.data; if (!f || !f.ready) return;
       DATA.funds = f;
-      var you = hs.reduce(function (s, h) { var e = h.exposures.filter(function (x) { return x.release === 'cpi' && x.side === 'high'; })[0]; return s + (e ? e.loss : 0); }, 0);
+      var you = hs.reduce(function (s, x) { var e = x.exposures.filter(function (y) { return y.release === 'cpi' && y.side === 'high'; })[0]; return s + (e ? e.loss : 0); }, 0);
       var rows = [{ who: 'You', pct: -you / total * 100, you: true }];
-      f.byKind.forEach(function (k) { if (k.exposure.cpi) rows.push({ who: k.label + ' (' + k.count + ')', pct: k.exposure.cpi.high }); });
+      f.byKind.forEach(function (k) { if (k.exposure.cpi) rows.push({ who: k.label, note: k.count + ' funds, average by size', pct: k.exposure.cpi.high }); });
       var bySize = f.funds.slice().sort(function (a, b) { return b.total - a.total; });
-      bySize.filter(function (x) { return x.kind === 'state_pension'; }).slice(0, 3)
-        .concat(bySize.filter(function (x) { return x.kind === 'municipal_pension'; }).slice(0, 1))
-        .concat(bySize.filter(function (x) { return x.kind === 'public_university'; }).slice(0, 2))
-        .forEach(function (x) { if (x.exposure.cpi) rows.push({ who: short(x.name), pct: x.exposure.cpi.high, size: x.total }); });
-      var max = Math.max.apply(null, rows.map(function (r) { return Math.abs(r.pct); })) || 1;
-      var host = $('bars'); host.textContent = '';
-      rows.forEach(function (r, i) {
-        var row = el('div', 'plain');
-        row.appendChild(el('span', 'g num', String(i + 1)));
-        row.appendChild(el('span', r.you ? 'down' : null, r.who));
-        var c3 = el('span', 'c3 g', r.you ? 'If inflation runs hot' : r.size ? big(r.size) + ' disclosed' : 'Average, by size');
-        var bar = el('span', 'bar'), i2 = el('i', r.you ? 'you' : null); i2.style.width = (Math.abs(r.pct) / max * 100).toFixed(1) + '%'; bar.appendChild(i2); c3.appendChild(bar);
-        row.appendChild(c3);
-        row.appendChild(el('span', 'v num' + (r.you ? ' down' : ''), r.pct.toFixed(2) + '%'));
-        host.appendChild(row);
+      bySize.filter(function (x) { return x.kind === 'state_pension'; }).slice(0, 2).concat(bySize.filter(function (x) { return x.kind === 'public_university'; }).slice(0, 1))
+        .forEach(function (x) { if (x.exposure.cpi) rows.push({ who: short(x.name), note: big(x.total) + ' disclosed', pct: x.exposure.cpi.high }); });
+      var max = Math.max.apply(null, rows.map(function (r) { return Math.abs(r.pct); })) || 1, host = $('pubList'); host.textContent = '';
+      rows.forEach(function (r) {
+        host.appendChild(h('<div class="li"><div><span class="sym' + (r.you ? ' down' : '') + '">' + esc(r.who) + '</span><small>' + esc(r.you ? 'if inflation runs hot' : r.note) + '</small></div>' +
+          '<div class="barline"><i class="' + (r.you ? 'you' : '') + '" style="width:' + (Math.abs(r.pct) / max * 100).toFixed(1) + '%"></i></div><div class="hide-s"></div>' +
+          '<b class="pct n' + (r.you ? ' down' : '') + '">' + (r.pct < 0 ? '−' : '+') + Math.abs(r.pct).toFixed(2) + '%</b></div>'));
       });
-      var periods = Array.from(new Set(f.funds.map(function (x) { return x.period; }))).sort();
-      $('pSub').textContent = f.funds.length + ' funds, US stocks and ETFs disclosed for ' + periods[periods.length - 1] + ', measured with the same model as you.';
-      var hl = $('holders'); hl.textContent = '';
-      f.holders.filter(function (x) { return x.funds; }).sort(function (a, b) { return b.value - a.value; }).forEach(function (x, i) {
-        var row = el('div', 'plain'), b = x.biggest[0];
-        row.appendChild(el('span', 'g num', String(i + 1)));
-        row.appendChild(el('span', null, x.ticker + ', ' + x.funds + ' funds'));
-        row.appendChild(el('span', 'c3 g', x.added + ' added, ' + x.cut + ' cut' + (b ? '. Biggest ' + short(b.name) + ', ' + (b.shareChange >= 0 ? '+' : '−') + Math.abs(b.shareChange).toLocaleString('en-US') + ' shares' : '')));
-        row.appendChild(el('span', 'v num', big(x.value)));
-        hl.appendChild(row);
-      });
+      $('pubSub').textContent = f.funds.length + ' public funds, from SEC 13F filings, measured with the same model as you. If inflation runs hot:';
     }).catch(function () {}).then(function () { DATA.fundsDone = true; maybeStart(); });
   }
 
-  /* ------------------------------------------------------------- news */
+  /* --------------------------------------------------------------- news */
   function renderNews(r, saved) {
     var host = $('newsList'); host.textContent = '';
-    r.articles.slice(0, 10).forEach(function (a, i) {
-      var row = el('div', 'plain');
-      row.appendChild(el('span', 'g num', String(i + 1)));
-      var link = el('a', null, a.title); link.href = a.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
-      var t = el('span'); t.style.gridColumn = '2 / span 2'; t.appendChild(link); t.appendChild(el('span', 'g', ' ' + [a.source, a.published ? ago(a.published) : ''].filter(Boolean).join(', ')));
-      row.appendChild(t);
-      row.appendChild(el('span', 'v g num', a.bearsOn ? CODE[a.bearsOn] : ''));
-      host.appendChild(row);
+    // stories with their own picture lead; the rest keep their order
+    // English headlines only: the page and her voice are in English
+    var english = function (t) { return /^[\x20-\x7e‘’“”–—…]+$/.test(t) || /\b(the|to|of|and|in|for|on|is|with|as|at|by|from|after|over|could|will)\b/i.test(t); };
+    var top = r.articles.filter(function (a) { return english(a.title); }).slice(0, 14), TOPIC = { cpi: 'Inflation', nfp: 'Jobs', fomc: 'Fed' };
+    var arts = top.filter(function (a) { return a.image; }).concat(top.filter(function (a) { return !a.image; })).slice(0, 7);
+    arts.forEach(function (a, i) {
+      var card = h('<a class="story' + (i === 0 ? ' top' : '') + '" href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer"><div class="pic"></div><div class="txt">' +
+        '<span class="lab">' + esc([a.source, a.published ? ago(a.published) : ''].filter(Boolean).join(' · ')) + '</span><h3>' + esc(a.title) + '</h3></div></a>');
+      var pic = card.querySelector('.pic'), fallback = a.bearsOn ? PHOTO[a.bearsOn] : null;
+      function put(src) { var img = new Image(); img.alt = ''; img.loading = 'lazy'; img.referrerPolicy = 'no-referrer'; img.onerror = function () { img.remove(); if (src !== fallback && fallback) put(fallback); }; img.src = src; pic.appendChild(img); }
+      if (a.image) put(a.image); else if (fallback) put(fallback);
+      if (a.bearsOn) pic.appendChild(el('span', 'lab', TOPIC[a.bearsOn]));
+      host.appendChild(card);
     });
-    $('newsState').textContent = (saved ? 'Saved search: ' : '') + '“' + r.query + '”, ' + r.articles.length + ' articles.';
+    $('newsState').textContent = (saved ? 'Saved search: ' : 'Results for ') + '“' + r.query + '”.';
   }
   var busy = false;
   function search(q) {
@@ -307,79 +447,24 @@
   [].forEach.call($('newsChips').querySelectorAll('button'), function (b) { b.addEventListener('click', function () { search(b.textContent); }); });
   fetch('../news-sample.json').then(function (r) { return r.json(); }).then(function (r) { renderNews(r, true); }).catch(function () {});
 
-  getJSON('/api/thread', 'thread.json').then(function (res) { DATA.thread = res.data; }).catch(function () { DATA.thread = {}; }).then(function () { DATA.threadDone = true; maybeStart(); });
-  getJSON('/api/agent', 'agent.json').then(function (res) { renderAgent(res.data, res.live); }).catch(function () { $('status').textContent = 'Atty could not load her last check.'; });
-  getJSON('/api/events', '../tape.json').then(function (res) {
-    var s = (res.data.signals || []).map(function (x) { var i = x.p.indexOf(Math.max.apply(null, x.p)); return CODE[x.id] + ' ' + Math.round(x.p[i] * 100) + '%'; });
-    $('asof').textContent = s.join(' · ') + (res.live ? '' : ' (saved)');
-    DATA.tape = res.data; maybeStart();
-  }).catch(function () { DATA.tape = { signals: [] }; maybeStart(); });
-
   /* ------------------------------------------------------------ her voice
-     Lines come from beats.js (built from the numbers, checked by Jev, pre-recorded).
-     Audio is decoded and played through an analyser so the glass can follow how loud
-     she is, syllable by syllable. Without audio the words still light up in time. */
+     Lines from beats.js (built from the numbers, checked by Jev, pre-recorded). Audio is
+     decoded and played through an analyser so the glass follows how loud she is. */
   var G = { beats: [], i: 0, playing: false, started: false, words: [], speaking: false, token: 0, src: null };
   var AC = null, analyser = null, abuf = null, decoded = {}, envelope = 0;
   function maybeStart() {
-    if (G.started || !DATA.agent || !DATA.tape || !DATA.fundsDone || !DATA.threadDone || !window.AttyBeats) return;
+    if (G.started || !rendered || !DATA.fundsDone || !window.AttyBeats) return;
     G.beats = AttyBeats.beats(DATA); if (!G.beats.length) return;
     G.started = true; showBeat(0, true);
   }
-  function miniRow(a, b, c, cls) { var r = el('div', 'mini'); r.appendChild(el('span', null, a)); r.appendChild(typeof b === 'string' ? el('span', 'g', b) : b); r.appendChild(el('span', cls || null, c)); return r; }
-  function renderShow(s) {
-    var host = $('show'); host.textContent = '';
-    if (!s || s.kind === 'end' && false) return;
-    var card = el('div', 'card');
-    if (s.kind === 'reports') s.rows.forEach(function (x) { card.appendChild(miniRow(x.name, x.date + ', most likely ' + x.fav, x.p, 'num')); });
-    if (s.kind === 'hits') s.rows.forEach(function (x) { card.appendChild(miniRow(x.sym, 'could lose', '−' + x.loss, 'down num')); });
-    if (s.kind === 'trade') {
-      card.appendChild(miniRow(s.contract, s.venue, '', ''));
-      card.appendChild(miniRow('Price with fee', 'fair ' + s.fair, s.ask, 'num'));
-      card.appendChild(miniRow('Cost', 'pays ' + s.payout + ' if it happens', s.cost, 'num'));
-    }
-    if (s.kind === 'skip') {
-      if (s.contract) card.appendChild(miniRow(s.contract + ', with fee', 'fair ' + s.fair, s.ask, 'down num'));
-      card.appendChild(miniRow('Atty’s call', '', 'Skip', 'down'));
-    }
-    if (s.kind === 'bars') {
-      var max = Math.max.apply(null, s.rows.map(function (b) { return Math.abs(b.v); })) || 1;
-      s.rows.forEach(function (b) {
-        var bar = el('span', 'bar'), i2 = el('i', b.you ? 'you' : null); i2.style.width = (Math.abs(b.v) / max * 100).toFixed(1) + '%'; bar.appendChild(i2);
-        card.appendChild(miniRow(b.who, bar, (b.v < 0 ? '−' : '+') + Math.abs(b.v).toFixed(2) + '%', 'num' + (b.you ? ' down' : '')));
-      });
-    }
-    if (s.kind === 'fit') s.rows.forEach(function (x) {
-      card.appendChild(miniRow(x.date, x.value + s.unit + ' after ' + x.before + s.unit + (x.happened ? ', paid' : ', missed'), (x.ret < 0 ? '−' : '+') + Math.abs(x.ret).toFixed(2) + '%', 'num ' + (x.ret < 0 ? 'down' : 'up')));
-    });
-    if (s.kind === 'fine') {
-      card.appendChild(miniRow('Trading stops', '', s.stops, 'num'));
-      card.appendChild(miniRow('If never published', s.fallback, s.pays ? 'pays' : 'no payout', s.pays ? 'up' : 'down'));
-      if (s.latest) card.appendChild(miniRow('Latest it can settle', '', s.latest, 'num'));
-      var src = el('div', 'mini'), a3 = el('a', 'g', 'Kalshi’s contract terms'); a3.href = s.url; a3.target = '_blank'; a3.rel = 'noopener noreferrer';
-      src.appendChild(a3); src.appendChild(el('span')); src.appendChild(el('span')); card.appendChild(src);
-    }
-    if (s.kind === 'ledger') s.rows.forEach(function (x) { card.appendChild(miniRow(x.date + ', ' + x.what, x.call, x.status, x.status === 'open' ? 'g' : '')); });
-    if (s.kind === 'end') {
-      var r = el('div', 'mini'), a1 = el('a', null, 'Ask about the news'), a2 = el('a', 'g', 'See every quote');
-      a1.href = '#news'; a2.href = '#quotes';
-      a1.addEventListener('click', function () { setTimeout(function () { $('newsQ').focus({ preventScroll: true }); }, 500); });
-      r.appendChild(a1); r.appendChild(el('span')); r.appendChild(a2); card.appendChild(r);
-    }
-    if (card.childNodes.length) host.appendChild(card);
-  }
-  function setLine(text, sub) {
+  function setLine(text) {
     var line = $('line'); line.textContent = '';
     G.words = text.split(' ').map(function (w, k) { var s = el('span', 'w', (k ? ' ' : '') + w); line.appendChild(s); return s; });
-    $('sub').textContent = sub || ''; $('sub').style.opacity = 0;
     G.revealStart = performance.now(); G.revealDur = reduce ? 0 : G.words.length * 170; G.revealDone = false;
   }
   function voiceUrl(text) { return DATA.live ? '/api/voice?t=' + encodeURIComponent(text) : 'voice/' + AttyBeats.hash(text) + '.mp3'; }
   function ensureAudio() {
-    if (!AC) {
-      var C = window.AudioContext || window.webkitAudioContext; if (!C) return false;
-      AC = new C(); analyser = AC.createAnalyser(); analyser.fftSize = 1024; abuf = new Float32Array(analyser.fftSize); analyser.connect(AC.destination);
-    }
+    if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return false; AC = new C(); analyser = AC.createAnalyser(); analyser.fftSize = 1024; abuf = new Float32Array(analyser.fftSize); analyser.connect(AC.destination); }
     if (AC.state === 'suspended') AC.resume();
     return true;
   }
@@ -391,48 +476,61 @@
     return decoded[url];
   }
   function stopAudio() { G.token++; clearTimeout(G.advance); if (G.src) { try { G.src.stop(); } catch (_) {} G.src = null; } }
+  function light(rel) {
+    [].forEach.call(document.querySelectorAll('.lit'), function (n) { n.classList.remove('lit'); });
+    if (!rel) return;
+    ['t-' + rel, 'w-' + rel].forEach(function (id) { var n = $(id); if (n) n.classList.add('lit'); });
+  }
   function showBeat(i, quiet) {
-    stopAudio();
+    stopAudio(); G.custom = false;
     G.i = Math.max(0, Math.min(G.beats.length - 1, i));
     var b = G.beats[G.i];
     $('step').textContent = (G.i + 1) + ' / ' + G.beats.length;
-    setLine(b.say, b.sub);
-    renderShow(b.show);
-    GL.hue = b.id === 'skip' ? 1 : b.id === 'risk' || b.id === 'fit' ? 0.62 : b.id === 'fine' ? 0.45 : b.id === 'trade' ? 0.15 : 0;
+    setLine(b.say + (b.sub ? ' ' + b.sub : ''));
+    light(b.release);
+    GL.hue = b.id === 'skip' ? 1 : b.id === 'risk' || b.id === 'fit' ? 0.62 : b.id === 'fine' ? 0.45 : 0;
+    PER.mood = null; if (!quiet) hop(b.id === 'hello' || b.id === 'end' ? 0.26 : 0.12);
     GL.cutTarget = 0;
     $('prev').disabled = G.i === 0;
-    $('next').textContent = G.i === G.beats.length - 1 ? 'Start over' : 'Next';
     if (G.playing && !quiet) playLine(b);
-    // the next line, ready before she needs it
     if (AC && G.beats[G.i + 1]) decode(voiceUrl(G.beats[G.i + 1].say));
   }
+  function jumpTo(rel, play) {
+    var i = -1; G.beats.some(function (b, j) { if (b.release === rel) { i = j; return true; } return false; });
+    if (i < 0) return;
+    showBeat(i, true); if (play) setPlaying(true);
+  }
   function playLine(b) {
-    if (!ensureAudio()) { $('voiceNote').textContent = 'This browser cannot play her voice, so the words will have to do.'; return setPlaying(false); }
+    if (!ensureAudio()) return setPlaying(false);
     var token = ++G.token; G.revealDur = 1e9;
     decode(voiceUrl(b.say)).then(function (buffer) {
       if (token !== G.token) return;
       var s = AC.createBufferSource(); s.buffer = buffer; s.connect(analyser);
       s.onended = function () {
         if (token !== G.token) return; G.src = null;
-        if (G.playing && G.i < G.beats.length - 1) G.advance = setTimeout(function () { showBeat(G.i + 1); }, b.snip ? 1700 : 850);
+        if (G.playing && G.i < G.beats.length - 1) G.advance = setTimeout(function () { showBeat(G.i + 1); }, b.snip ? 1600 : 800);
         else setPlaying(false);
       };
       G.src = s; s.start();
-      G.revealStart = performance.now(); G.revealDur = reduce ? 0 : buffer.duration * 920;
+      G.revealStart = performance.now(); G.revealDur = reduce ? 0 : buffer.duration * 1000 * (b.say.length / (b.say.length + (b.sub ? b.sub.length + 1 : 0))) * 0.94;
     }).catch(function () {
       if (token !== G.token) return;
-      $('voiceNote').textContent = 'Her voice is not available here, so the words will have to do.';
       G.revealStart = performance.now(); G.revealDur = reduce ? 0 : G.words.length * 170; setPlaying(false);
     });
   }
   function setPlaying(on) {
-    G.playing = on; $('play').classList.toggle('on', on); $('play').setAttribute('aria-pressed', String(on));
-    $('playLabel').textContent = on ? 'Pause' : (G.i ? 'Keep listening' : 'Listen to Atty');
-    if (on) { $('voiceNote').textContent = ''; playLine(G.beats[G.i]); } else stopAudio();
+    G.playing = on; $('play').classList.toggle('on', on); $('play').setAttribute('aria-pressed', String(on)); $('play').setAttribute('aria-label', on ? 'Pause Atty' : 'Play Atty');
+    if (on) playLine(G.beats[G.i]); else stopAudio();
   }
   $('next').addEventListener('click', function () { if (G.started) showBeat(G.i === G.beats.length - 1 ? 0 : G.i + 1); });
   $('prev').addEventListener('click', function () { if (G.started) showBeat(G.i - 1); });
   $('play').addEventListener('click', function () { if (G.started) setPlaying(!G.playing); });
+  $('headHit').addEventListener('click', function () {
+    feel(['happy', 'wink', 'surprised'][helloN % 3], 1400); hop(0.3);
+    if (G.started && !G.playing) { setLine(HELLO[helloN % HELLO.length]); G.custom = true; }
+    helloN++;
+  });
+  $('heroPlay').addEventListener('click', function () { if (G.started) { showBeat(0, true); setPlaying(true); } });
   addEventListener('keydown', function (e) {
     if (!G.started || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
     if (e.key === 'ArrowRight') showBeat(Math.min(G.beats.length - 1, G.i + 1));
@@ -440,122 +538,204 @@
   });
 
   /* ------------------------------------------------------------ the glass
-     A rod of glass across the dark: thin bright rims split into red, green and blue
-     (the rainbow edge), a darker see-through body, a blue bloom behind it and a white
-     light that travels along it. Her voice drives it: louder means brighter, thicker,
-     faster light and a ripple through the rod. When she says skip, it splits. */
+     One field of glowing glass. At the top it is Atty: a rounded glass head with two eyes
+     of light and no mouth, sitting to the right of the headline. On arrival a rod of glass
+     flows in and folds into her; as you scroll she unfolds back into the rod, which runs
+     along the bottom of the screen under her voice. Glass is drawn from the distance
+     field: background refracted through it with the colours split (the rainbow edge), a
+     white-hot rim where the light hits, a blue bloom, and light travelling along the rod.
+     Her voice drives all of it: louder is brighter, thicker and faster. */
   var GL = { hue: 0, hueNow: 0, cut: 0, cutTarget: 0 };
-  var cv = $('glass'), gl = cv.getContext('webgl', { antialias: false, premultipliedAlpha: false });
+  /* Her personality. Each eye is [height, width, tilt, lift]; each line she says has a
+     mood, and between lines she has habits: she looks around, hops, gets curious or
+     sleepy, startles when your cursor comes close, and reacts when you click her. */
+  var MOODS = {
+    neutral:   { L: [1, 1, 0, 0], R: [1, 1, 0, 0], tilt: 0 },
+    happy:     { L: [0.3, 1.22, 0, 0.012], R: [0.3, 1.22, 0, 0.012], tilt: 0.05 },
+    worried:   { L: [0.85, 0.95, -0.38, 0], R: [0.85, 0.95, 0.38, 0], tilt: -0.04 },
+    skeptical: { L: [1.05, 1, 0, 0], R: [0.3, 1.15, 0.18, 0.012], tilt: 0.07 },
+    curious:   { L: [1.3, 1.08, 0, 0.004], R: [0.95, 1, 0, 0], tilt: 0.12 },
+    stern:     { L: [0.22, 1.3, 0.28, -0.004], R: [0.22, 1.3, -0.28, -0.004], tilt: 0 },
+    wink:      { L: [1.05, 1, 0, 0], R: [0.1, 1.25, 0, 0.006], tilt: 0.06 },
+    surprised: { L: [1.4, 1.18, 0, 0.012], R: [1.4, 1.18, 0, 0.012], tilt: 0 },
+    sleepy:    { L: [0.18, 1.1, 0, -0.01], R: [0.18, 1.1, 0, -0.01], tilt: -0.08 }
+  };
+  var BEAT_MOOD = { hello: 'happy', risk: 'worried', trade: 'neutral', fit: 'skeptical', fine: 'curious', skip: 'stern', peers: 'neutral', record: 'wink', end: 'happy' };
+  var PER = { mood: null, until: 0, L: [1, 1, 0, 0], R: [1, 1, 0, 0], tilt: 0, hop: 0, hopV: 0, shake: 0, idleAt: 0, lookAt: null, nearAt: 0 };
+  function feel(m, ms) { PER.mood = m; PER.until = performance.now() + (ms || 1200); }
+  function hop(v) { if (PER.hop < 0.004) PER.hopV = v || 0.22; }
+  var HELLO = ['Hi! Press play and I will walk you through your week.', 'That tickles. Your next trade is just below.', 'I only say numbers I can check.', 'Still here. Still watching your thread.'], helloN = 0;
+  var cv = $('glass'), gl = cv.getContext('webgl', { antialias: false });
   var FRAG = [
     'precision highp float;',
-    'uniform vec2 uRes; uniform float uTime; uniform float uAmp; uniform float uCut; uniform float uHue;',
-    'float rod(vec2 p, float a, float b, float r) { p.x -= clamp(p.x, a, b); return length(p) - r; }',
-    'float scene(vec2 p, float r, float hl, float gap) {',
-    '  if (gap < 0.0005) return rod(p, -hl, hl, r);',
-    '  return min(rod(p, -hl, -gap, r), rod(p, gap, hl, r));',
+    'uniform vec2 uRes, uCenter, uLook;',
+    'uniform float uTime, uAmp, uForm, uIntro, uCut, uHue, uDim, uBlink, uScale, uRodY, uDock, uTilt, uHop, uSquash;',
+    'uniform vec4 uEyeL, uEyeR;',
+    'float HL;',
+    'float sdBox(vec2 p, vec2 b, float r) { vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }',
+    'float sdSeg(vec2 p, vec2 a, vec2 b, float r) { vec2 c = 0.5 * (a + b); vec2 hs = vec2(0.5 * abs(b.x - a.x) + r, 0.5 * abs(b.y - a.y) + r); return sdBox(p - c, hs, 0.004); }',
+    'vec2 headP(vec2 p) { vec2 q = (p - uCenter) / uScale; q.y -= 0.014 * sin(uTime * 1.3) + 0.022 * uAmp + uHop; float c = cos(uTilt), s = sin(uTilt); q = vec2(c * q.x + s * q.y, -s * q.x + c * q.y); q.y /= (1.0 - uSquash); q.x /= (1.0 + 0.6 * uSquash); return q; }',
+    'float rodD(vec2 p) {',
+    '  float fade = smoothstep(HL, HL - 0.45, abs(p.x));',
+    '  float w = (0.04 * sin(p.x * 1.2 + uTime * 0.4) + uAmp * 0.04 * sin(p.x * 9.0 - uTime * 8.0) * fade) * (1.0 - 0.6 * uDock);',
+    '  float y = mix(uRodY, uCenter.y, uForm);',
+    '  vec2 q = vec2(p.x, p.y - y - w * (1.0 - uForm));',
+    '  float r = mix(0.042, 0.02, uDock) + 0.024 * uAmp * (1.0 - 0.5 * uDock);',
+    '  float x1 = mix(-HL, HL, uIntro);',
+    '  float gap = uCut * 0.11 * (1.0 - uForm);',
+    '  if (gap > 0.0005) return min(sdSeg(q, vec2(-HL, 0.0), vec2(min(x1, -gap), 0.0), r), sdSeg(q, vec2(gap, 0.0), vec2(max(x1, gap), 0.0), r));',
+    '  return sdSeg(q, vec2(-HL, 0.0), vec2(x1, 0.0), r);',
+    '}',
+    'float headD(vec2 p) { return sdBox(headP(p), vec2(0.25, 0.25) * (1.0 + 0.035 * uAmp), 0.012) * uScale; }',
+    'float shape(vec2 p) {',
+    '  float f = uForm * uForm * (3.0 - 2.0 * uForm);',
+    '  if (f < 0.001) return rodD(p);',
+    '  if (f > 0.999) return headD(p);',
+    '  return mix(rodD(p), headD(p), f);',
+    '}',
+    'float eye(vec2 q, vec2 c, vec4 e) { vec2 d = q - c - vec2(0.0, e.w); float cs = cos(e.z), sn = sin(e.z); d = vec2(cs * d.x + sn * d.y, -sn * d.x + cs * d.y); return sdBox(d, vec2(0.026 * e.y, 0.052 * uBlink * e.x + 0.006), 0.003); }',
+    'float eyesD(vec2 p) {',
+    '  vec2 q = headP(p) - uLook * 0.035;',
+    '  return min(eye(q, vec2(-0.095, 0.03), uEyeL), eye(q, vec2(0.095, 0.03), uEyeR)) * uScale;',
     '}',
     'vec3 tint(float t) {',
-    '  vec3 blue = vec3(0.10, 0.28, 1.0), violet = vec3(0.50, 0.24, 1.0), rose = vec3(1.0, 0.28, 0.62);',
+    '  vec3 blue = vec3(0.09, 0.26, 1.0), violet = vec3(0.48, 0.22, 1.0), rose = vec3(1.0, 0.26, 0.6);',
     '  return mix(mix(blue, violet, clamp(t * 1.6, 0.0, 1.0)), rose, clamp(t * 1.6 - 0.6, 0.0, 1.0));',
     '}',
-    'float chan(vec2 q, float o, float r, float hl, float gap) {',
-    '  float d = scene(q + vec2(o * 0.5, o), r, hl, gap);',
-    '  float inside = smoothstep(0.0016, -0.0016, d);',
-    '  float rim = exp(-abs(d) * 240.0);',
-    '  float inner = inside * pow(clamp(1.0 + d / r, 0.0, 1.0), 5.0);',
-    '  return rim * 1.25 + inner * 0.6 + inside * 0.05;',
+    'vec3 bg(vec2 p, vec3 tc) {',
+    '  vec2 c = mix(vec2(0.0, uRodY), uCenter, uForm);',
+    '  vec3 col = vec3(0.004, 0.008, 0.035);',
+    '  col += tc * 1.05 * exp(-length((p - c) * vec2(0.55, 1.0)) * 1.9) * (0.55 + 0.9 * uAmp) * uDim;',
+    '  col += vec3(0.02, 0.06, 0.4) * smoothstep(0.7, -0.6, p.y) * 0.45 * uDim;',
+    '  return col;',
     '}',
     'void main() {',
-    '  vec2 uv = gl_FragCoord.xy / uRes;',
     '  vec2 p = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;',
-    '  p.y -= 0.06;',
-    '  float aspect = uRes.x / uRes.y, t = uTime;',
+    '  HL = 0.5 * uRes.x / uRes.y - 0.05;',
     '  vec3 tc = tint(uHue);',
-    '  vec3 col = vec3(0.003, 0.005, 0.02);',
-    '  col += tc * 0.62 * exp(-length(p * vec2(0.55, 1.5)) * 2.4) * (0.5 + 1.0 * uAmp);',
-    '  col += vec3(0.0, 0.015, 0.09) * (1.0 - uv.y);',
-    '  float hl = 0.5 * aspect - 0.08;',
-    '  float fade = smoothstep(hl, hl - 0.35, abs(p.x));',
-    '  float wave = 0.05 * sin(p.x * 1.3 + t * 0.32) + uAmp * 0.04 * sin(p.x * 11.0 - t * 8.0) * fade;',
-    '  vec2 q = vec2(p.x, p.y - wave);',
-    '  float r = 0.026 + 0.02 * uAmp;',
-    '  float gap = uCut * 0.1;',
-    '  float sp = 0.0035 + 0.007 * uAmp;',
-    '  vec3 g = vec3(chan(q, -sp, r, hl, gap), chan(q, 0.0, r, hl, gap), chan(q, sp, r, hl, gap));',
-    '  float d0 = scene(q, r, hl, gap);',
-    '  float body = smoothstep(0.002, -0.002, d0);',
-    '  col *= 1.0 - 0.55 * body;',
-    '  col += tc * body * 0.22;',
-    '  float hiL = exp(-pow((q.y - r * 0.45) / (r * 0.13), 2.0)) * body;',
-    '  float loL = exp(-pow((q.y + r * 0.55) / (r * 0.2), 2.0)) * body;',
-    '  col += vec3(0.85, 0.92, 1.0) * hiL * (0.35 + 0.9 * uAmp) + tc * loL * 0.35;',
-    '  col += vec3(g.r * 1.05, g.g * 0.95, g.b * 1.3) * mix(vec3(1.0), tc * 1.7, 0.3);',
-    '  float span = 2.0 * hl + 0.8;',
-    '  float sx = mod(t * (0.16 + 0.75 * uAmp), span) - hl - 0.4;',
-    '  float sweep = exp(-pow((p.x - sx) * 3.5, 2.0)) * exp(-max(d0, 0.0) * 34.0);',
-    '  col += vec3(0.8, 0.88, 1.0) * sweep * (0.3 + 1.6 * uAmp);',
-    '  col += tc * exp(-max(d0, 0.0) * 12.0) * (0.1 + 0.6 * uAmp);',
-    '  if (gap > 0.0005) {',
-    '    float e = min(length(q - vec2(-gap, 0.0)), length(q - vec2(gap, 0.0)));',
-    '    col += vec3(1.0, 0.6, 0.95) * exp(-e * 16.0) * uCut * 1.4;',
+    '  float d = shape(p);',
+    '  vec2 e = vec2(0.0018, 0.0);',
+    '  vec2 n = normalize(vec2(shape(p + e.xy) - shape(p - e.xy), shape(p + e.yx) - shape(p - e.yx)) + 1e-6);',
+    '  float inside = smoothstep(0.002, -0.002, d);',
+    '  float thick = mix(mix(0.042, 0.02, uDock) + 0.024 * uAmp, 0.13 * uScale, uForm);',
+    '  float depth = clamp(-d / thick, 0.0, 1.0);',
+    '  float k = 0.07 * (1.0 - depth) + 0.025;',
+    '  vec3 refr = vec3(bg(p - n * k, tc).r, bg(p - n * k * 1.35, tc).g, bg(p - n * k * 1.7, tc).b);',
+    '  vec3 col = mix(bg(p, tc), refr * 2.2 + tc * 0.22, inside);',
+    '  float sp = 0.006 + 0.008 * uAmp;',
+    '  vec3 rim = vec3(exp(-abs(shape(p + n * sp)) * 120.0), exp(-abs(d) * 120.0), exp(-abs(shape(p - n * sp)) * 120.0));',
+    '  col += rim * vec3(1.05, 0.9, 1.35) * 1.5;',
+    '  col += inside * pow(1.0 - depth, 3.0) * vec3(0.65, 0.78, 1.0) * 1.1;',
+    '  float lit = dot(n, normalize(vec2(-0.45, 1.0)));',
+    '  col += inside * smoothstep(0.2, 1.0, lit) * pow(1.0 - depth, 1.6) * vec3(1.0) * (1.2 + 1.4 * uAmp);',
+    '  col += inside * smoothstep(0.3, 1.0, -lit) * pow(1.0 - depth, 2.5) * tc * 0.8;',
+    '  float sx = mod(uTime * (0.2 + 0.85 * uAmp), 2.0 * HL + 0.8) - HL - 0.4;',
+    '  col += vec3(0.85, 0.9, 1.0) * exp(-pow((p.x - sx) * 3.2, 2.0)) * exp(-max(d, 0.0) * 26.0) * (0.35 + 1.8 * uAmp) * (1.0 - uForm);',
+    '  col += tc * exp(-max(d, 0.0) * mix(8.0, 16.0, uDock)) * (0.35 + 0.9 * uAmp) * (1.0 - 0.5 * uDock);',
+    '  col += vec3(0.75, 0.85, 1.0) * exp(-max(d, 0.0) * 34.0) * 0.25;',
+    '  if (uForm > 0.02) {',
+    '    float ed = eyesD(p);',
+    '    float on = smoothstep(0.55, 1.0, uForm);',
+    '    col += (vec3(1.0) * smoothstep(0.004, -0.004, ed) * 2.2 + vec3(0.6, 0.75, 1.0) * exp(-max(ed, 0.0) * 28.0) * (0.7 + 1.2 * uAmp)) * on;',
     '  }',
-    '  col = 1.0 - exp(-col * 1.7);',
-    '  float n = fract(sin(dot(gl_FragCoord.xy + fract(t) * 91.0, vec2(12.9898, 78.233))) * 43758.5453);',
-    '  col += (n - 0.5) * 0.018;',
+    '  if (uCut > 0.01 && uForm < 0.5) {',
+    '    float gp = uCut * 0.11;',
+    '    float ce = min(length(p - vec2(-gp, uRodY)), length(p - vec2(gp, uRodY)));',
+    '    col += vec3(1.0, 0.6, 0.95) * exp(-ce * 14.0) * uCut * 1.5;',
+    '  }',
+    '  col = 1.0 - exp(-col * 1.5);',
+    '  float g = fract(sin(dot(gl_FragCoord.xy + fract(uTime) * 91.0, vec2(12.9898, 78.233))) * 43758.5453);',
+    '  col += (g - 0.5) * 0.016;',
     '  gl_FragColor = vec4(col, 1.0);',
     '}'].join('\n');
   var prog = null, U = {};
   if (gl) {
     var sh = function (type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null; } return s; };
     var vs = sh(gl.VERTEX_SHADER, 'attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }'), fs = sh(gl.FRAGMENT_SHADER, FRAG);
-    if (vs && fs) {
-      prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
-      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); prog = null; }
-    }
+    if (vs && fs) { prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); prog = null; } }
     if (prog) {
       gl.useProgram(prog);
       var vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
       var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ['uRes', 'uTime', 'uAmp', 'uCut', 'uHue'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+      ['uRes', 'uCenter', 'uLook', 'uTime', 'uAmp', 'uForm', 'uIntro', 'uCut', 'uHue', 'uDim', 'uBlink', 'uScale', 'uRodY', 'uDock', 'uTilt', 'uHop', 'uSquash', 'uEyeL', 'uEyeR'].forEach(function (k) { U[k] = gl.getUniformLocation(prog, k); });
     }
   }
-  function size() {
-    var dpr = Math.min(1.5, window.devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight;
-    cv.width = Math.max(1, Math.round(w * dpr)); cv.height = Math.max(1, Math.round(h * dpr));
-    if (gl) gl.viewport(0, 0, cv.width, cv.height);
-  }
+  if (!prog) document.body.style.background = 'radial-gradient(60% 50% at 70% 40%, #0b2bd6 0%, #030620 60%, #020414 100%)';
+  function size() { var dpr = Math.min(1.5, window.devicePixelRatio || 1); cv.width = Math.max(1, Math.round(innerWidth * dpr)); cv.height = Math.max(1, Math.round(innerHeight * dpr)); if (gl) gl.viewport(0, 0, cv.width, cv.height); }
   size(); addEventListener('resize', size);
+  var mouse = null; addEventListener('pointermove', function (e) { mouse = { x: e.clientX, y: e.clientY, t: performance.now() }; }, { passive: true });
 
-  var last = performance.now(), t0 = last, snipAt = -1;
+  var t0 = performance.now(), last = t0, look = { x: 0, y: 0 }, blinkAt = t0 + 3500;
+  var ease = function (x) { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
   function frame(now) {
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
-    // words light up in time with her voice (or at reading pace without it)
+    var T = (now - t0) / 1000;
+    // words light up in time with her voice
     if (G.started && G.words.length) {
       var n = G.revealDur ? Math.floor((now - G.revealStart) / G.revealDur * G.words.length) + 1 : G.words.length;
       for (var k = 0; k < G.words.length; k++) G.words[k].classList.toggle('on', k < n);
       G.speaking = n < G.words.length || !!G.src;
-      if (n >= G.words.length && !G.revealDone) {
-        G.revealDone = true; $('sub').style.opacity = 1;
-        if (G.beats[G.i].snip) GL.cutTarget = 1;
-      }
+      if (n >= G.words.length && !G.revealDone) { G.revealDone = true; if (G.beats[G.i].snip) { GL.cutTarget = 1; PER.shake = 1; } }
     }
-    // how loud she is right now
     var target = 0;
-    if (G.src && analyser) {
-      analyser.getFloatTimeDomainData(abuf);
-      var sum = 0; for (var j = 0; j < abuf.length; j++) sum += abuf[j] * abuf[j];
-      target = Math.min(1, Math.sqrt(sum / abuf.length) * 5.5);
-    } else if (G.speaking) target = 0.22 + 0.12 * Math.sin(now / 90) * Math.sin(now / 230);
+    if (G.src && analyser) { analyser.getFloatTimeDomainData(abuf); var sum = 0; for (var j = 0; j < abuf.length; j++) sum += abuf[j] * abuf[j]; target = Math.min(1, Math.sqrt(sum / abuf.length) * 5.5); }
+    else if (G.speaking) target = 0.2 + 0.12 * Math.sin(now / 90) * Math.sin(now / 230);
     envelope += (target - envelope) * (target > envelope ? 0.45 : 0.08);
     GL.hueNow += (GL.hue - GL.hueNow) * Math.min(1, dt * 2.5);
     GL.cut += (GL.cutTarget - GL.cut) * Math.min(1, dt * (GL.cutTarget > GL.cut ? 9 : 3));
+
+    // where she is: right of the headline on wide screens, above it on phones
+    var aspect = innerWidth / innerHeight, wide = aspect > 0.95;
+    var cx = wide ? Math.min(0.5 * aspect - 0.42, 0.42 * aspect * 0.62) : 0, cy = wide ? 0.02 : 0.23, sc = wide ? Math.min(1, aspect / 1.35) : Math.min(0.72, aspect * 1.25);
+    var scroll = Math.max(0, Math.min(1, scrollY / (innerHeight * 0.7)));
+    var intro = reduce ? 1 : ease(T / 1.1), form = (reduce ? 1 : ease((T - 0.9) / 1.5)) * (1 - ease(scroll));
+    var bottomY = -0.5 + (innerWidth < 880 ? 40 : 52) / innerHeight;
+    var rodY = cy + (bottomY - cy) * ease(scroll);
+    // eyes: open after she forms, blink now and then, look at your cursor
+    var open = ease((T - 2.1) / 0.35);
+    if (now > blinkAt) { if (now > blinkAt + 140) blinkAt = now + 2600 + Math.random() * 3200; else open *= 0.08; }
+    var hx = innerWidth / 2 + cx * innerHeight, hy = innerHeight / 2 - cy * innerHeight;
+    var base = (G.speaking || G.playing) && G.beats[G.i] && !G.custom ? (BEAT_MOOD[G.beats[G.i].id] || 'neutral') : 'neutral';
+    if (PER.mood && now > PER.until) PER.mood = null;
+    // habits between lines
+    if (!G.speaking && !PER.mood && form > 0.8 && T > 3.5 && now > PER.idleAt) {
+      var roll = Math.random();
+      if (roll < 0.35) PER.lookAt = { x: (Math.random() - 0.5) * 1.6, y: (Math.random() - 0.3) * 0.8, until: now + 1300 };
+      else if (roll < 0.55) { hop(0.16); feel('happy', 900); }
+      else if (roll < 0.72) feel('curious', 1500);
+      else if (roll < 0.84) feel('sleepy', 1700);
+      else feel('wink', 700);
+      PER.idleAt = now + 4200 + Math.random() * 4200;
+    }
+    // your cursor coming close startles her a little, then she is pleased
+    if (mouse && now - mouse.t < 300 && form > 0.8 && !G.speaking && now > PER.nearAt && Math.hypot(mouse.x - hx, mouse.y - hy) < innerHeight * 0.28) {
+      feel('surprised', 500); setTimeout(function () { feel('happy', 900); hop(0.14); }, 500); PER.nearAt = now + 6000;
+    }
+    var mt = MOODS[PER.mood || base] || MOODS.neutral, kk = Math.min(1, dt * 9);
+    for (var q2 = 0; q2 < 4; q2++) { PER.L[q2] += (mt.L[q2] - PER.L[q2]) * kk; PER.R[q2] += (mt.R[q2] - PER.R[q2]) * kk; }
+    PER.shake *= Math.pow(0.04, dt);
+    PER.tilt += (mt.tilt - PER.tilt) * kk;
+    var tiltNow = PER.tilt + 0.12 * Math.sin(now / 45) * PER.shake;
+    PER.hopV -= 1.6 * dt; PER.hop += PER.hopV * dt; if (PER.hop < 0) { PER.hop = 0; PER.hopV = 0; }
+    var squash = 0.05 * envelope + (PER.hop === 0 && PER.hopV === 0 ? 0 : -0.03);
+    // the click target follows her head
+    var hs = 0.5 * sc * innerHeight, hit = $('headHit');
+    hit.style.width = hit.style.height = hs + 'px'; hit.style.transform = 'translate(' + (hx - hs / 2) + 'px,' + (hy - hs / 2) + 'px)'; hit.style.display = form > 0.6 ? 'block' : 'none';
+    if (PER.lookAt && now < PER.lookAt.until && !(mouse && now - mouse.t < 2500)) { look.x += (PER.lookAt.x - look.x) * 0.1; look.y += (PER.lookAt.y - look.y) * 0.1; }
+    else if (mouse && now - mouse.t < 2500) {
+      var lx = (mouse.x - hx) / (innerWidth * 0.4), ly = -(mouse.y - hy) / (innerHeight * 0.4), ll = Math.hypot(lx, ly);
+      if (ll > 1) { lx /= ll; ly /= ll; }
+      look.x += (lx - look.x) * 0.12; look.y += (ly - look.y) * 0.12;
+    } else { look.x *= 0.95; look.y *= 0.95; }
     if (prog) {
       gl.uniform2f(U.uRes, cv.width, cv.height);
-      gl.uniform1f(U.uTime, reduce ? 4 : (now - t0) / 1000);
-      gl.uniform1f(U.uAmp, reduce ? Math.min(envelope, 0.3) : envelope);
-      gl.uniform1f(U.uCut, GL.cut);
-      gl.uniform1f(U.uHue, GL.hueNow);
+      gl.uniform2f(U.uCenter, cx, cy); gl.uniform2f(U.uLook, look.x, look.y);
+      gl.uniform1f(U.uTime, reduce ? 3 : T); gl.uniform1f(U.uAmp, envelope);
+      gl.uniform1f(U.uForm, form); gl.uniform1f(U.uIntro, intro); gl.uniform1f(U.uCut, GL.cut); gl.uniform1f(U.uHue, GL.hueNow);
+      gl.uniform4f(U.uEyeL, PER.L[0], PER.L[1], PER.L[2], PER.L[3]); gl.uniform4f(U.uEyeR, PER.R[0], PER.R[1], PER.R[2], PER.R[3]);
+      gl.uniform1f(U.uTilt, tiltNow); gl.uniform1f(U.uHop, PER.hop); gl.uniform1f(U.uSquash, squash);
+      gl.uniform1f(U.uDim, 1 - 0.4 * ease(scroll)); gl.uniform1f(U.uBlink, open); gl.uniform1f(U.uScale, sc); gl.uniform1f(U.uRodY, rodY); gl.uniform1f(U.uDock, ease(scroll));
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
     requestAnimationFrame(frame);

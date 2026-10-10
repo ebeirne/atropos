@@ -14,7 +14,10 @@ const out = path.join(__dirname, '..', 'dist', 'atty');
   for (const f of ['tape.json', 'news-sample.json']) fs.copyFileSync(path.join(pub, f), path.join(out, f));
   // in the artifact the shared snapshots sit next to the page, not one folder up
   const page = path.join(out, 'index.html');
-  fs.writeFileSync(page, fs.readFileSync(page, 'utf8').split("'../tape.json'").join("'tape.json'").split("'../news-sample.json'").join("'news-sample.json'"));
+  fs.writeFileSync(page, fs.readFileSync(page, 'utf8').split("'../tape.json'").join("'tape.json'").split("'../news-sample.json'").join("'news-sample.json'").split("'../photos/").join("'photos/"));
+  // the release photos (public domain and CC0, credited on the page)
+  fs.mkdirSync(path.join(out, 'photos'), { recursive: true });
+  for (const f of ['cpi.jpg', 'fed.jpg', 'nfp.jpg', 'credits.json']) fs.copyFileSync(path.join(pub, 'photos', f), path.join(out, 'photos', f));
 
   // the walkthrough exactly as the saved page will build it
   const { beats } = require(path.join(pub, 'atty', 'beats.js'));
