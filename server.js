@@ -25,9 +25,11 @@ const voice = require('./lib/voice');
 const history = require('./lib/history');
 const rules = require('./lib/rules');
 const ledger = require('./lib/ledger');
+const guard = require('./lib/guard');
+const AttyBeats = require('./public/atty/beats');
 
 const PORT = Number(process.env.PORT || 4411);
-const HOST = '127.0.0.1';
+const HOST = process.env.HOST || (guard.PUBLIC ? '0.0.0.0' : '127.0.0.1');
 const PUBLIC = path.join(__dirname, 'public');
 
 /* ------------------------------------------------------- sample inputs */
@@ -67,6 +69,8 @@ const LINKED = path.join(__dirname, 'data');
 fs.mkdirSync(LINKED, { recursive: true });
 
 async function portfolio() {
+  // the public demo never touches a brokerage: it always shows the sample portfolio
+  if (guard.PUBLIC) return { ...SAMPLE_PORTFOLIO, source: 'sample', reason: 'Public demo' };
   if (!snaptrade.configured()) return { ...SAMPLE_PORTFOLIO, source: 'sample', reason: 'SnapTrade keys not set' };
   try {
     const live = await snaptrade.holdings();
@@ -208,6 +212,16 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
   const route = url.pathname;
   try {
+    if (guard.PUBLIC) {
+      if (route === '/') { res.writeHead(302, { Location: '/atty/' }); return res.end(); }
+      // linking a brokerage, the status page (it lists linked accounts) and the full ticket
+      // pipeline are for your own machine only
+      if (/^\/api\/(link|status|tickets)$/.test(route)) return send(res, 404, { error: 'not available in the public demo' });
+      if (route.startsWith('/api/')) {
+        const kind = route === '/api/try' ? 'try' : route === '/api/news' ? 'news' : route === '/api/voice' ? 'voice' : 'api';
+        if (!guard.allow(req, kind) || (kind !== 'api' && !guard.allow(req, 'api'))) return send(res, 429, { error: 'Too many requests. Try again in a few minutes.' });
+      }
+    }
     if (route === '/api/status') {
       const [j, accts, brokers] = await Promise.all([
         jev.health(),
@@ -235,16 +249,11 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, t ? { asOf: t, snapshots: archive.asOf(t) } : archive.status());
     }
 
-    if (route === '/api/events') {
-      const ev = await markets.loadEvents();
-      const signals = ev.map(engine.analyseEvent);
-      signals.forEach((s, i) => { s.change = archive.changeFor(ev[i]); });
-      return send(res, 200, { signals });
-    }
+    if (route === '/api/events') return send(res, 200, await tapeNow());
 
     if (route === '/api/agent') {
       // the latest round of Atty's agent; ?run=1 asks for a fresh round now
-      if (url.searchParams.get('run') === '1' && agentRound) await agentRound();
+      if (url.searchParams.get('run') === '1' && agentRound && !guard.PUBLIC) await agentRound();
       return send(res, 200, agent.status());
     }
 
@@ -277,7 +286,9 @@ const server = http.createServer(async (req, res) => {
       const [check, cpiData] = await Promise.all([history.check(holdings), history.cpi()]);
       const fine = {};
       for (const p of result.portfolio) if (p.best) fine[`${p.release}:${p.side}`] = rules.edge(p.best, { cpi: cpiData, nfpDays: check.days.nfp, gaps: check.gaps });
-      return send(res, 200, { agent: { result }, thread: { at: new Date().toISOString(), history: check, fine, ledger: [] } });
+      const thread = { at: new Date().toISOString(), history: check, fine, ledger: [] };
+      await learnLines({ result }, thread);
+      return send(res, 200, { agent: { result }, thread });
     }
 
     if (route === '/api/thread') {
@@ -285,16 +296,17 @@ const server = http.createServer(async (req, res) => {
       // quote (contract terms), and Atty's record of calls
       const r = agent.status().result;
       if (!r) return send(res, 503, { error: 'the agent has not finished its first round yet' });
-      const holdings = r.holdings.map((h) => ({ symbol: h.symbol, value: h.value }));
-      const [check, cpiData] = await Promise.all([history.check(holdings), history.cpi()]);
-      const fine = {};
-      for (const p of r.portfolio) if (p.best) fine[`${p.release}:${p.side}`] = rules.edge(p.best, { cpi: cpiData, nfpDays: check.days.nfp, gaps: check.gaps });
-      return send(res, 200, { at: new Date().toISOString(), history: check, fine, ledger: ledger.list() });
+      return send(res, 200, await threadFor(r));
     }
 
     if (route === '/api/voice') {
       // Atty reads one line aloud (ElevenLabs, cached on disk per line)
-      try { return send(res, 200, await voice.speak(url.searchParams.get('t')), 'audio/mpeg'); }
+      const t = url.searchParams.get('t');
+      if (guard.PUBLIC && !voice.cached(t) && !guard.lineAllowed(t)) {
+        await refreshLines();
+        if (!guard.lineAllowed(t)) return send(res, 403, { error: 'Atty only reads her own lines' });
+      }
+      try { return send(res, 200, await voice.speak(t), 'audio/mpeg'); }
       catch (e) { return send(res, e.code || 500, { error: e.message }); }
     }
 
@@ -313,7 +325,7 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, await runPipeline({ forceSample: url.searchParams.get('sample') === '1' }));
     }
 
-    const file = route === '/' ? 'index.html' : route.replace(/^\/+/, '');
+    const file = route === '/' || route.endsWith('/') ? route.replace(/^\/+/, '') + 'index.html' : route.replace(/^\/+/, '');
     const full = path.join(PUBLIC, file);
     if (!full.startsWith(PUBLIC) || !fs.existsSync(full) || fs.statSync(full).isDirectory()) {
       return send(res, 404, { error: 'not found' });
@@ -333,6 +345,36 @@ const server = http.createServer(async (req, res) => {
 
 /* ------------------------------------------------------- Atty's agent */
 function engineSignals(events) { return events.map(engine.analyseEvent); }
+async function tapeNow() {
+  const ev = await markets.loadEvents();
+  const signals = ev.map(engine.analyseEvent);
+  signals.forEach((s, i) => { s.change = archive.changeFor(ev[i]); });
+  return { signals };
+}
+/** Does protection pay when you lose (release-day history), the fine print on each quote, and Atty's record. */
+async function threadFor(r) {
+  const holdings = r.holdings.map((h) => ({ symbol: h.symbol, value: h.value }));
+  const [check, cpiData] = await Promise.all([history.check(holdings), history.cpi()]);
+  const fine = {};
+  for (const p of r.portfolio) if (p.best) fine[`${p.release}:${p.side}`] = rules.edge(p.best, { cpi: cpiData, nfpDays: check.days.nfp, gaps: check.gaps });
+  return { at: new Date().toISOString(), history: check, fine, ledger: ledger.list() };
+}
+/** The lines Atty would say about this result, the only ones she may record new audio for in public. */
+async function learnLines(agentPayload, thread) {
+  if (!guard.PUBLIC) return;
+  try {
+    const hs = agentPayload.result.holdings;
+    const [tape, fundsData] = await Promise.all([tapeNow(), funds.benchmark(engineSignals(await markets.loadEvents()), hs.map((h) => h.symbol).join(','))]);
+    guard.allowLines(AttyBeats.beats({ agent: agentPayload, thread, tape, funds: fundsData }).map((b) => b.say));
+  } catch (e) { console.log('learnLines', e.message); }
+}
+let linesAt = 0;
+async function refreshLines() {
+  if (Date.now() - linesAt < 60e3) return;
+  linesAt = Date.now();
+  const st = agent.status(); if (!st.result) return;
+  await learnLines(st, await threadFor(st.result));
+}
 /** The holdings the agent works on: the linked (or sample) portfolio, buckets filled in by Jev where unknown. */
 async function agentInputs() {
   const pf = await portfolio();
@@ -353,7 +395,7 @@ if (require.main === module) {
   });
   server.listen(PORT, HOST, () => {
     console.log(`Atropos  http://${HOST}:${PORT}`);
-    console.log(`  snaptrade  ${snaptrade.configured() ? 'keys set (personal, read-only)' : 'MISSING keys'}`);
+    console.log(`  snaptrade  ${guard.PUBLIC ? 'off (public demo: sample portfolio only)' : snaptrade.configured() ? 'keys set (personal, read-only)' : 'MISSING keys'}`);
     console.log(`  jev        ${jev.configured() ? 'key set' : 'MISSING key'}`);
     console.log(`  claude     ${claude.configured() ? claude.MODEL : 'no ANTHROPIC_API_KEY - deterministic writer in use'}`);
     console.log(`  agent      every ${Number(process.env.AGENT_EVERY_MIN || 10)} min`);
