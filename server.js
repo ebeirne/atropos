@@ -212,8 +212,9 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
   const route = url.pathname;
   try {
+    // the Atty page is the app; the earlier landing page stays at /index.html
+    if (route === '/') { res.writeHead(302, { Location: '/atty/' }); return res.end(); }
     if (guard.PUBLIC) {
-      if (route === '/') { res.writeHead(302, { Location: '/atty/' }); return res.end(); }
       // linking a brokerage, the status page (it lists linked accounts) and the full ticket
       // pipeline are for your own machine only
       if (/^\/api\/(link|status|tickets)$/.test(route)) return send(res, 404, { error: 'not available in the public demo' });
