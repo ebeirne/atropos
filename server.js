@@ -256,6 +256,30 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, await news.search(url.searchParams.get('q')));
     }
 
+    if (route === '/api/try') {
+      // anyone's own tickers, no login: "NVDA 20000, SPY, TLT" (amounts in dollars, default $10,000)
+      const parts = String(url.searchParams.get('h') || '').toUpperCase().split(',').map((x) => x.trim()).filter(Boolean);
+      if (!parts.length || parts.length > 15) return send(res, 400, { error: 'give 1 to 15 tickers' });
+      const positions = [];
+      for (const part of parts) {
+        const m = part.match(/^([A-Z][A-Z.]{0,5})(?:[\s:=]+\$?([\d,]+(?:\.\d+)?))?$/);
+        if (!m) return send(res, 400, { error: `could not read "${part.slice(0, 20)}"` });
+        const value = m[2] ? Number(m[2].replace(/,/g, '')) : 10000;
+        if (!(value > 0 && value <= 1e7)) return send(res, 400, { error: `amount for ${m[1]} must be between $1 and $10,000,000` });
+        positions.push({ symbol: m[1], description: m[1], value, type: 'equity' });
+      }
+      const unknown = positions.filter((p) => !engine.bucketOf(p.symbol)).map((p) => ({ symbol: p.symbol, description: p.symbol }));
+      let buckets = {};
+      if (unknown.length && jev.configured()) { try { buckets = (await jev.classify(unknown)).buckets; } catch (_) { buckets = {}; } }
+      const withBuckets = positions.map((p) => ({ ...p, bucket: engine.bucketOf(p.symbol) || (buckets[p.symbol] && buckets[p.symbol].bucket) || 'other' }));
+      const result = await agent.runOnce({ positions: withBuckets, signals: engineSignals(await markets.loadEvents()), portfolioId: 'try', quick: true });
+      const holdings = result.holdings.map((h) => ({ symbol: h.symbol, value: h.value }));
+      const [check, cpiData] = await Promise.all([history.check(holdings), history.cpi()]);
+      const fine = {};
+      for (const p of result.portfolio) if (p.best) fine[`${p.release}:${p.side}`] = rules.edge(p.best, { cpi: cpiData, nfpDays: check.days.nfp, gaps: check.gaps });
+      return send(res, 200, { agent: { result }, thread: { at: new Date().toISOString(), history: check, fine, ledger: [] } });
+    }
+
     if (route === '/api/thread') {
       // does protection pay when you lose (release-day history), the fine print on each
       // quote (contract terms), and Atty's record of calls

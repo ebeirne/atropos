@@ -152,6 +152,41 @@
   footer { padding: 110px 0 160px; color: var(--mute); font-size: 15px; }
   footer .shell { display: grid; gap: 10px; }
 
+  /* the claim and its proof: every report day since 2021, your losing days lit when the hedge paid, red when it missed */
+  .land h1 { font-size: clamp(40px, 4.7vw, 80px); }
+  .proof { margin-top: 34px; }
+  .proof .ptop { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .proof svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .proof .paid { fill: rgba(225, 235, 255, .95); }
+  .proof .miss { fill: rgba(255, 79, 116, .18); stroke: #ff4f74; stroke-width: 1.6; }
+  .proof .calm { fill: rgba(150, 175, 255, .2); }
+  .proof .base { stroke: rgba(150, 175, 255, .4); stroke-width: 1; }
+  .proof .yr { fill: #98a1c8; font: 500 15px "Geist Mono", monospace; letter-spacing: .08em; }
+  .key { display: inline-flex; gap: 18px; }
+  .key i { display: inline-block; width: 11px; height: 11px; margin-right: 7px; vertical-align: -1px; }
+  .key .kp { background: rgba(225, 235, 255, .95); } .key .km { border: 1.6px solid #ff4f74; background: rgba(255, 79, 116, .18); }
+  .try { display: flex; margin-top: 28px; border: 1px solid var(--edge); background: rgba(4, 7, 30, .6); }
+  .try input { flex: 1; min-width: 0; font: 400 19px var(--f); color: var(--ink); background: transparent; border: 0; outline: none; padding: 16px 18px; }
+  .try input::placeholder { color: var(--dim); }
+  .try .btn { border: 0; border-left: 1px solid var(--edge); }
+  .tnote { margin-top: 10px; min-height: 1.3em; }
+  .tnote a { color: var(--ink); }
+  /* the tour: press play and each line takes the screen, with Atty beside it */
+  .tour { position: fixed; inset: 0; z-index: 3; background: rgba(2, 3, 15, .9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; }
+  .tour.on { display: block; }
+  html.touring { overflow: hidden; }
+  .tour .close { position: absolute; top: 22px; right: 26px; font: 500 14px var(--m); letter-spacing: .1em; text-transform: uppercase; background: transparent; color: var(--ink); border: 1px solid var(--edge); padding: 12px 16px; cursor: pointer; }
+  .scene { position: absolute; left: 42%; right: 5%; top: 46%; transform: translateY(-50%); }
+  .scene .anim { animation: rise .55s cubic-bezier(.2, .8, .2, 1) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+  .bignum { font: 600 clamp(64px, 9.5vw, 160px)/.9 var(--d); letter-spacing: -.05em; display: block; }
+  .bignum.mid { font-size: clamp(48px, 6.5vw, 110px); }
+  .scene .what { font: 500 clamp(22px, 2.1vw, 34px)/1.15 var(--d); letter-spacing: -.03em; margin-top: 18px; max-width: 26ch; }
+  .scene .rowsx { margin-top: 28px; border-top: 1px solid var(--edge); }
+  .scene .rowsx div { display: flex; justify-content: space-between; gap: 20px; padding: 13px 0; border-bottom: 1px solid var(--rule); font-size: 22px; }
+  .scene .rowsx span { color: var(--mute); }
+  .scene .rowsx b { font-weight: 500; text-align: right; }
+  .scene .ctas { margin-top: 30px; }
   /* her voice, along the bottom, on the glass */
   .player { position: fixed; left: 24px; bottom: 18px; z-index: 5; width: min(1000px, calc(100% - 230px)); display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
     padding: 10px; background: rgba(4, 7, 30, .86); border: 1px solid var(--edge); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
@@ -191,7 +226,8 @@
     .cap { font-size: 15px; }
     .facts > div { padding-right: 0; margin-right: 22px; }
   }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .rep { transition: none; } }
+  @media (max-width: 880px) { .scene { left: 18px; right: 18px; top: auto; bottom: 96px; transform: none; } .bignum { font-size: 64px; } .bignum.mid { font-size: 46px; } .scene .rowsx div { font-size: 17px; } .scene .rowsx { margin-top: 16px; } .tour .close { top: 14px; right: 14px; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .rep { transition: none; } .scene .anim { animation: none; } }
 </style>
 
 <canvas id="glass" aria-hidden="true"></canvas>
@@ -200,24 +236,26 @@
 <div class="wrap">
   <header class="bar"><div class="shell">
     <span class="brand">Atropos</span>
-    <nav aria-label="Sections"><a href="#week">This week</a><a href="#trade">Next trade</a><a href="#holdings">Holdings</a><a href="#public">Public money</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
+    <nav aria-label="Sections"><a href="#trade">Next trade</a><a href="#week">This week</a><a href="#holdings">Holdings</a><a href="#public">Public money</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
   </div></header>
 
   <section class="land" id="top" style="padding-top:0"><div class="shell"><div class="copy">
-    <h1>What could hit your money this week.</h1>
-    <p class="lead">Atty checks prediction markets against what you own. Then she tells you what to protect, and what to skip.</p>
-    <div class="ctas"><button class="btn main" type="button" id="heroPlay"><i class="tri"></i>Listen</button><a class="btn" href="#trade">Next trade</a></div>
-    <div class="facts" id="facts"></div>
+    <h1>Most hedges miss the days you actually lose.</h1>
+    <p class="lead" id="claim">Atty checks every hedge against your real losses.</p>
+    <div class="proof" id="proof"></div>
+    <form class="try" id="tryForm" autocomplete="off"><input id="tryQ" type="text" maxlength="200" placeholder="Your tickers: NVDA 20000, SPY, TLT" aria-label="Your tickers, with dollar amounts if you like"><button class="btn main" type="submit">Check mine</button></form>
+    <p class="lab tnote" id="tryNote"></p>
+    <div class="ctas"><button class="btn" type="button" id="heroPlay"><i class="tri"></i>Play the tour</button><a class="btn" href="#trade">Next trade</a></div>
   </div></div></section>
-
-  <section id="week"><div class="shell">
-    <div class="head"><h2>This week</h2></div>
-    <div class="week" id="weekCards"></div>
-  </div></section>
 
   <section id="trade"><div class="shell">
     <div class="head"><h2>Next trade</h2></div>
     <div id="tickets"></div>
+  </div></section>
+
+  <section id="week"><div class="shell">
+    <div class="head"><h2>This week</h2></div>
+    <div class="week" id="weekCards"></div>
   </div></section>
 
   <section id="holdings"><div class="shell">
@@ -244,6 +282,8 @@
     <p id="asof"></p>
   </div></footer>
 </div>
+
+<div class="tour" id="tour"><button class="close" id="tourClose" type="button">Close ✕</button><div class="scene" id="scene" aria-live="polite"></div></div>
 
 <div class="player" role="region" aria-label="Atty's voice">
   <button class="pp" type="button" id="play" aria-pressed="false" aria-label="Play Atty"><i class="tri"></i></button>
@@ -305,7 +345,7 @@
   function maybeRender() {
     if (rendered || !DATA.agent || !DATA.tape || !DATA.threadDone) return;
     rendered = true;
-    renderFacts(); renderWeek(); renderTickets(); renderHoldings();
+    renderFacts(); renderProof(); renderWeek(); renderTickets(); renderHoldings();
     maybeStart();
   }
   function sig(id) { return (DATA.tape.signals || []).filter(function (s) { return s.id === id; })[0]; }
@@ -315,7 +355,33 @@
   }
   function oddsOf(p) { var o = null; DATA.agent.result.holdings.forEach(function (h) { h.exposures.forEach(function (e) { if (o == null && e.release === p.release && e.side === p.side) o = e.odds; }); }); return o; }
 
+  /* the proof: every report day for your biggest risk, your losing days lit when the hedge paid, red when it missed */
+  var DAYWORD = { cpi: 'inflation', nfp: 'jobs' };
+  function proofSVG(big) {
+    var th = DATA.thread || {}, p = DATA.agent.result.portfolio.filter(function (x) { return x.knot; })[0];
+    if (!p || !th.history || !th.history.days) return null;
+    var days = th.history.days[p.release] || [], f = (th.history.fits || {})[p.release + ':' + p.side];
+    if (!days.length || !f) return null;
+    var n = days.length, W = 1000, H = big ? 230 : 190, base = H * 0.4, bw = W / n, last = '';
+    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + f.paidOnLoss + ' of ' + f.lossDays + ' losing days paid"><line class="base" x1="0" x2="' + W + '" y1="' + base + '" y2="' + base + '"/>';
+    days.forEach(function (d, i) {
+      var x = i * bw + bw * 0.16, w = bw * 0.68, m = Math.abs(d.ret), lost = d.ret <= -0.5;
+      var hgt = Math.max(3, Math.min(d.ret < 0 ? H - base - 26 : base - 4, m * (big ? 34 : 28)));
+      var happened = p.side === 'high' ? d.value > d.before : d.value < d.before, cls = lost ? (happened ? 'paid' : 'miss') : 'calm';
+      out += '<rect class="' + cls + '" x="' + x.toFixed(1) + '" y="' + (d.ret < 0 ? base : base - hgt).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + hgt.toFixed(1) + '"><title>' + d.date + ': ' + (d.ret < 0 ? '−' : '+') + m.toFixed(2) + '%' + (lost ? (happened ? ', paid' : ', missed') : '') + '</title></rect>';
+      var yr = d.date.slice(0, 4); if (yr !== last) { if (last) out += '<text class="yr" x="' + x.toFixed(1) + '" y="' + (H - 4) + '">' + yr + '</text>'; last = yr; }
+    });
+    return { svg: out + '</svg>', f: f, p: p };
+  }
+  function renderProof() {
+    var r = proofSVG(false), host = $('proof'); if (!host) return;
+    if (!r) { host.textContent = ''; return; }
+    var word = DAYWORD[r.p.release] || NAME[r.p.release].toLowerCase(), hr = r.f.paidOnLoss / r.f.lossDays;
+    $('claim').textContent = 'Protection against ' + (r.p.release === 'cpi' ? 'hot inflation' : 'a ' + r.p.word + ' ' + NAME[r.p.release].toLowerCase()) + ' paid on ' + r.f.paidOnLoss + ' of your ' + r.f.lossDays + ' worst ' + word + ' days. ' + (hr >= 0.6 ? 'It usually shows up.' : hr >= 0.4 ? 'A coin flip.' : 'It usually misses.');
+    host.innerHTML = '<div class="ptop"><span class="lab">Every ' + word + ' report since ' + r.f.from.slice(0, 4) + '</span><span class="lab key"><span><i class="kp"></i>Paid</span><span><i class="km"></i>Missed</span></span></div>' + r.svg;
+  }
   function renderFacts() {
+    if (!$('facts')) return;
     var r = DATA.agent.result, n = (DATA.tape.signals || []).length;
     var p = r.portfolio.filter(function (x) { return x.knot; })[0];
     $('facts').innerHTML = '<div><b class="n">' + money(DATA.total) + '</b><span class="lab">' + r.holdings.length + ' holdings</span></div>' +
@@ -482,6 +548,25 @@
     if (!rel) return;
     ['t-' + rel, 'w-' + rel].forEach(function (id) { var n = $(id); if (n) n.classList.add('lit'); });
   }
+  var TOUR = false;
+  function openTour() { if (TOUR) return; TOUR = true; $('tour').classList.add('on'); document.documentElement.classList.add('touring'); renderScene(G.beats[G.i]); }
+  function closeTour() { if (!TOUR) return; TOUR = false; $('tour').classList.remove('on'); document.documentElement.classList.remove('touring'); setPlaying(false); }
+  function rowsx(rows) { return '<div class="rowsx">' + rows.map(function (r) { return '<div><span>' + esc(r[0]) + '</span><b class="' + (r[2] || '') + '">' + esc(r[1]) + '</b></div>'; }).join('') + '</div>'; }
+  function renderScene(b) {
+    var host = $('scene'); if (!host || !b) return;
+    var sh = b.show || {}, nb = b.numbers || {}, R = DATA.agent.result, html = '';
+    if (b.id === 'hello') html = '<span class="bignum n">' + money(DATA.total) + '</span><p class="what">watched, ' + R.holdings.length + ' holdings</p>' + rowsx((sh.rows || []).map(function (x) { return [x.name + ' · ' + x.date, x.fav + ' · ' + x.p]; }));
+    else if (b.id === 'risk') html = '<span class="bignum n down">' + money(-nb.loss) + '</span><p class="what">' + esc(b.say) + '</p>' + rowsx((sh.rows || []).map(function (x) { return [x.sym, '−' + x.loss, 'down']; }));
+    else if (b.id === 'trade') html = '<span class="bignum n">' + esc(sh.cost) + '</span><p class="what">' + esc(sh.contract.replace(/"/g, '')) + ', ' + esc(sh.venue) + '</p>' + rowsx([['Price with fee', sh.ask + ' (fair ' + sh.fair + ')'], ['Pays if it happens', sh.payout, 'up']]);
+    else if (b.id === 'fit') { var pr = proofSVG(true); html = '<span class="bignum n">' + nb.paidOnLoss + '<span class="mute"> / ' + nb.lossDays + '</span></span><p class="what">of your worst days, it paid. ' + esc(b.sub || '') + '</p>' + (pr ? '<div class="proof">' + pr.svg + '</div>' : ''); }
+    else if (b.id === 'fine') html = '<span class="bignum mid ' + (sh.pays ? 'up' : 'down') + '">' + (sh.pays ? 'Still pays' : 'Won’t pay') + '</span><p class="what">if the report is never published</p>' + rowsx([['Fallback', sh.fallback], ['Last trade', sh.stops]].concat(sh.latest ? [['Latest it can settle', sh.latest]] : []));
+    else if (b.id === 'skip') html = '<span class="bignum down">Skip</span><p class="what">' + esc(b.say) + '</p>' + (sh.contract ? rowsx([['Price with fee', sh.ask, 'down'], ['Worth', sh.fair]]) : '');
+    else if (b.id === 'peers') html = '<span class="bignum n down">' + (nb.you < 0 ? '−' : '+') + Math.abs(nb.you).toFixed(2) + '%</span><p class="what">you, if inflation runs hot</p>' + rowsx((sh.rows || []).filter(function (x) { return !x.you; }).map(function (x) { return [x.who, (x.v < 0 ? '−' : '+') + Math.abs(x.v).toFixed(2) + '%']; }));
+    else if (b.id === 'record') html = '<span class="bignum mid">I keep score.</span>' + rowsx((sh.rows || []).map(function (x) { return [x.date + ' · ' + x.what, x.call + ' · ' + x.status]; }));
+    else html = '<span class="bignum mid">Your turn.</span><div class="ctas"><button class="btn main" type="button" data-go="try">Check my tickers</button><button class="btn" type="button" data-go="news">Ask about the news</button></div>';
+    host.innerHTML = '<div class="anim">' + html + '</div>';
+    [].forEach.call(host.querySelectorAll('[data-go]'), function (bt) { bt.addEventListener('click', function () { var go = bt.getAttribute('data-go'); closeTour(); setTimeout(function () { if (go === 'try') { $('top').scrollIntoView(); $('tryQ').focus(); } else { $('news').scrollIntoView(); $('newsQ').focus({ preventScroll: true }); } }, 60); }); });
+  }
   function showBeat(i, quiet) {
     stopAudio(); G.custom = false;
     G.i = Math.max(0, Math.min(G.beats.length - 1, i));
@@ -493,6 +578,7 @@
     PER.mood = null; if (!quiet) hop(b.id === 'hello' || b.id === 'end' ? 0.26 : 0.12);
     GL.cutTarget = 0;
     $('prev').disabled = G.i === 0;
+    if (TOUR) renderScene(b);
     if (G.playing && !quiet) playLine(b);
     if (AC && G.beats[G.i + 1]) decode(voiceUrl(G.beats[G.i + 1].say));
   }
@@ -521,8 +607,9 @@
   }
   function setPlaying(on) {
     G.playing = on; $('play').classList.toggle('on', on); $('play').setAttribute('aria-pressed', String(on)); $('play').setAttribute('aria-label', on ? 'Pause Atty' : 'Play Atty');
-    if (on) playLine(G.beats[G.i]); else stopAudio();
+    if (on) { openTour(); playLine(G.beats[G.i]); } else stopAudio();
   }
+  $('tourClose').addEventListener('click', closeTour);
   $('next').addEventListener('click', function () { if (G.started) showBeat(G.i === G.beats.length - 1 ? 0 : G.i + 1); });
   $('prev').addEventListener('click', function () { if (G.started) showBeat(G.i - 1); });
   $('play').addEventListener('click', function () { if (G.started) setPlaying(!G.playing); });
@@ -531,11 +618,31 @@
     if (G.started && !G.playing) { setLine(HELLO[helloN % HELLO.length]); G.custom = true; }
     helloN++;
   });
+  $('tryForm').addEventListener('submit', function (e) {
+    e.preventDefault(); var q = $('tryQ').value.trim(); if (!q) return;
+    $('tryNote').textContent = 'Checking ' + q.toUpperCase() + '…'; feel('curious', 6000);
+    fetch('/api/try?h=' + encodeURIComponent(q)).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'That did not work.'); return j; }); })
+      .then(function (j) {
+        setPlaying(false);
+        DATA.agent = { result: j.agent.result, everyMinutes: null }; DATA.thread = j.thread; DATA.live = true;
+        DATA.total = j.agent.result.holdings.reduce(function (s2, x) { return s2 + x.value; }, 0);
+        renderFacts(); renderProof(); renderWeek(); renderTickets(); renderHoldings();
+        G.started = false; DATA.fundsDone = false; loadFunds(j.agent.result.holdings, DATA.total);
+        $('tryNote').innerHTML = 'Showing your ' + j.agent.result.holdings.length + ' tickers. <a href="">Back to the sample</a>';
+        feel('happy', 1600); hop(0.3);
+      })
+      .catch(function (err) {
+        var m = String(err && err.message || err);
+        $('tryNote').textContent = /fetch|network|JSON|token/i.test(m) ? 'Checking your own tickers needs the live app.' : m;
+        feel('worried', 1500);
+      });
+  });
   $('heroPlay').addEventListener('click', function () { if (G.started) { showBeat(0, true); setPlaying(true); } });
   addEventListener('keydown', function (e) {
     if (!G.started || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
     if (e.key === 'ArrowRight') showBeat(Math.min(G.beats.length - 1, G.i + 1));
     if (e.key === 'ArrowLeft') showBeat(G.i - 1);
+    if (e.key === 'Escape') closeTour();
   });
 
   /* ------------------------------------------------------------ the glass
@@ -729,6 +836,14 @@
     frame.lean = (frame.lean || 0) + (Math.max(-0.16, Math.min(0.16, -vel / 4000)) - (frame.lean || 0)) * Math.min(1, dt * 6);
     var sc = scH + (scD - scH) * dk;
     var cx = cxH + (cxD - cxH) * dk + (reduce ? 0 : 0.014 * Math.sin(T * 0.55) * sc), cy = cyH + (cyD - cyH) * dk + (reduce ? 0 : 0.01 * Math.sin(T * 0.83) * sc);
+    frame.tk = (frame.tk || 0) + ((TOUR ? 1 : 0) - (frame.tk || 0)) * Math.min(1, dt * 4);
+    if (frame.tk > 0.001) {
+      var tpx = Math.min(0.2 * innerHeight, 0.5 * innerWidth);
+      var scT = wide ? Math.min(1.05, aspect / 1.45) : 2 * tpx / innerHeight;
+      var cxT = wide ? -0.5 * aspect + 0.1 + 0.25 * scT : 0, cyT = wide ? 0.04 : (innerHeight / 2 - (78 + tpx / 2)) / innerHeight;
+      var tke = ease(frame.tk);
+      sc += (scT - sc) * tke; cx += (cxT - cx) * tke; cy += (cyT - cy) * tke;
+    }
     var asm = reduce ? 1 : ease((T - 0.15) / 2.1), intro = 1, form = asm;
     var rodY = -0.6;
     // eyes: open after she forms, blink now and then, look at your cursor
