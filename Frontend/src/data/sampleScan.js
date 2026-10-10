@@ -49,7 +49,7 @@ function makeSeries(seed, theta, n = 120) {
 const PAIRS = {
   CO1: { a: 'CO1A', b: 'CO1B', seed: 11, theta: 0.15, stats: { corr: 0.666, coint_p: 0.0001, half_life: 5.77, zscore: 0.21, hedge_ratio: 1.19, return_beta: 0.56, hedge_effectiveness: 0.44, spread_std: 0.0312, vol_a: 0.19, vol_b: 0.21 } },
   CO2: { a: 'CO2A', b: 'CO2B', seed: 22, theta: 0.05, stats: { corr: 0.658, coint_p: 0.003, half_life: 14.22, zscore: -1.79, hedge_ratio: 1.225, return_beta: 0.554, hedge_effectiveness: 0.43, spread_std: 0.0407, vol_a: 0.19, vol_b: 0.22 } },
-  HC1: { a: 'HC1A', b: 'HC1B', seed: 33, theta: 0.005, stats: { corr: 0.774, coint_p: 0.937, half_life: 274.26, zscore: 1.0, hedge_ratio: 0.98, return_beta: 0.86, hedge_effectiveness: 0.6, spread_std: 0.0991, vol_a: 0.2, vol_b: 0.21 } },
+  HC1: { a: 'HC1A', b: 'HC1B', seed: 33, theta: 0.005, stats: { corr: -0.774, coint_p: 0.937, half_life: 274.26, zscore: 1.0, hedge_ratio: -0.98, return_beta: -0.86, hedge_effectiveness: 0.6, spread_std: 0.0991, vol_a: 0.2, vol_b: 0.21 } },
   HC2: { a: 'HC2A', b: 'HC2B', seed: 44, theta: 0.05, stats: { corr: 0.822, coint_p: 0.017, half_life: 21.68, zscore: 1.36, hedge_ratio: 0.94, return_beta: 0.81, hedge_effectiveness: 0.68, spread_std: 0.0524, vol_a: 0.18, vol_b: 0.19 } },
 };
 
@@ -66,7 +66,7 @@ const EXPLANATIONS = {
   arbitrage:
     'Sample reading. CO1A/CO1B is the cleanest fit: a very strong cointegration result and a half-life under a week, which suits high turnover. CO2A/CO2B also qualifies but reverts more slowly, so each trade ties up capital longer.',
   hedging:
-    'Sample reading. HC1A/HC1B moves together day to day but its spread never reverts, so it is a hedge for direction, not a pairs trade. Hedging it removes roughly 60 percent of the variance of the first leg.',
+    'Sample reading. HC1A/HC1B moves in opposite directions day to day and is not cointegrated, so one leg offsets the other: it is a hedge, not a pairs trade. Holding both removes roughly 60 percent of the variance of the first leg.',
 };
 
 function buildPair(id, score) {
@@ -83,8 +83,4 @@ export function sampleScan({ strategies, tickers }) {
     };
   });
   return { sample: true, universe_size: tickers?.length || 12, pairs_screened: 4, strategies: out };
-}
-
-export function sampleUniverse() {
-  return { tickers: ['CO1A', 'CO1B', 'CO2A', 'CO2B', 'HC1A', 'HC1B', 'HC2A', 'HC2B', 'RW1', 'RW2', 'RW3', 'RW4'] };
 }

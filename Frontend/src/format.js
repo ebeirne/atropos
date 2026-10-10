@@ -9,11 +9,6 @@ export const percent = (v) => (v == null ? dash : `${Math.round(v * 100)}%`);
 export const monthYear = (iso) =>
   new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
 
-export const PROVIDER_LABELS = {
-  synthetic: 'Synthetic demo data',
-  yahoo: 'Yahoo Finance',
-};
-
 // Plain names for the requirement keys.
 export const REQ_LABELS = {
   coint_p: 'Cointegration p',

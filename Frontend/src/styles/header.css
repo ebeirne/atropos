@@ -13,8 +13,7 @@
 .site-header.dark { color: var(--on-dark); background: transparent; }
 .site-header.light {
   color: var(--ink);
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
   border-bottom-color: var(--line);
 }
 

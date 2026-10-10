@@ -19,9 +19,19 @@ export default function SiteHeader({ path }) {
 
   const overHero = path === '/' && !past;
 
+  // Check the scroll position at most once per frame, not once per scroll event.
   useEffect(() => {
-    const onScroll = () => setPast(window.scrollY > window.innerHeight * 0.6);
-    onScroll();
+    let queued = false;
+    const update = () => {
+      queued = false;
+      setPast(window.scrollY > window.innerHeight * 0.6);
+    };
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    };
+    update();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);

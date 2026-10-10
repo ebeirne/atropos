@@ -1,7 +1,6 @@
 // Built-in copy of the strategy definitions, used when the Leaf API is not running.
 // It mirrors app/strategies.py on the backend.
 export const FALLBACK = {
-  providers: ['synthetic', 'yahoo'],
   strategies: {
     mean_reversion: {
       label: 'Mean reversion',
@@ -26,13 +25,13 @@ export const FALLBACK = {
     },
     hedging: {
       label: 'Hedging',
-      summary: 'Highly correlated pairs that are NOT cointegrated: hedge direction, not the level.',
+      summary: 'Inverse pairs, correlation between -0.9 and -0.5, that are NOT cointegrated: when one falls, the other rises.',
       math: [
         'Hedge ratio (return space): h = Cov(r_A, r_B) / Var(r_B)',
         'Hedged return: r_A - h * r_B',
         'Hedge effectiveness: 1 - Var(hedged) / Var(r_A) = corr^2',
       ],
-      requires: { corr: '>= 0.7', coint_p: '> 0.10', hedge_effectiveness: '>= 0.5' },
+      requires: { corr: '-0.9 to -0.5', coint_p: '> 0.10' },
     },
   },
 };

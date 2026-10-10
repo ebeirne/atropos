@@ -1,35 +1,29 @@
 import { useRef, useState } from 'react';
-import { getUniverse, scanMulti } from '../api.js';
+import { scanMulti } from '../api.js';
 import StrategyList from '../components/StrategyList.jsx';
 import ScanControls from '../components/ScanControls.jsx';
 import ResultsPanel from '../components/ResultsPanel.jsx';
+import { logExSpec } from '../ex.js';
 
-const parseTickers = (text) =>
-  [...new Set(text.split(/[\s,;]+/).map((t) => t.trim().toUpperCase()).filter(Boolean))];
-
-export default function Screener({ strategies, providers, query }) {
-  const initial = (query.s || 'mean_reversion').split(',').filter(Boolean);
+export default function Screener({ strategies, query }) {
+  // Nothing is ticked on arrival, unless a link names a strategy (#/screener?s=hedging).
+  const initial = (query.s || '').split(',').filter(Boolean);
   const [selected, setSelected] = useState(() => new Set(initial));
-  const [provider, setProvider] = useState('synthetic');
-  const [days, setDays] = useState(750);
-  const [tickers, setTickers] = useState('');
+  const [days, setDays] = useState(252); // 1Y, see PERIODS in ScanControls
   const [scan, setScan] = useState({ status: 'idle' });
   const resultsRef = useRef(null);
 
   const chosen = strategies ? [...selected].filter((k) => strategies[k]) : [];
 
-  const toggle = (key) =>
+  const toggle = (key) => {
+    // Ticking a card (not un-ticking) asks EX what Lego will need for it.
+    if (!selected.has(key) && strategies?.[key]) logExSpec(key, strategies[key]);
     setSelected((prev) => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
-
-  const loadDefaults = () =>
-    getUniverse(provider).then(
-      (d) => setTickers(d.tickers.join(', ')),
-      (e) => setScan({ status: 'error', error: e.message }),
-    );
+  };
 
   const run = async () => {
     setScan({ status: 'loading' });
@@ -39,13 +33,8 @@ export default function Screener({ strategies, providers, query }) {
       resultsRef.current?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
     }
     try {
-      const list = parseTickers(tickers);
-      const data = await scanMulti({
-        strategies: chosen,
-        provider,
-        days: Number(days) || 750,
-        tickers: list.length ? list : null,
-      });
+      // Real prices only, over the backend's built-in universe.
+      const data = await scanMulti({ strategies: chosen, provider: 'yahoo', days });
       setScan({ status: 'done', data });
     } catch (e) {
       setScan({ status: 'error', error: e.message });
@@ -56,7 +45,7 @@ export default function Screener({ strategies, providers, query }) {
     <div className="screener">
       <header className="wrap page-head">
         <h1>Screener</h1>
-        <p>Pick one or more strategies, set the universe, and Leaf returns the pairs that fit each.</p>
+        <p>Pick one or more strategies, and Leaf returns the pairs that fit each.</p>
       </header>
 
       {strategies && (
@@ -67,14 +56,8 @@ export default function Screener({ strategies, providers, query }) {
 
             <h2>Data</h2>
             <ScanControls
-              providers={providers}
-              provider={provider}
-              onProvider={setProvider}
               days={days}
               onDays={setDays}
-              tickers={tickers}
-              onTickers={setTickers}
-              onLoadDefaults={loadDefaults}
               onScan={run}
               busy={scan.status === 'loading'}
               selectedCount={chosen.length}

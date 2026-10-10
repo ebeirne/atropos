@@ -173,6 +173,7 @@ export default function ResultsPanel({ scan, strategies }) {
     <section className="results">
       <p className="meta">
         {data.universe_size} tickers · {data.pairs_screened} pairs passed the correlation prefilter
+        {data.dropped?.length > 0 && ` · no usable data for ${data.dropped.join(', ')}`}
       </p>
       {data.sample && (
         <p className="sample-note">Sample data. Results are examples, not live prices.</p>
@@ -201,8 +202,8 @@ export default function ResultsPanel({ scan, strategies }) {
           <div className="none">
             <h2>No pairs fit {strategies[current].label.toLowerCase()}</h2>
             <p>
-              Nothing in this universe meets the requirements. Add more tickers from the same
-              sector, or lengthen the lookback.
+              Nothing in the universe meets the requirements over this window. Try a longer
+              lookback.
             </p>
           </div>
         ) : (

@@ -17,7 +17,7 @@ export default function App() {
 
   // New page, start at the top. (Section links like #/?to=how scroll themselves.)
   useEffect(() => {
-    if (!route.query.to) window.scrollTo(0, 0);
+    if (!route.query.to) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [route.path]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -38,7 +38,6 @@ export default function App() {
           <Screener
             key={route.query.s || ''}
             strategies={meta?.strategies}
-            providers={meta?.providers || []}
             query={route.query}
           />
         ) : (
