@@ -1,12 +1,21 @@
-import { useEffect } from 'react';
-import { useRoute } from './hooks/useRuter.js';
+import { useEffect, useState } from 'react';
+import { getStrategies } from './api.js';
+import { useRoute } from './hooks/useRoute.js';
 import SiteHeader from './components/SiteHeader.jsx';
 import SiteFooter from './components/SiteFooter.jsx';
+import Home from './pages/Home.jsx';
+import Screener from './pages/Screener.jsx';
 
 export default function App() {
   const route = useRoute();
+  const [meta, setMeta] = useState(null);
 
-  // New page, start at the top. (Section links like #/?to=how scroll themselves, later.)
+  // Strategy content loads once and is shared by the pages.
+  useEffect(() => {
+    getStrategies().then(setMeta);
+  }, []);
+
+  // New page, start at the top. (Section links like #/?to=how scroll themselves.)
   useEffect(() => {
     if (!route.query.to) window.scrollTo(0, 0);
   }, [route.path]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -26,25 +35,14 @@ export default function App() {
       <SiteHeader path={route.path} />
       <main id="main" tabIndex={-1}>
         {route.path === '/screener' ? (
-          <section className="wrap" style={{ paddingTop: 140, minHeight: '70vh' }}>
-            <h1 style={{ font: '300 56px/1.1 var(--display)' }}>Screener</h1>
-            <p style={{ marginTop: 12, color: 'var(--ink-2)' }}>Placeholder. We build this page in Step 6.</p>
-          </section>
+          <Screener
+            key={route.query.s || ''}
+            strategies={meta?.strategies}
+            providers={meta?.providers || []}
+            query={route.query}
+          />
         ) : (
-          <>
-            {/* temporary stand-in for the hero (Step 3) */}
-            <section style={{ minHeight: '100svh', background: 'var(--spruce)', color: 'var(--on-dark)', display: 'grid', alignItems: 'center' }}>
-              <div className="wrap">
-                <h1 style={{ font: '300 clamp(44px, 7vw, 96px)/1 var(--display)', letterSpacing: '-0.03em' }}>
-                  Find the pairs that move together.
-                </h1>
-              </div>
-            </section>
-            {/* temporary stand-in for the page body (Steps 4 and 5) */}
-            <section className="wrap" style={{ padding: '96px var(--gutter)', minHeight: '120vh' }}>
-              <p>Scroll position test: the header should turn solid light once you pass about 60% of the first screen.</p>
-            </section>
-          </>
+          <Home route={route} strategies={meta?.strategies} />
         )}
       </main>
       <SiteFooter />
