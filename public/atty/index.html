@@ -4,20 +4,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@500&display=swap">
 <style>
-  /* Atty is glass. On arrival a bar of glowing glass slides in and folds into her: a
-     square glass head with two eyes of light and no mouth. As you scroll she unfolds back
-     into the bar, which follows you down the page along the bottom, where her voice plays;
-     it ripples and brightens as she speaks. Sharp corners everywhere, wide display type
-     (Unbounded, Jev's pick) for what matters, mono labels, and big photos. */
+  /* Atty is a voice, nothing else (Jev's call). When she speaks, a soft iridescent glow
+     rises from the bottom edge of the screen and moves with how loud she is; her words sit
+     above it. Dark, sharp-cornered, big type: the claim, its proof, your trade. */
   :root {
     color-scheme: dark;
-    --bg: #02030f;
-    --ink: #f4f6ff;
-    --mute: #98a1c8;
-    --dim: #555d88;
-    --panel: rgba(6, 10, 38, .8);
-    --edge: rgba(140, 165, 255, .22);
-    --rule: rgba(140, 165, 255, .14);
+    --bg: #050508;
+    --ink: #f4f5fb;
+    --mute: #9097b0;
+    --dim: #4f5570;
+    --panel: rgba(16, 17, 26, .78);
+    --edge: rgba(255, 255, 255, .1);
+    --rule: rgba(255, 255, 255, .07);
     --up: #3ee6a0;
     --down: #ff4f74;
     --amber: #ffc857;
@@ -27,79 +25,83 @@
     --gut: clamp(18px, 3.2vw, 56px);
   }
   * { box-sizing: border-box; border-radius: 0 !important; }
-  html { background: var(--bg); scroll-behavior: smooth; }
+  html { background: var(--bg); scroll-behavior: smooth; overflow-x: clip; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 400 20px/1.45 var(--f); -webkit-font-smoothing: antialiased; }
   a { color: inherit; }
-  :focus-visible { outline: 2px solid #8fa6ff; outline-offset: 3px; }
+  :focus-visible { outline: 2px solid #a5b4ff; outline-offset: 3px; }
   p { margin: 0; }
   .mute { color: var(--mute); }
   .up { color: var(--up); } .down { color: var(--down); } .amber { color: var(--amber); }
   .n { font-variant-numeric: tabular-nums; }
   .lab { font: 500 13px/1.2 var(--m); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+  .shell { max-width: 1240px; margin: 0 auto; padding: 0 var(--gut); }
 
-  .headhit { position: fixed; left: 0; top: 0; z-index: 6; background: transparent; border: 0; padding: 0; cursor: pointer; }
-  #glass { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 4; pointer-events: none; }
-  body { background: radial-gradient(circle var(--gr, 460px) at var(--gx, 72%) var(--gy, 45%), rgba(var(--gc, 28, 72, 255), .62) 0%, rgba(var(--gc, 28, 72, 255), .2) 45%, transparent 100%), linear-gradient(180deg, #02030f 0%, #040a33 100%); background-attachment: fixed; }
-  .wrap { position: relative; z-index: 1; }
-  .shell { max-width: 1320px; margin: 0 auto; padding: 0 var(--gut); }
+  /* the voice glow: a low-resolution canvas, heavily blurred, screened over the page */
+  #glow { position: fixed; left: -10vw; bottom: -14vh; width: 120vw; height: 62vh; z-index: 4; pointer-events: none; filter: blur(46px) saturate(1.25); mix-blend-mode: screen; }
 
-  /* top bar */
-  .bar { position: absolute; inset: 0 0 auto 0; z-index: 3; }
+  .bar { position: absolute; inset: 0 0 auto 0; z-index: 2; }
   .bar .shell { display: flex; justify-content: space-between; align-items: center; height: 84px; }
-  .brand { font: 600 20px var(--d); letter-spacing: -.01em; }
+  .brand { font: 600 19px var(--d); letter-spacing: -.01em; }
   .bar nav { display: flex; gap: 30px; }
   .bar nav a { text-decoration: none; font: 500 13px var(--m); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
   .bar nav a:hover { color: var(--ink); }
 
-  /* landing */
+  /* the claim, its proof, and your own tickers */
   .land { min-height: 100svh; display: flex; align-items: center; }
-  .land .shell { width: 100%; }
-  .land .copy { max-width: 600px; padding-block: 110px 210px; }
-  h1 { font: 600 clamp(42px, 5.4vw, 92px)/.95 var(--d); letter-spacing: -.045em; margin: 18px 0 26px; }
-  .lead { font-size: clamp(20px, 1.7vw, 25px); color: #c9d0f0; max-width: 30ch; }
-  .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 36px; }
-  .btn { font: 500 15px var(--m); letter-spacing: .08em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 12px; padding: 18px 24px; text-decoration: none; cursor: pointer;
-    color: var(--ink); background: rgba(255,255,255,.04); border: 1px solid var(--edge); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-  .btn.main { background: var(--ink); color: #050a35; border-color: var(--ink); }
+  .land .shell { width: 100%; padding-block: 120px 170px; }
+  h1 { font: 600 clamp(42px, 6vw, 100px)/.95 var(--d); letter-spacing: -.045em; margin: 0 0 26px; max-width: 13ch; }
+  .lead { font-size: clamp(20px, 1.8vw, 26px); color: #c5c9db; max-width: 34ch; }
+  .proof { margin-top: 38px; max-width: 860px; }
+  .proof .ptop { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .proof svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .proof .paid { fill: rgba(240, 242, 255, .95); }
+  .proof .miss { fill: rgba(255, 79, 116, .18); stroke: #ff4f74; stroke-width: 1.6; }
+  .proof .calm { fill: rgba(255, 255, 255, .13); }
+  .proof .base { stroke: rgba(255, 255, 255, .25); stroke-width: 1; }
+  .proof .yr { fill: #9097b0; font: 500 15px "Geist Mono", monospace; letter-spacing: .08em; }
+  .key { display: inline-flex; gap: 18px; }
+  .key i { display: inline-block; width: 11px; height: 11px; margin-right: 7px; vertical-align: -1px; }
+  .key .kp { background: rgba(240, 242, 255, .95); } .key .km { border: 1.6px solid #ff4f74; background: rgba(255, 79, 116, .18); }
+  .row2 { display: flex; gap: 12px; margin-top: 34px; flex-wrap: wrap; max-width: 860px; }
+  .try { display: flex; flex: 1 1 300px; min-width: 0; border: 1px solid var(--edge); background: rgba(255, 255, 255, .03); }
+  .try input { flex: 1; min-width: 0; width: 100%; font: 400 19px var(--f); color: var(--ink); background: transparent; border: 0; outline: none; padding: 17px 18px; }
+  .try input::placeholder { color: var(--dim); }
+  .btn { font: 500 15px var(--m); letter-spacing: .08em; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 18px 24px; text-decoration: none; cursor: pointer;
+    color: var(--ink); background: rgba(255, 255, 255, .04); border: 1px solid var(--edge); }
+  .btn.main { background: var(--ink); color: #08080d; border-color: var(--ink); }
   .btn:hover { filter: brightness(1.12); }
+  .try .btn { border: 0; border-left: 1px solid var(--edge); }
   .tri { width: 0; height: 0; border-left: 10px solid currentColor; border-top: 6.5px solid transparent; border-bottom: 6.5px solid transparent; }
-  .facts { display: flex; gap: 0; margin-top: 54px; flex-wrap: wrap; border-top: 1px solid var(--edge); }
-  .facts > div { padding: 16px 28px 0 0; margin-right: 28px; }
-  .facts b { display: block; font: 500 24px var(--d); white-space: nowrap; letter-spacing: -.03em; }
-  .facts span { display: block; margin-top: 6px; }
+  .tnote { margin-top: 12px; min-height: 1.3em; }
+  .tnote a { color: var(--ink); }
 
   /* sections */
   section { padding-top: 140px; }
-  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 34px; border-bottom: 1px solid var(--edge); padding-bottom: 22px; }
-  h2 { font: 600 clamp(36px, 4.6vw, 76px)/.95 var(--d); letter-spacing: -.045em; margin: 0; }
-  .sub { color: var(--mute); font-size: 19px; max-width: 40ch; text-align: right; }
-  .panel { background: var(--panel); border: 1px solid var(--edge); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
-  .lit { box-shadow: 0 0 0 1px rgba(170, 190, 255, .7), 0 0 70px rgba(60, 100, 255, .38); }
-  .tag { display: inline-block; padding: 8px 12px 7px; font: 600 13px var(--m); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--edge); background: rgba(255,255,255,.04); }
-  .tag.buy { color: var(--up); border-color: rgba(62,230,160,.55); background: rgba(62,230,160,.08); }
-  .tag.call { color: var(--amber); border-color: rgba(255,200,87,.55); background: rgba(255,200,87,.08); }
-  .tag.skip { color: var(--down); border-color: rgba(255,79,116,.55); background: rgba(255,79,116,.08); }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 30px; border-bottom: 1px solid var(--edge); padding-bottom: 20px; }
+  h2 { font: 600 clamp(34px, 4.4vw, 70px)/.95 var(--d); letter-spacing: -.045em; margin: 0; }
+  .sub { color: var(--mute); font-size: 18px; max-width: 40ch; text-align: right; }
+  .panel { background: var(--panel); border: 1px solid var(--edge); }
+  .lit { box-shadow: 0 0 0 1px rgba(255, 255, 255, .35), 0 0 70px rgba(120, 110, 255, .25); }
+  .tag { display: inline-block; padding: 8px 12px 7px; font: 600 13px var(--m); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--edge); background: rgba(255, 255, 255, .04); }
+  .tag.buy { color: var(--up); border-color: rgba(62, 230, 160, .5); background: rgba(62, 230, 160, .08); }
+  .tag.call { color: var(--amber); border-color: rgba(255, 200, 87, .5); background: rgba(255, 200, 87, .08); }
+  .tag.skip { color: var(--down); border-color: rgba(255, 79, 116, .5); background: rgba(255, 79, 116, .08); }
   .tag.watch { color: var(--mute); }
-
-  /* this week */
-  .week { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--edge); }
+  .week { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--edge); }
   .rep { text-decoration: none; display: block; border-right: 1px solid var(--edge); background: var(--panel); transition: background .25s; }
   .rep:last-child { border-right: 0; }
-  .rep:hover { background: rgba(14, 22, 80, .85); }
-  .ph { position: relative; aspect-ratio: 4 / 3; background: #0b1240 center / cover no-repeat; }
-  .ph::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(2,3,15,0) 45%, rgba(2,3,15,.9)); }
-  .ph .when { position: absolute; left: 20px; bottom: 16px; z-index: 1; }
-  .ph .when.lab { color: var(--ink); }
+  .rep:hover { background: rgba(28, 29, 44, .9); }
+  .ph { position: relative; aspect-ratio: 4 / 3; background: #15161f center / cover no-repeat; }
+  .ph::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5, 5, 8, 0) 45%, rgba(5, 5, 8, .9)); }
+  .ph .when { position: absolute; left: 20px; bottom: 16px; z-index: 1; color: var(--ink); }
   .rep .in { padding: 22px 22px 26px; }
   .rep h3 { margin: 0; font: 600 26px/1.05 var(--d); letter-spacing: -.035em; }
   .rep .fav { color: var(--mute); margin: 10px 0 18px; font-size: 18px; }
-
-  /* the trade ticket */
   .ticket { display: grid; grid-template-columns: 0.8fr 1.2fr; margin-bottom: 24px; }
   .ticket .ph { aspect-ratio: auto; min-height: 100%; }
-  .ticket .ph::after { background: linear-gradient(90deg, rgba(2,3,15,0) 55%, rgba(6,10,38,.96)); }
+  .ticket .ph::after { background: linear-gradient(90deg, rgba(5, 5, 8, 0) 55%, rgba(16, 17, 26, .96)); }
   .tk { padding: 34px 36px 36px; }
-  .tk h3 { margin: 12px 0 28px; font: 600 clamp(28px, 2.8vw, 44px)/1 var(--d); letter-spacing: -.04em; }
+  .tk h3 { margin: 0 0 28px; font: 600 clamp(28px, 2.8vw, 44px)/1 var(--d); letter-spacing: -.04em; }
   .kpis { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--edge); margin-bottom: 26px; }
   .kpi { padding: 18px 20px; border-right: 1px solid var(--edge); }
   .kpi:last-child { border-right: 0; }
@@ -116,95 +118,76 @@
   .chk:last-child { border-right: 0; }
   .chk b { display: block; font-size: 22px; font-weight: 500; margin-top: 8px; }
   .chk em { font-style: normal; color: var(--mute); font-size: 15px; }
-  .why { margin-top: 22px; color: #c9d0f0; font-size: 21px; max-width: 46ch; }
-  .tk .ctas { margin-top: 26px; }
-
-  /* holdings, public money */
+  .why { margin-top: 22px; color: #c5c9db; font-size: 21px; max-width: 46ch; }
+  .tk .ctas { margin-top: 26px; display: flex; gap: 12px; }
   .list .li { display: grid; grid-template-columns: 1fr 1.3fr 1fr auto; gap: 20px; align-items: center; padding: 18px 24px; border-bottom: 1px solid var(--rule); }
   .list .li > * { min-width: 0; }
   .list .li:last-child { border-bottom: 0; }
   .list .li .sym { font: 600 24px var(--d); letter-spacing: -.03em; }
   .list .li small { display: block; color: var(--mute); font-size: 16px; margin-top: 2px; }
-  .barline { height: 8px; background: rgba(255,255,255,.07); overflow: hidden; }
-  .barline i { display: block; height: 100%; background: linear-gradient(90deg, #2f5cff, #b9c8ff); }
+  .barline { height: 8px; background: rgba(255, 255, 255, .07); overflow: hidden; }
+  .barline i { display: block; height: 100%; background: linear-gradient(90deg, #6d6bff, #c9c8ff); }
   .barline i.you { background: linear-gradient(90deg, #ff4f74, #ffb3c8); }
   .pct { font: 600 26px var(--d); letter-spacing: -.03em; }
-
-  /* news: pictures first */
-  .ask { display: flex; gap: 0; }
+  .ask { display: flex; }
   .ask input { flex: 1; min-width: 0; font: 400 24px var(--f); color: var(--ink); background: transparent; border: 0; outline: none; padding: 20px 22px; }
   .ask input::placeholder { color: var(--dim); }
   .ask .btn { border-top: 0; border-bottom: 0; border-right: 0; }
-  .chips { display: flex; flex-wrap: wrap; gap: 0; margin: 0 0 26px; border: 1px solid var(--edge); border-top: 0; }
+  .chips { display: flex; flex-wrap: wrap; margin: 0 0 26px; border: 1px solid var(--edge); border-top: 0; }
   .chips button { font: 500 13px var(--m); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); background: transparent; border: 0; border-right: 1px solid var(--edge); padding: 14px 18px; cursor: pointer; }
-  .chips button:hover { color: var(--ink); background: rgba(255,255,255,.04); }
-  .feed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--edge); }
+  .chips button:hover { color: var(--ink); background: rgba(255, 255, 255, .04); }
+  .feed { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--edge); }
   .story { display: flex; flex-direction: column; text-decoration: none; background: var(--panel); border-right: 1px solid var(--edge); border-bottom: 1px solid var(--edge); }
   .story:hover h3 { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
-  .story .pic { position: relative; aspect-ratio: 16 / 10; background: linear-gradient(135deg, #0a1a8a, #1c46ff 45%, #a8b8ff 52%, #0a1a8a 60%, #020414); overflow: hidden; }
+  .story .pic { position: relative; aspect-ratio: 16 / 10; background: linear-gradient(135deg, #191a2a, #2d2b5c 50%, #191a2a); overflow: hidden; }
   .story .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .story .pic .lab { position: absolute; left: 16px; top: 14px; color: var(--ink); background: rgba(2,3,15,.65); padding: 6px 8px; }
+  .story .pic .lab { position: absolute; left: 16px; top: 14px; color: var(--ink); background: rgba(5, 5, 8, .65); padding: 6px 8px; }
   .story .txt { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
   .story h3 { margin: 0; font: 500 21px/1.25 var(--f); letter-spacing: -.01em; }
   .story.top { grid-column: span 2; grid-row: span 2; }
   .story.top .pic { aspect-ratio: 16 / 9; }
   .story.top h3 { font: 600 clamp(26px, 2.6vw, 40px)/1.05 var(--d); letter-spacing: -.035em; }
-  footer { padding: 110px 0 160px; color: var(--mute); font-size: 15px; }
+  footer { padding: 110px 0 170px; color: var(--mute); font-size: 15px; }
   footer .shell { display: grid; gap: 10px; }
 
-  /* the claim and its proof: every report day since 2021, your losing days lit when the hedge paid, red when it missed */
-  .land h1 { font-size: clamp(40px, 4.7vw, 80px); }
-  .proof { margin-top: 34px; }
-  .proof .ptop { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
-  .proof svg { width: 100%; height: auto; display: block; overflow: visible; }
-  .proof .paid { fill: rgba(225, 235, 255, .95); }
-  .proof .miss { fill: rgba(255, 79, 116, .18); stroke: #ff4f74; stroke-width: 1.6; }
-  .proof .calm { fill: rgba(150, 175, 255, .2); }
-  .proof .base { stroke: rgba(150, 175, 255, .4); stroke-width: 1; }
-  .proof .yr { fill: #98a1c8; font: 500 15px "Geist Mono", monospace; letter-spacing: .08em; }
-  .key { display: inline-flex; gap: 18px; }
-  .key i { display: inline-block; width: 11px; height: 11px; margin-right: 7px; vertical-align: -1px; }
-  .key .kp { background: rgba(225, 235, 255, .95); } .key .km { border: 1.6px solid #ff4f74; background: rgba(255, 79, 116, .18); }
-  .try { display: flex; margin-top: 28px; border: 1px solid var(--edge); background: rgba(4, 7, 30, .6); }
-  .try input { flex: 1; min-width: 0; font: 400 19px var(--f); color: var(--ink); background: transparent; border: 0; outline: none; padding: 16px 18px; }
-  .try input::placeholder { color: var(--dim); }
-  .try .btn { border: 0; border-left: 1px solid var(--edge); }
-  .tnote { margin-top: 10px; min-height: 1.3em; }
-  .tnote a { color: var(--ink); }
-  /* the tour: press play and each line takes the screen, with Atty beside it */
-  .tour { position: fixed; inset: 0; z-index: 3; background: rgba(2, 3, 15, .9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; }
-  .tour.on { display: block; }
-  html.touring { overflow: hidden; }
-  .tour .close { position: absolute; top: 22px; right: 26px; font: 500 14px var(--m); letter-spacing: .1em; text-transform: uppercase; background: transparent; color: var(--ink); border: 1px solid var(--edge); padding: 12px 16px; cursor: pointer; }
-  .scene { position: absolute; left: 42%; right: 5%; top: 46%; transform: translateY(-50%); }
-  .scene .anim { animation: rise .55s cubic-bezier(.2, .8, .2, 1) both; }
-  @keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
-  .bignum { font: 600 clamp(64px, 9.5vw, 160px)/.9 var(--d); letter-spacing: -.05em; display: block; }
-  .bignum.mid { font-size: clamp(48px, 6.5vw, 110px); }
-  .scene .what { font: 500 clamp(22px, 2.1vw, 34px)/1.15 var(--d); letter-spacing: -.03em; margin-top: 18px; max-width: 26ch; }
-  .scene .rowsx { margin-top: 28px; border-top: 1px solid var(--edge); }
-  .scene .rowsx div { display: flex; justify-content: space-between; gap: 20px; padding: 13px 0; border-bottom: 1px solid var(--rule); font-size: 22px; }
-  .scene .rowsx span { color: var(--mute); }
-  .scene .rowsx b { font-weight: 500; text-align: right; }
-  .scene .ctas { margin-top: 30px; }
-  /* her voice, along the bottom, on the glass */
-  .player { position: fixed; left: 24px; bottom: 18px; z-index: 5; width: min(1000px, calc(100% - 230px)); display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
-    padding: 10px; background: rgba(4, 7, 30, .86); border: 1px solid var(--edge); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-  .player .pp { width: 52px; height: 52px; border: 0; background: var(--ink); color: #050a35; display: grid; place-items: center; cursor: pointer; }
+  /* her voice: the bar along the bottom, her words in it */
+  .player { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 5; width: min(980px, calc(100% - 24px)); display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
+    padding: 10px; background: rgba(10, 10, 16, .72); border: 1px solid var(--edge); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  .player .pp { width: 52px; height: 52px; border: 0; background: var(--ink); color: #08080d; display: grid; place-items: center; cursor: pointer; }
   .player .pp.on .tri { width: 12px; height: 14px; border: 0; border-left: 4px solid currentColor; border-right: 4px solid currentColor; }
   .cap { font-size: 19px; line-height: 1.25; max-height: 2.5em; overflow: hidden; }
   .cap .w { opacity: .25; transition: opacity .15s; } .cap .w.on { opacity: 1; }
-  .nav { display: flex; align-items: center; gap: 0; white-space: nowrap; border: 1px solid var(--edge); }
+  .nav { display: flex; align-items: center; white-space: nowrap; border: 1px solid var(--edge); }
   .nav span { font: 500 13px var(--m); letter-spacing: .1em; color: var(--mute); padding: 0 12px; }
   .nav button { font: inherit; font-size: 22px; width: 46px; height: 46px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
   .nav button:disabled { color: var(--dim); cursor: default; }
 
+  /* the tour: each line takes the screen, the glow rising under it */
+  .tour { position: fixed; inset: 0; z-index: 3; background: var(--bg); display: none; }
+  .tour.on { display: block; }
+  html.touring { overflow: hidden; }
+  .tour .close { position: absolute; top: 22px; right: 26px; font: 500 14px var(--m); letter-spacing: .1em; text-transform: uppercase; background: transparent; color: var(--ink); border: 1px solid var(--edge); padding: 12px 16px; cursor: pointer; }
+  .scene { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); width: min(980px, calc(100% - 2 * var(--gut))); }
+  .scene .anim { animation: rise .55s cubic-bezier(.2, .8, .2, 1) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+  .bignum { font: 600 clamp(64px, 11vw, 190px)/.9 var(--d); letter-spacing: -.05em; display: block; }
+  .bignum.mid { font-size: clamp(48px, 7.5vw, 130px); }
+  .scene .what { font: 500 clamp(22px, 2.2vw, 36px)/1.15 var(--d); letter-spacing: -.03em; margin-top: 18px; max-width: 30ch; }
+  .scene .rowsx { margin-top: 30px; border-top: 1px solid var(--edge); max-width: 760px; }
+  .scene .rowsx div { display: flex; justify-content: space-between; gap: 20px; padding: 13px 0; border-bottom: 1px solid var(--rule); font-size: 22px; }
+  .scene .rowsx span { color: var(--mute); }
+  .scene .rowsx b { font-weight: 500; text-align: right; }
+  .scene .ctas { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .scene .proof { max-width: none; }
+
   @media (max-width: 880px) {
     body { font-size: 18px; }
     .bar nav { display: none; }
-    .land { align-items: flex-end; }
-    .land .copy { padding-block: 34vh 130px; }
-    h1 { font-size: 40px; }
+    .land .shell { padding-block: 110px 140px; }
+    .row2 { flex-direction: column; }
+    .row2 > .btn { width: 100%; }
+    .try { width: 100%; flex: none; }
+    .try .btn { padding: 18px 14px; }
     .head { display: block; }
     .sub { text-align: left; margin-top: 12px; }
     .week, .feed { grid-template-columns: 1fr; }
@@ -212,7 +195,7 @@
     .story.top { grid-column: auto; grid-row: auto; }
     .ticket { grid-template-columns: 1fr; }
     .ticket .ph { aspect-ratio: 16 / 9; }
-    .ticket .ph::after { background: linear-gradient(180deg, rgba(2,3,15,0) 45%, rgba(6,10,38,.96)); }
+    .ticket .ph::after { background: linear-gradient(180deg, rgba(5, 5, 8, 0) 45%, rgba(16, 17, 26, .96)); }
     .tk { padding: 24px 20px 26px; }
     .kpis, .checks { grid-template-columns: 1fr 1fr; }
     .kpi:nth-child(2) { border-right: 0; }
@@ -220,68 +203,69 @@
     .chk:nth-child(3) { grid-column: 1 / -1; border-top: 1px solid var(--rule); }
     .list .li { grid-template-columns: 1fr auto; }
     .list .li .hide-s { display: none; }
-    .player { gap: 10px; bottom: 10px; left: 12px; width: calc(100% - 24px); }
+    .player { gap: 10px; bottom: 10px; }
     .player .pp { width: 44px; height: 44px; }
     .player #prev, .player .nav span { display: none; }
     .cap { font-size: 15px; }
-    .facts > div { padding-right: 0; margin-right: 22px; }
+    .scene { top: auto; bottom: 100px; transform: translateX(-50%); }
+    .bignum { font-size: 64px; } .bignum.mid { font-size: 46px; }
+    .scene .rowsx div { font-size: 17px; }
+    .tour .close { top: 14px; right: 14px; }
   }
-  @media (max-width: 880px) { .scene { left: 18px; right: 18px; top: auto; bottom: 96px; transform: none; } .bignum { font-size: 64px; } .bignum.mid { font-size: 46px; } .scene .rowsx div { font-size: 17px; } .scene .rowsx { margin-top: 16px; } .tour .close { top: 14px; right: 14px; } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .rep { transition: none; } .scene .anim { animation: none; } }
 </style>
 
-<canvas id="glass" aria-hidden="true"></canvas>
-<button class="headhit" id="headHit" type="button" aria-label="Say hi to Atty"></button>
+<canvas id="glow" aria-hidden="true"></canvas>
 
-<div class="wrap">
-  <header class="bar"><div class="shell">
-    <span class="brand">Atropos</span>
-    <nav aria-label="Sections"><a href="#trade">Next trade</a><a href="#week">This week</a><a href="#holdings">Holdings</a><a href="#public">Public money</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
-  </div></header>
+<header class="bar"><div class="shell">
+  <span class="brand">Atropos</span>
+  <nav aria-label="Sections"><a href="#trade">Next trade</a><a href="#week">This week</a><a href="#holdings">Holdings</a><a href="#public">Public money</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
+</div></header>
 
-  <section class="land" id="top" style="padding-top:0"><div class="shell"><div class="copy">
-    <h1>Most hedges miss the days you actually lose.</h1>
-    <p class="lead" id="claim">Atty checks every hedge against your real losses.</p>
-    <div class="proof" id="proof"></div>
+<section class="land" id="top" style="padding-top:0"><div class="shell">
+  <h1>Most hedges miss the days you actually lose.</h1>
+  <p class="lead" id="claim">Atty checks every hedge against your real losses.</p>
+  <div class="proof" id="proof"></div>
+  <div class="row2">
     <form class="try" id="tryForm" autocomplete="off"><input id="tryQ" type="text" maxlength="200" placeholder="Your tickers: NVDA 20000, SPY, TLT" aria-label="Your tickers, with dollar amounts if you like"><button class="btn main" type="submit">Check mine</button></form>
-    <p class="lab tnote" id="tryNote"></p>
-    <div class="ctas"><button class="btn" type="button" id="heroPlay"><i class="tri"></i>Play the tour</button><a class="btn" href="#trade">Next trade</a></div>
-  </div></div></section>
+    <button class="btn" type="button" id="heroPlay"><i class="tri"></i>Hear Atty</button>
+  </div>
+  <p class="lab tnote" id="tryNote"></p>
+</div></section>
 
-  <section id="trade"><div class="shell">
-    <div class="head"><h2>Next trade</h2></div>
-    <div id="tickets"></div>
-  </div></section>
+<section id="trade"><div class="shell">
+  <div class="head"><h2>Next trade</h2></div>
+  <div id="tickets"></div>
+</div></section>
 
-  <section id="week"><div class="shell">
-    <div class="head"><h2>This week</h2></div>
-    <div class="week" id="weekCards"></div>
-  </div></section>
+<section id="week"><div class="shell">
+  <div class="head"><h2>This week</h2></div>
+  <div class="week" id="weekCards"></div>
+</div></section>
 
-  <section id="holdings"><div class="shell">
-    <div class="head"><h2>Your holdings</h2></div>
-    <div class="panel list" id="holdList"></div>
-  </div></section>
+<section id="holdings"><div class="shell">
+  <div class="head"><h2>Your holdings</h2></div>
+  <div class="panel list" id="holdList"></div>
+</div></section>
 
-  <section id="public"><div class="shell">
-    <div class="head"><h2>Public money</h2><p class="sub" id="pubSub">Pensions and universities. Same test.</p></div>
-    <div class="panel list" id="pubList"></div>
-  </div></section>
+<section id="public"><div class="shell">
+  <div class="head"><h2>Public money</h2><p class="sub" id="pubSub">Pensions and universities. Same test.</p></div>
+  <div class="panel list" id="pubList"></div>
+</div></section>
 
-  <section id="news"><div class="shell">
-    <div class="head"><h2>News</h2><p class="sub" id="newsState"></p></div>
-    <form class="panel ask" id="newsForm" role="search"><input id="newsQ" type="search" placeholder="Ask about anything" aria-label="Ask Atty about anything" autocomplete="off" maxlength="200"><button class="btn main" type="submit">Ask</button></form>
-    <div class="chips" id="newsChips"><button type="button">The Fed</button><button type="button">Inflation</button><button type="button">Layoffs</button><button type="button">Tariffs</button><button type="button">Oil prices</button><button type="button">Nvidia</button></div>
-    <div class="feed" id="newsList"></div>
-  </div></section>
+<section id="news"><div class="shell">
+  <div class="head"><h2>News</h2><p class="sub" id="newsState"></p></div>
+  <form class="panel ask" id="newsForm" role="search"><input id="newsQ" type="search" placeholder="Ask about anything" aria-label="Ask Atty about anything" autocomplete="off" maxlength="200"><button class="btn main" type="submit">Ask</button></form>
+  <div class="chips" id="newsChips"><button type="button">The Fed</button><button type="button">Inflation</button><button type="button">Layoffs</button><button type="button">Tariffs</button><button type="button">Oil prices</button><button type="button">Nvidia</button></div>
+  <div class="feed" id="newsList"></div>
+</div></section>
 
-  <footer><div class="shell">
-    <p>Not investment advice. Atty never trades.</p>
-    <p>Numbers from code. Every sentence checked by Jev. Odds: Kalshi, ForecastEx, CME, Limitless, Futuur. Funds: SEC 13F.</p>
-    <p id="credits"></p>
-    <p id="asof"></p>
-  </div></footer>
-</div>
+<footer><div class="shell">
+  <p>Not investment advice. Atty never trades.</p>
+  <p>Numbers from code. Every sentence checked by Jev. Odds: Kalshi, ForecastEx, CME, Limitless, Futuur. Funds: SEC 13F.</p>
+  <p id="credits"></p>
+  <p id="asof"></p>
+</div></footer>
 
 <div class="tour" id="tour"><button class="close" id="tourClose" type="button">Close ✕</button><div class="scene" id="scene" aria-live="polite"></div></div>
 
@@ -574,9 +558,6 @@
     $('step').textContent = (G.i + 1) + ' / ' + G.beats.length;
     setLine(b.say + (b.sub ? ' ' + b.sub : ''));
     light(b.release);
-    GL.hue = b.id === 'skip' ? 1 : b.id === 'risk' || b.id === 'fit' ? 0.62 : b.id === 'fine' ? 0.45 : 0;
-    PER.mood = null; if (!quiet) hop(b.id === 'hello' || b.id === 'end' ? 0.26 : 0.12);
-    GL.cutTarget = 0;
     $('prev').disabled = G.i === 0;
     if (TOUR) renderScene(b);
     if (G.playing && !quiet) playLine(b);
@@ -613,30 +594,6 @@
   $('next').addEventListener('click', function () { if (G.started) showBeat(G.i === G.beats.length - 1 ? 0 : G.i + 1); });
   $('prev').addEventListener('click', function () { if (G.started) showBeat(G.i - 1); });
   $('play').addEventListener('click', function () { if (G.started) setPlaying(!G.playing); });
-  $('headHit').addEventListener('click', function () {
-    feel(['happy', 'wink', 'surprised'][helloN % 3], 1400); hop(0.3);
-    if (G.started && !G.playing) { setLine(HELLO[helloN % HELLO.length]); G.custom = true; }
-    helloN++;
-  });
-  $('tryForm').addEventListener('submit', function (e) {
-    e.preventDefault(); var q = $('tryQ').value.trim(); if (!q) return;
-    $('tryNote').textContent = 'Checking ' + q.toUpperCase() + '…'; feel('curious', 6000);
-    fetch('/api/try?h=' + encodeURIComponent(q)).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'That did not work.'); return j; }); })
-      .then(function (j) {
-        setPlaying(false);
-        DATA.agent = { result: j.agent.result, everyMinutes: null }; DATA.thread = j.thread; DATA.live = true;
-        DATA.total = j.agent.result.holdings.reduce(function (s2, x) { return s2 + x.value; }, 0);
-        renderFacts(); renderProof(); renderWeek(); renderTickets(); renderHoldings();
-        G.started = false; DATA.fundsDone = false; loadFunds(j.agent.result.holdings, DATA.total);
-        $('tryNote').innerHTML = 'Showing your ' + j.agent.result.holdings.length + ' tickers. <a href="">Back to the sample</a>';
-        feel('happy', 1600); hop(0.3);
-      })
-      .catch(function (err) {
-        var m = String(err && err.message || err);
-        $('tryNote').textContent = /fetch|network|JSON|token/i.test(m) ? 'Checking your own tickers needs the live app.' : m;
-        feel('worried', 1500);
-      });
-  });
   $('heroPlay').addEventListener('click', function () { if (G.started) { showBeat(0, true); setPlaying(true); } });
   addEventListener('keydown', function (e) {
     if (!G.started || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
@@ -645,166 +602,45 @@
     if (e.key === 'Escape') closeTour();
   });
 
-  /* ------------------------------------------------------------ the glass
-     One field of glowing glass. At the top it is Atty: a rounded glass head with two eyes
-     of light and no mouth, sitting to the right of the headline. On arrival a rod of glass
-     flows in and folds into her; as you scroll she unfolds back into the rod, which runs
-     along the bottom of the screen under her voice. Glass is drawn from the distance
-     field: background refracted through it with the colours split (the rainbow edge), a
-     white-hot rim where the light hits, a blue bloom, and light travelling along the rod.
-     Her voice drives all of it: louder is brighter, thicker and faster. */
-  var GL = { hue: 0, hueNow: 0, cut: 0, cutTarget: 0 };
-  /* Her personality. Each eye is [height, width, tilt, lift]; each line she says has a
-     mood, and between lines she has habits: she looks around, hops, gets curious or
-     sleepy, startles when your cursor comes close, and reacts when you click her. */
-  var MOODS = {
-    neutral:   { L: [1, 1, 0, 0], R: [1, 1, 0, 0], tilt: 0 },
-    happy:     { L: [0.3, 1.22, 0, 0.012], R: [0.3, 1.22, 0, 0.012], tilt: 0.05 },
-    worried:   { L: [0.85, 0.95, -0.38, 0], R: [0.85, 0.95, 0.38, 0], tilt: -0.04 },
-    skeptical: { L: [1.05, 1, 0, 0], R: [0.3, 1.15, 0.18, 0.012], tilt: 0.07 },
-    curious:   { L: [1.3, 1.08, 0, 0.004], R: [0.95, 1, 0, 0], tilt: 0.12 },
-    stern:     { L: [0.22, 1.3, 0.28, -0.004], R: [0.22, 1.3, -0.28, -0.004], tilt: 0 },
-    wink:      { L: [1.05, 1, 0, 0], R: [0.1, 1.25, 0, 0.006], tilt: 0.06 },
-    surprised: { L: [1.4, 1.18, 0, 0.012], R: [1.4, 1.18, 0, 0.012], tilt: 0 },
-    sleepy:    { L: [0.18, 1.1, 0, -0.01], R: [0.18, 1.1, 0, -0.01], tilt: -0.08 }
-  };
-  var BEAT_MOOD = { hello: 'happy', risk: 'worried', trade: 'neutral', fit: 'skeptical', fine: 'curious', skip: 'stern', peers: 'neutral', record: 'wink', end: 'happy' };
-  var PER = { mood: null, until: 0, L: [1, 1, 0, 0], R: [1, 1, 0, 0], tilt: 0, hop: 0, hopV: 0, shake: 0, idleAt: 0, lookAt: null, nearAt: 0 };
-  function feel(m, ms) { PER.mood = m; PER.until = performance.now() + (ms || 1200); }
-  function hop(v) { if (PER.hop < 0.004) PER.hopV = v || 0.22; }
-  var HELLO = ['Hi! Press play.', 'That tickles.', 'Next trade is below.', 'Still here. Still watching.'], helloN = 0;
-  var cv = $('glass'), gl = cv.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: true });
-  var FRAG = [
-    'precision highp float;',
-    'uniform vec2 uRes, uCenter, uLook;',
-    'uniform float uTime, uAmp, uForm, uIntro, uCut, uHue, uDim, uBlink, uScale, uRodY, uDock, uTilt, uHop, uSquash;',
-    'uniform vec4 uEyeL, uEyeR;',
-    'uniform float uAsm;',
-    'float HL;',
-    'float sdBox(vec2 p, vec2 b, float r) { vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }',
-    'float sdSeg(vec2 p, vec2 a, vec2 b, float r) { vec2 c = 0.5 * (a + b); vec2 hs = vec2(0.5 * abs(b.x - a.x) + r, 0.5 * abs(b.y - a.y) + r); return sdBox(p - c, hs, 0.004); }',
-    'vec2 headP(vec2 p) { vec2 q = (p - uCenter) / uScale; q.y -= 0.014 * sin(uTime * 1.3) + 0.022 * uAmp + uHop; float c = cos(uTilt), s = sin(uTilt); q = vec2(c * q.x + s * q.y, -s * q.x + c * q.y); q.y /= (1.0 - uSquash); q.x /= (1.0 + 0.6 * uSquash); return q; }',
-    'float rodD(vec2 p) {',
-    '  float fade = smoothstep(HL, HL - 0.45, abs(p.x));',
-    '  float w = (0.04 * sin(p.x * 1.2 + uTime * 0.4) + uAmp * 0.04 * sin(p.x * 9.0 - uTime * 8.0) * fade) * (1.0 - 0.6 * uDock);',
-    '  float y = mix(uRodY, uCenter.y, uForm);',
-    '  vec2 q = vec2(p.x, p.y - y - w * (1.0 - uForm));',
-    '  float r = mix(0.042, 0.02, uDock) + 0.024 * uAmp * (1.0 - 0.5 * uDock);',
-    '  float x1 = mix(-HL, HL, uIntro);',
-    '  float gap = uCut * 0.11 * (1.0 - uForm);',
-    '  if (gap > 0.0005) return min(sdSeg(q, vec2(-HL, 0.0), vec2(min(x1, -gap), 0.0), r), sdSeg(q, vec2(gap, 0.0), vec2(max(x1, gap), 0.0), r));',
-    '  return sdSeg(q, vec2(-HL, 0.0), vec2(x1, 0.0), r);',
-    '}',
-    'float headD(vec2 p) { return sdBox(headP(p), vec2(0.25, 0.25) * (1.0 + 0.035 * uAmp), 0.012) * uScale; }',
-    'float hash(float n) { return fract(sin(n * 127.1 + 311.7) * 43758.5453); }',
-    'float sdTri(vec2 p, vec2 p0, vec2 p1, vec2 p2) {',
-    '  vec2 e0 = p1 - p0, e1 = p2 - p1, e2 = p0 - p2, v0 = p - p0, v1 = p - p1, v2 = p - p2;',
-    '  vec2 q0 = v0 - e0 * clamp(dot(v0, e0) / dot(e0, e0), 0.0, 1.0), q1 = v1 - e1 * clamp(dot(v1, e1) / dot(e1, e1), 0.0, 1.0), q2 = v2 - e2 * clamp(dot(v2, e2) / dot(e2, e2), 0.0, 1.0);',
-    '  float sg = sign(e0.x * e2.y - e0.y * e2.x);',
-    '  vec2 d = min(min(vec2(dot(q0, q0), sg * (v0.x * e0.y - v0.y * e0.x)), vec2(dot(q1, q1), sg * (v1.x * e1.y - v1.y * e1.x))), vec2(dot(q2, q2), sg * (v2.x * e2.y - v2.y * e2.x)));',
-    '  return -sqrt(d.x) * sign(d.y);',
-    '}',
-    '/* her head is cut into 18 triangular shards that fly in from all sides, spinning, and lock together */',
-    'float shardsD(vec2 p) {',
-    '  vec2 q = headP(p);',
-    '  float best = 1e5;',
-    '  for (int i = 0; i < 3; i++) for (int j = 0; j < 3; j++) for (int k = 0; k < 2; k++) {',
-    '    float id = float(i * 6 + j * 2 + k);',
-    '    vec2 a = vec2(-0.25 + float(i) / 6.0, -0.25 + float(j) / 6.0), w = vec2(1.0 / 6.0);',
-    '    vec2 v0 = a, v1 = a + vec2(w.x, 0.0), v2 = a + w, v3 = a + vec2(0.0, w.y);',
-    '    bool flip = mod(float(i + j), 2.0) > 0.5;',
-    '    vec2 A = flip ? (k == 0 ? v0 : v1) : v0;',
-    '    vec2 B = flip ? (k == 0 ? v1 : v2) : (k == 0 ? v1 : v2);',
-    '    vec2 C = flip ? (k == 0 ? v3 : v3) : (k == 0 ? v2 : v3);',
-    '    float t = clamp(uAsm * 1.7 - hash(id + 21.7) * 0.7, 0.0, 1.0); t = 1.0 - pow(1.0 - t, 3.0);',
-    '    vec2 c = (A + B + C) / 3.0;',
-    '    float ang = hash(id + 1.0) * 6.2832;',
-    '    vec2 off = vec2(cos(ang), sin(ang)) * (0.45 + 0.7 * hash(id + 7.3)) * (1.0 - t);',
-    '    float rot = (hash(id + 13.1) - 0.5) * 6.0 * (1.0 - t), cs = cos(rot), sn = sin(rot);',
-    '    vec2 pp = q - c - off;',
-    '    if (dot(pp, pp) > 0.04) continue;',
-    '    pp = vec2(cs * pp.x + sn * pp.y, -sn * pp.x + cs * pp.y) + c;',
-    '    best = min(best, sdTri(pp, A, B, C) + 0.006 * (1.0 - t));',
-    '  }',
-    '  return best * uScale;',
-    '}',
-    'float shape(vec2 p) {',
-    '  if (uAsm > 0.999) return headD(p);',
-    '  return mix(shardsD(p), headD(p), smoothstep(0.88, 1.0, uAsm));',
-    '}',
-    'float eye(vec2 q, vec2 c, vec4 e) { vec2 d = q - c - vec2(0.0, e.w); float cs = cos(e.z), sn = sin(e.z); d = vec2(cs * d.x + sn * d.y, -sn * d.x + cs * d.y); return sdBox(d, vec2(0.026 * e.y, 0.052 * uBlink * e.x + 0.006), 0.003); }',
-    'float eyesD(vec2 p) {',
-    '  vec2 q = headP(p) - uLook * 0.035;',
-    '  return min(eye(q, vec2(-0.095, 0.03), uEyeL), eye(q, vec2(0.095, 0.03), uEyeR)) * uScale;',
-    '}',
-    'vec3 tint(float t) {',
-    '  vec3 blue = vec3(0.09, 0.26, 1.0), violet = vec3(0.48, 0.22, 1.0), rose = vec3(1.0, 0.26, 0.6);',
-    '  return mix(mix(blue, violet, clamp(t * 1.6, 0.0, 1.0)), rose, clamp(t * 1.6 - 0.6, 0.0, 1.0));',
-    '}',
-    'vec3 bg(vec2 p, vec3 tc) {',
-    '  vec2 c = uCenter;',
-    '  vec3 col = vec3(0.004, 0.008, 0.035);',
-    '  col += tc * 1.05 * exp(-length((p - c) * vec2(0.55, 1.0)) * 1.9) * (0.55 + 0.9 * uAmp) * uDim;',
-    '  col += vec3(0.02, 0.06, 0.4) * smoothstep(0.7, -0.6, p.y) * 0.45 * uDim;',
-    '  return col;',
-    '}',
-    'void main() {',
-    '  vec2 p = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;',
-    '  HL = 0.5 * uRes.x / uRes.y - 0.05;',
-    '  vec3 tc = tint(uHue);',
-    '  float d = shape(p);',
-    '  vec2 e = vec2(0.0018, 0.0);',
-    '  // the edge work (normal, rainbow rim) only near the surface; deep inside and far outside it is not needed',
-    '  bool near = abs(d) < 0.07;',
-    '  vec2 n = near ? normalize(vec2(shape(p + e.xy) - shape(p - e.xy), shape(p + e.yx) - shape(p - e.yx)) + 1e-6) : vec2(0.0);',
-    '  float inside = smoothstep(0.002, -0.002, d);',
-    '  float thick = 0.13 * uScale;',
-    '  float depth = clamp(-d / thick, 0.0, 1.0);',
-    '  float k = 0.07 * (1.0 - depth) + 0.025;',
-    '  vec3 refr = vec3(bg(p - n * k, tc).r, bg(p - n * k * 1.35, tc).g, bg(p - n * k * 1.7, tc).b);',
-    '  vec3 base = refr * 1.12 + tc * 0.035;',
-    '  float sp = 0.006 + 0.008 * uAmp;',
-    '  vec3 rim = near ? vec3(exp(-abs(shape(p + n * sp)) * 190.0), exp(-abs(d) * 190.0), exp(-abs(shape(p - n * sp)) * 190.0)) : vec3(0.0);',
-    '  vec3 L = rim * vec3(1.05, 0.9, 1.35) * 0.95;',
-    '  L += inside * pow(1.0 - depth, 7.0) * vec3(0.65, 0.78, 1.0) * 0.5;',
-    '  float lit = dot(n, normalize(vec2(-0.45, 1.0)));',
-    '  L += inside * smoothstep(0.35, 1.0, lit) * pow(1.0 - depth, 5.0) * vec3(1.0) * (0.5 + 0.9 * uAmp);',
-    '  L += inside * smoothstep(0.3, 1.0, -lit) * pow(1.0 - depth, 2.5) * tc * 0.8;',
-    '  L += tc * exp(-max(d, 0.0) * 11.0) * (0.12 + 0.55 * uAmp);',
-    '  L += vec3(0.75, 0.85, 1.0) * exp(-max(d, 0.0) * 40.0) * 0.08;',
-    '  if (uForm > 0.02) {',
-    '    float ed = eyesD(p);',
-    '    float on = smoothstep(0.55, 1.0, uForm);',
-    '    L += (vec3(1.0) * smoothstep(0.004, -0.004, ed) * 1.7 + vec3(0.6, 0.75, 1.0) * exp(-max(ed, 0.0) * 28.0) * (0.7 + 1.2 * uAmp)) * on;',
-    '  }',
-    '  // inside the glass: what is behind her, bent and split; outside: only her light, so the page shows through',
-    '  vec3 c1 = 1.0 - exp(-(base + L) * 1.5);',
-    '  vec3 c0 = 1.0 - exp(-L * 1.5);',
-    '  float a0 = clamp(max(c0.r, max(c0.g, c0.b)) * 1.15, 0.0, 1.0);',
-    '  vec3 premul = mix(c0, c1 * 0.86, inside);',
-    '  float alpha = max(mix(a0, 0.86, inside), max(premul.r, max(premul.g, premul.b)));',
-    '  gl_FragColor = vec4(premul, alpha);',
-    '}'].join('\n');
-  var prog = null, U = {};
-  if (gl) {
-    var sh = function (type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null; } return s; };
-    var vs = sh(gl.VERTEX_SHADER, 'attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }'), fs = sh(gl.FRAGMENT_SHADER, FRAG);
-    if (vs && fs) { prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); prog = null; } }
-    if (prog) {
-      gl.useProgram(prog);
-      var vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-      var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ['uRes', 'uCenter', 'uLook', 'uTime', 'uAmp', 'uForm', 'uIntro', 'uCut', 'uHue', 'uDim', 'uBlink', 'uScale', 'uRodY', 'uDock', 'uTilt', 'uHop', 'uSquash', 'uEyeL', 'uEyeR', 'uAsm'].forEach(function (k) { U[k] = gl.getUniformLocation(prog, k); });
-    }
-  }
-  if (!prog) document.body.style.background = 'radial-gradient(60% 50% at 70% 40%, #0b2bd6 0%, #030620 60%, #020414 100%)';
-  function size() { var dpr = Math.min(1.5, window.devicePixelRatio || 1); cv.width = Math.max(1, Math.round(innerWidth * dpr)); cv.height = Math.max(1, Math.round(innerHeight * dpr)); if (gl) gl.viewport(0, 0, cv.width, cv.height); }
-  size(); addEventListener('resize', size);
-  var mouse = null; addEventListener('pointermove', function (e) { mouse = { x: e.clientX, y: e.clientY, t: performance.now() }; }, { passive: true });
+  // your own tickers
+  $('tryForm').addEventListener('submit', function (e) {
+    e.preventDefault(); var q = $('tryQ').value.trim(); if (!q) return;
+    $('tryNote').textContent = 'Checking ' + q.toUpperCase() + '…'; GLOW.think = true;
+    fetch('/api/try?h=' + encodeURIComponent(q)).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'That did not work.'); return j; }); })
+      .then(function (j) {
+        setPlaying(false);
+        DATA.agent = { result: j.agent.result, everyMinutes: null }; DATA.thread = j.thread; DATA.live = true;
+        DATA.total = j.agent.result.holdings.reduce(function (s2, x) { return s2 + x.value; }, 0);
+        renderFacts(); renderProof(); renderWeek(); renderTickets(); renderHoldings();
+        G.started = false; DATA.fundsDone = false; loadFunds(j.agent.result.holdings, DATA.total);
+        $('tryNote').innerHTML = 'Showing your ' + j.agent.result.holdings.length + ' tickers. <a href="">Back to the sample</a>';
+      })
+      .catch(function (err) {
+        var m = String(err && err.message || err);
+        $('tryNote').textContent = /fetch|network|JSON|token/i.test(m) ? 'Checking your own tickers needs the live app.' : m;
+      })
+      .then(function () { GLOW.think = false; });
+  });
 
-  var t0 = performance.now(), last = t0, look = { x: 0, y: 0 }, blinkAt = t0 + 3500;
-  var ease = function (x) { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
+  /* ------------------------------------------------------------- the glow
+     Six soft lights along the bottom edge of the screen, drawn small and blurred hard by
+     CSS, screened over the page. They breathe when she is quiet and rise and brighten with
+     how loud she is. Their colours lean with what she is saying: warm when there is risk,
+     rose when she says skip, green when protection is cheap. */
+  var GLOW = { mood: 'hello', think: false };
+  var gc = $('glow'), gx = gc.getContext('2d');
+  var PALETTES = {
+    calm: ['#3d5cff', '#7b5cff', '#ff5fa8', '#2fd6c3', '#5ec8ff', '#a978ff'],
+    risk: ['#ff8a3d', '#ff5f6d', '#ffb547', '#c45cff', '#ff5fa8', '#7b5cff'],
+    skip: ['#ff3d6e', '#ff5fa8', '#c43dff', '#ff7a8a', '#ff3d6e', '#8a4dff'],
+    good: ['#2fe6a0', '#2fd6c3', '#5ec8ff', '#3d5cff', '#9bf06b', '#2fe6a0'],
+  };
+  var MOOD_PAL = { hello: 'calm', risk: 'risk', trade: 'good', fit: 'risk', fine: 'calm', skip: 'skip', peers: 'calm', record: 'calm', end: 'calm' };
+  function hex(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
+  var cur = PALETTES.calm.map(hex);
+  function gsize() { gc.width = Math.max(1, Math.round(innerWidth * 1.2 / 6)); gc.height = Math.max(1, Math.round(innerHeight * 0.62 / 6)); }
+  gsize(); addEventListener('resize', gsize);
+  var last = performance.now(), t0 = last;
   function frame(now) {
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
     var T = (now - t0) / 1000;
@@ -813,88 +649,34 @@
       var n = G.revealDur ? Math.floor((now - G.revealStart) / G.revealDur * G.words.length) + 1 : G.words.length;
       for (var k = 0; k < G.words.length; k++) G.words[k].classList.toggle('on', k < n);
       G.speaking = n < G.words.length || !!G.src;
-      if (n >= G.words.length && !G.revealDone) { G.revealDone = true; if (G.beats[G.i].snip) { GL.cutTarget = 1; PER.shake = 1; } }
+      if (n >= G.words.length && !G.revealDone) G.revealDone = true;
     }
+    // how loud she is
     var target = 0;
     if (G.src && analyser) { analyser.getFloatTimeDomainData(abuf); var sum = 0; for (var j = 0; j < abuf.length; j++) sum += abuf[j] * abuf[j]; target = Math.min(1, Math.sqrt(sum / abuf.length) * 5.5); }
     else if (G.speaking) target = 0.2 + 0.12 * Math.sin(now / 90) * Math.sin(now / 230);
-    envelope += (target - envelope) * (target > envelope ? 0.45 : 0.08);
-    GL.hueNow += (GL.hue - GL.hueNow) * Math.min(1, dt * 2.5);
-    GL.cut += (GL.cutTarget - GL.cut) * Math.min(1, dt * (GL.cutTarget > GL.cut ? 9 : 3));
-
-    // where she is: right of the headline on wide screens, above it on phones
-    var aspect = innerWidth / innerHeight, wide = aspect > 0.95;
-    // big beside the headline; as you scroll she shrinks into the bottom right corner and stays
-    // on phones she sits in the space above the headline
-    var phonePx = Math.min(0.24 * innerHeight, 0.6 * innerWidth);
-    var scH = wide ? Math.min(1.3, aspect / 1.15) : 2 * phonePx / innerHeight;
-    var cxH = wide ? 0.5 * aspect - 0.06 - 0.25 * scH : 0, cyH = wide ? 0.02 : (innerHeight / 2 - (76 + phonePx / 2)) / innerHeight;
-    var dockPx = wide ? 150 : 88, dX = innerWidth - (wide ? 30 : 14) - dockPx / 2, dY = innerHeight - (wide ? 22 : 92) - dockPx / 2;
-    var scD = 2 * dockPx / innerHeight, cxD = (dX - innerWidth / 2) / innerHeight, cyD = (innerHeight / 2 - dY) / innerHeight;
-    var scroll = Math.max(0, Math.min(1, scrollY / (innerHeight * 0.7))), dk = ease(scroll);
-    var vel = (scrollY - (frame.lastY == null ? scrollY : frame.lastY)) / Math.max(dt, 0.001); frame.lastY = scrollY;
-    frame.lean = (frame.lean || 0) + (Math.max(-0.16, Math.min(0.16, -vel / 4000)) - (frame.lean || 0)) * Math.min(1, dt * 6);
-    var sc = scH + (scD - scH) * dk;
-    var cx = cxH + (cxD - cxH) * dk + (reduce ? 0 : 0.014 * Math.sin(T * 0.55) * sc), cy = cyH + (cyD - cyH) * dk + (reduce ? 0 : 0.01 * Math.sin(T * 0.83) * sc);
-    frame.tk = (frame.tk || 0) + ((TOUR ? 1 : 0) - (frame.tk || 0)) * Math.min(1, dt * 4);
-    if (frame.tk > 0.001) {
-      var tpx = Math.min(0.2 * innerHeight, 0.5 * innerWidth);
-      var scT = wide ? Math.min(1.05, aspect / 1.45) : 2 * tpx / innerHeight;
-      var cxT = wide ? -0.5 * aspect + 0.1 + 0.25 * scT : 0, cyT = wide ? 0.04 : (innerHeight / 2 - (78 + tpx / 2)) / innerHeight;
-      var tke = ease(frame.tk);
-      sc += (scT - sc) * tke; cx += (cxT - cx) * tke; cy += (cyT - cy) * tke;
+    else if (GLOW.think) target = 0.18 + 0.1 * Math.sin(now / 160);
+    envelope += (target - envelope) * (target > envelope ? 0.4 : 0.06);
+    // colours drift toward the mood of the line
+    var pal = PALETTES[MOOD_PAL[(G.beats[G.i] || {}).id] || 'calm'].map(hex), kc = Math.min(1, dt * 1.5);
+    for (var c = 0; c < 6; c++) for (var ch = 0; ch < 3; ch++) cur[c][ch] += (pal[c][ch] - cur[c][ch]) * kc;
+    // draw
+    var W = gc.width, H = gc.height, touring = TOUR ? 1 : 0;
+    gx.clearRect(0, 0, W, H);
+    gx.globalCompositeOperation = 'lighter';
+    var lift = 0.12 + 0.08 * touring + 0.6 * envelope;
+    for (var b = 0; b < 6; b++) {
+      var ph = b * 1.7, sp = 0.13 + b * 0.031;
+      var x = W * (0.12 + 0.76 * (0.5 + 0.5 * Math.sin(T * sp + ph)));
+      var y = H * (1.02 - lift * (0.55 + 0.45 * Math.sin(T * (0.6 + b * 0.09) + ph * 2)));
+      var r = H * (0.42 + 0.35 * envelope + 0.08 * Math.sin(T * 0.7 + ph));
+      var a = (reduce ? 0.35 : 0.32 + 0.5 * envelope + 0.12 * touring);
+      var col = cur[b], g = gx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, 'rgba(' + (col[0] | 0) + ',' + (col[1] | 0) + ',' + (col[2] | 0) + ',' + a.toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(' + (col[0] | 0) + ',' + (col[1] | 0) + ',' + (col[2] | 0) + ',0)');
+      gx.fillStyle = g; gx.fillRect(0, 0, W, H);
     }
-    var asm = reduce ? 1 : ease((T - 0.15) / 2.1), intro = 1, form = asm;
-    var rodY = -0.6;
-    // eyes: open after she forms, blink now and then, look at your cursor
-    var open = ease((T - 2.25) / 0.35);
-    if (now > blinkAt) { if (now > blinkAt + 140) blinkAt = now + 2600 + Math.random() * 3200; else open *= 0.08; }
-    var hx = innerWidth / 2 + cx * innerHeight, hy = innerHeight / 2 - cy * innerHeight;
-    var base = (G.speaking || G.playing) && G.beats[G.i] && !G.custom ? (BEAT_MOOD[G.beats[G.i].id] || 'neutral') : 'neutral';
-    if (PER.mood && now > PER.until) PER.mood = null;
-    // habits between lines
-    if (!G.speaking && !PER.mood && asm > 0.95 && T > 3.5 && now > PER.idleAt) {
-      var roll = Math.random();
-      if (roll < 0.35) PER.lookAt = { x: (Math.random() - 0.5) * 1.6, y: (Math.random() - 0.3) * 0.8, until: now + 1300 };
-      else if (roll < 0.55) { hop(0.16); feel('happy', 900); }
-      else if (roll < 0.72) feel('curious', 1500);
-      else if (roll < 0.84) feel('sleepy', 1700);
-      else feel('wink', 700);
-      PER.idleAt = now + 4200 + Math.random() * 4200;
-    }
-    // your cursor coming close startles her a little, then she is pleased
-    if (mouse && now - mouse.t < 300 && asm > 0.95 && !G.speaking && now > PER.nearAt && Math.hypot(mouse.x - hx, mouse.y - hy) < innerHeight * 0.28) {
-      feel('surprised', 500); setTimeout(function () { feel('happy', 900); hop(0.14); }, 500); PER.nearAt = now + 6000;
-    }
-    var mt = MOODS[PER.mood || base] || MOODS.neutral, kk = Math.min(1, dt * 9);
-    for (var q2 = 0; q2 < 4; q2++) { PER.L[q2] += (mt.L[q2] - PER.L[q2]) * kk; PER.R[q2] += (mt.R[q2] - PER.R[q2]) * kk; }
-    PER.shake *= Math.pow(0.04, dt);
-    PER.tilt += (mt.tilt - PER.tilt) * kk;
-    var tiltNow = PER.tilt + 0.12 * Math.sin(now / 45) * PER.shake + (reduce ? 0 : 0.035 * Math.sin(T * 0.7)) + frame.lean;
-    PER.hopV -= 1.6 * dt; PER.hop += PER.hopV * dt; if (PER.hop < 0) { PER.hop = 0; PER.hopV = 0; }
-    var squash = 0.05 * envelope + (PER.hop === 0 && PER.hopV === 0 ? 0 : -0.03);
-    // the click target follows her head
-    var hs = 0.5 * sc * innerHeight, hit = $('headHit');
-    hit.style.width = hit.style.height = hs + 'px'; hit.style.transform = 'translate(' + (hx - hs / 2) + 'px,' + (hy - hs / 2) + 'px)'; hit.style.display = asm > 0.9 ? 'block' : 'none';
-    if (PER.lookAt && now < PER.lookAt.until && !(mouse && now - mouse.t < 2500)) { look.x += (PER.lookAt.x - look.x) * 0.1; look.y += (PER.lookAt.y - look.y) * 0.1; }
-    else if (mouse && now - mouse.t < 2500) {
-      var lx = (mouse.x - hx) / (innerWidth * 0.4), ly = -(mouse.y - hy) / (innerHeight * 0.4), ll = Math.hypot(lx, ly);
-      if (ll > 1) { lx /= ll; ly /= ll; }
-      look.x += (lx - look.x) * 0.12; look.y += (ly - look.y) * 0.12;
-    } else { look.x *= 0.95; look.y *= 0.95; }
-    var gcol = GL.hueNow < 0.5 ? [28 + 120 * GL.hueNow * 2, 72 - 30 * GL.hueNow * 2, 255] : [148 + 107 * (GL.hueNow - 0.5) * 2, 42 + 20 * (GL.hueNow - 0.5) * 2, 255 - 100 * (GL.hueNow - 0.5) * 2];
-    var gkey = Math.round(hx) + ',' + Math.round(hy) + ',' + Math.round(sc * innerHeight * 0.9) + ',' + gcol.map(Math.round).join(' ');
-    if (gkey !== frame.gkey) { frame.gkey = gkey; var bs = document.body.style; bs.setProperty('--gx', Math.round(hx) + 'px'); bs.setProperty('--gy', Math.round(hy) + 'px'); bs.setProperty('--gr', Math.round(Math.max(220, sc * innerHeight * 0.9)) + 'px'); bs.setProperty('--gc', gcol.map(Math.round).join(', ')); }
-    if (prog) {
-      gl.uniform2f(U.uRes, cv.width, cv.height);
-      gl.uniform2f(U.uCenter, cx, cy); gl.uniform2f(U.uLook, look.x, look.y);
-      gl.uniform1f(U.uTime, reduce ? 3 : T); gl.uniform1f(U.uAmp, envelope);
-      gl.uniform1f(U.uForm, form); gl.uniform1f(U.uIntro, intro); gl.uniform1f(U.uCut, GL.cut); gl.uniform1f(U.uHue, GL.hueNow);
-      gl.uniform4f(U.uEyeL, PER.L[0], PER.L[1], PER.L[2], PER.L[3]); gl.uniform4f(U.uEyeR, PER.R[0], PER.R[1], PER.R[2], PER.R[3]);
-      gl.uniform1f(U.uTilt, tiltNow); gl.uniform1f(U.uAsm, asm); gl.uniform1f(U.uHop, PER.hop); gl.uniform1f(U.uSquash, squash);
-      gl.uniform1f(U.uDim, 1 - 0.35 * dk); gl.uniform1f(U.uBlink, open); gl.uniform1f(U.uScale, sc); gl.uniform1f(U.uRodY, rodY); gl.uniform1f(U.uDock, ease(scroll));
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    }
+    gx.globalCompositeOperation = 'source-over';
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
