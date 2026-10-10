@@ -2,12 +2,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500&display=swap">
 <style>
-  /* Atty is a little yellow blob who lives on a black page. She sleeps until you come near,
-     watches your cursor, squishes when poked and stretches when you drag her. The page is a
-     conversation with her: short lines in her voice, each with one clear card, and tap
-     replies to move on. */
+  /* A stage, not a chat (Jev's call): one full-screen scene at a time, with Atty, a little
+     yellow blob, in the middle of it physically handling the one thing that matters. She sits
+     on your total, gets squashed by the loss, pushes the trade in, carries the fine print,
+     and kicks the overpriced contract off the stage. You click Next. */
   :root {
     color-scheme: dark;
     --bg: #000;
@@ -24,8 +24,9 @@
     --m: "Geist Mono", ui-monospace, monospace;
   }
   * { box-sizing: border-box; }
-  html { background: var(--bg); overflow-x: clip; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 19px/1.45 var(--f); -webkit-font-smoothing: antialiased; }
+  html, body { height: 100%; }
+  html { background: var(--bg); overflow: hidden; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 19px/1.45 var(--f); -webkit-font-smoothing: antialiased; overflow: hidden; }
   a { color: inherit; }
   button { font: inherit; }
   :focus-visible { outline: 2px solid var(--atty); outline-offset: 3px; }
@@ -38,43 +39,25 @@
   body.over-atty, body.over-atty * { cursor: grab !important; }
   body.dragging, body.dragging * { cursor: grabbing !important; }
 
-  .top { position: fixed; inset: 0 0 auto 0; z-index: 15; display: flex; justify-content: space-between; align-items: center; padding: 22px clamp(18px, 3vw, 40px); background: linear-gradient(#000 40%, rgba(0, 0, 0, 0)); }
-  .brand { font-weight: 700; font-size: 18px; letter-spacing: -.01em; }
-  .top .right { display: flex; gap: 10px; align-items: center; }
+  .top { position: fixed; inset: 0 0 auto 0; z-index: 15; display: flex; justify-content: space-between; align-items: center; padding: 20px clamp(18px, 3vw, 40px); }
+  .brand { font-weight: 800; font-size: 18px; letter-spacing: -.01em; }
+  .top .right { display: flex; gap: 8px; align-items: center; }
   .chip { border: 1px solid var(--edge); background: #0b0b0a; color: var(--ink); padding: 8px 14px; border-radius: 999px; font-size: 14px; cursor: pointer; text-decoration: none; }
   .chip[aria-pressed="false"] { color: var(--mute); }
 
-  /* the landing: Atty asleep, the claim, one button */
-  .wake { min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; text-align: center; padding: 0 20px 12vh; }
-  .wake h1 { font-weight: 600; font-size: clamp(34px, 4.6vw, 64px); line-height: 1.02; letter-spacing: -.035em; margin: 0 auto 14px; max-width: 16ch; }
-  .wake p { color: var(--mute); font-size: clamp(18px, 1.5vw, 21px); max-width: 34ch; margin: 0 auto 28px; }
-  .go { background: var(--atty); color: #111; border: 0; border-radius: 999px; padding: 16px 28px; font-weight: 600; font-size: 18px; cursor: pointer; }
-  .go:hover { filter: brightness(1.06); }
-
-  /* the conversation */
-  .chat { max-width: 680px; margin: 0 auto; padding: 0 20px 260px 120px; display: flex; flex-direction: column; gap: 14px; }
-  .chat:not(:empty) { padding-top: 110px; }
-  .msg { max-width: 100%; animation: pop .35s cubic-bezier(.2, .9, .3, 1.2) both; }
-  @keyframes pop { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
-  .msg.atty .bub { background: var(--card); border: 1px solid var(--edge); border-radius: 22px 22px 22px 6px; padding: 16px 20px; font-size: 21px; line-height: 1.35; }
-  .msg.atty .bub .sub { color: var(--mute); display: block; margin-top: 6px; font-size: 18px; }
-  .msg.you { align-self: flex-end; }
-  .msg.you .bub { background: var(--atty); color: #111; border-radius: 22px 22px 6px 22px; padding: 12px 18px; font-weight: 500; }
-  .typing .bub { width: 76px; display: flex; gap: 6px; justify-content: center; }
-  .typing i { width: 8px; height: 8px; border-radius: 50%; background: var(--mute); animation: dot 1s infinite; }
-  .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
-  @keyframes dot { 0%, 100% { opacity: .3; transform: none; } 50% { opacity: 1; transform: translateY(-3px); } }
-  .w { opacity: .3; transition: opacity .12s; } .w.on { opacity: 1; }
-
-  /* cards inside her messages */
-  .card { margin-top: 10px; background: var(--card); border: 1px solid var(--edge); border-radius: 18px; overflow: hidden; }
-  .card .pad { padding: 18px 20px; }
-  .big { display: block; font-weight: 700; font-size: clamp(44px, 6vw, 72px); line-height: .95; letter-spacing: -.04em; }
-  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--edge); }
-  .kpi { padding: 14px 18px; border-right: 1px solid var(--edge); }
-  .kpi:last-child { border-right: 0; }
-  .kpi b { display: block; font-size: 28px; font-weight: 700; letter-spacing: -.03em; margin-top: 6px; }
+  /* scenes */
+  .stage { position: fixed; inset: 0; }
+  .scene { position: absolute; inset: 0; display: none; }
+  .scene.on { display: block; animation: sceneIn .5s ease both; }
+  @keyframes sceneIn { from { opacity: 0; } to { opacity: 1; } }
+  .center { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); text-align: center; width: min(1100px, 92vw); }
+  .huge { display: inline-block; font-weight: 800; font-size: clamp(64px, 13vw, 210px); line-height: .9; letter-spacing: -.05em; }
+  .say { position: absolute; left: 50%; bottom: 112px; transform: translateX(-50%); width: min(820px, 90vw); text-align: center; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.35; }
+  .say .sub { display: block; color: var(--mute); font-size: .85em; margin-top: 4px; }
+  .w { opacity: .28; transition: opacity .12s; } .w.on { opacity: 1; }
+  .card { background: var(--card); border: 1px solid var(--edge); border-radius: 20px; overflow: hidden; text-align: left; }
   .rows .r { display: flex; justify-content: space-between; gap: 16px; padding: 12px 20px; border-top: 1px solid var(--rule); }
+  .rows .r:first-child { border-top: 0; }
   .rows .r > span { color: var(--mute); }
   .rows .r b { font-weight: 500; text-align: right; }
   .rows .r em { font-style: normal; color: var(--mute); font-weight: 400; margin-left: 8px; }
@@ -82,79 +65,136 @@
   .tag.buy { color: var(--up); border-color: rgba(70, 227, 159, .5); }
   .tag.call { color: var(--atty); border-color: rgba(248, 202, 65, .5); }
   .tag.skip { color: var(--down); border-color: rgba(255, 84, 112, .5); }
-  .tag.watch { color: var(--mute); }
-  .reports { display: grid; grid-template-columns: repeat(3, 1fr); }
-  .rep { border-right: 1px solid var(--edge); }
-  .rep:last-child { border-right: 0; }
-  .ph { aspect-ratio: 4 / 3; background: #1a1a18 center / cover no-repeat; }
-  .rep .t { padding: 12px 14px 14px; }
-  .rep b { display: block; font-size: 17px; }
-  .rep small { display: block; color: var(--mute); font-size: 14px; margin-top: 2px; }
-  .proof svg { width: 100%; height: auto; display: block; }
+  .rise { animation: rise .6s cubic-bezier(.2, .9, .3, 1.15) both; }
+  @keyframes rise { from { opacity: 0; translate: 0 30px; } to { opacity: 1; translate: 0 0; } }
+
+  /* intro */
+  .intro h1 { font-weight: 800; font-size: clamp(36px, 5vw, 72px); line-height: 1; letter-spacing: -.04em; margin: 0 auto 14px; max-width: 15ch; }
+  .intro p { color: var(--mute); font-size: clamp(18px, 1.5vw, 21px); max-width: 36ch; margin: 0 auto 26px; }
+  .intro .center { top: 66%; }
+  .go { background: var(--atty); color: #111; border: 0; border-radius: 999px; padding: 16px 28px; font-weight: 700; font-size: 18px; cursor: pointer; }
+  .go:hover { filter: brightness(1.06); }
+
+  /* hello: the total and the three reports */
+  .reports { position: absolute; left: 50%; top: 47%; transform: translateX(-50%); display: grid; grid-template-columns: repeat(3, minmax(0, 220px)); gap: 14px; }
+  .rep { background: var(--card); border: 1px solid var(--edge); border-radius: 16px; overflow: hidden; }
+  .rep .ph { aspect-ratio: 16 / 10; background: #1a1a18 center / cover no-repeat; }
+  .rep .t { padding: 10px 12px 12px; }
+  .rep b { display: block; font-size: 16px; } .rep small { display: block; color: var(--mute); font-size: 13px; }
+  /* risk: the loss drops from above */
+  .drop { animation: drop .75s cubic-bezier(.5, 0, .75, 0) both; }
+  @keyframes drop { 0% { transform: translateY(-120vh); } 78% { transform: translateY(0); } 88% { transform: translateY(-14px); } 100% { transform: none; } }
+  .hits { position: absolute; right: max(4vw, calc(50% - 560px)); top: 50%; transform: translateY(-50%); width: 260px; }
+  /* trade: the ticket slides in, pushed */
+  .ticket { position: absolute; left: 50%; top: 42%; width: min(520px, 90vw); transform: translate(-50%, -50%); }
+  .ticket.push { animation: push 1.2s cubic-bezier(.3, .1, .2, 1) both; }
+  @keyframes push { from { transform: translate(-150vw, -50%); } to { transform: translate(-50%, -50%); } }
+  .ticket .hd { padding: 18px 20px; }
+  .ticket .hd p { font-size: 24px; font-weight: 700; letter-spacing: -.02em; margin-top: 4px; }
+  .ticket .cost { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 20px; border-top: 1px solid var(--edge); }
+  .ticket .cost b { font-size: 40px; font-weight: 800; letter-spacing: -.03em; }
+  /* fit: the miss chart */
+  .chart { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(1000px, 92vw); }
+  .chart .huge { font-size: clamp(64px, 10vw, 150px); }
+  .proof svg { width: 100%; height: auto; display: block; margin-top: 10px; }
   .proof .paid { fill: #f5f5f2; }
-  .proof .miss { fill: rgba(255, 84, 112, .18); stroke: #ff5470; stroke-width: 2; }
+  .proof .miss { fill: rgba(255, 84, 112, .18); stroke: #ff5470; stroke-width: 2; animation: blink 1.4s ease-in-out infinite alternate; }
+  @keyframes blink { from { fill-opacity: .1; } to { fill-opacity: .55; } }
   .proof .calm { fill: #2a2a27; }
   .proof .base { stroke: #3a3a36; stroke-width: 1; }
   .proof .yr { fill: #8e8e8a; font: 500 16px "Geist Mono", monospace; }
-  .key { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+  .key { display: flex; gap: 16px; justify-content: center; margin-top: 8px; }
   .key i { display: inline-block; width: 11px; height: 11px; margin-right: 6px; vertical-align: -1px; border-radius: 2px; }
   .key .kp { background: #f5f5f2; } .key .km { border: 2px solid #ff5470; }
-  .barline { height: 8px; border-radius: 8px; background: #1e1e1c; overflow: hidden; }
-  .barline i { display: block; height: 100%; border-radius: 8px; background: #6b6b66; }
-  .barline i.you { background: var(--atty); }
-  .story { display: grid; grid-template-columns: 120px 1fr; gap: 14px; padding: 12px 14px; border-top: 1px solid var(--rule); text-decoration: none; align-items: center; }
+  /* fine: the sign she carries */
+  .sign { position: fixed; left: 0; top: 0; z-index: 19; background: var(--ink); color: #111; border-radius: 14px; padding: 14px 20px; text-align: center; display: none; transform-origin: 50% 100%; }
+  .sign b { display: block; font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+  .sign b.up { color: #0f9a62; } .sign b.down { color: #d6213f; }
+  .sign small { display: block; font-size: 14px; color: #555; }
+  .fineinfo { position: absolute; right: max(4vw, calc(50% - 560px)); top: 50%; transform: translateY(-50%); width: 300px; }
+  /* skip: the overpriced card gets kicked off */
+  .kick { position: absolute; left: 50%; top: 44%; width: min(440px, 88vw); transform: translate(-50%, -50%); transition: transform .9s cubic-bezier(.3, -.2, .6, 1), opacity .9s; }
+  .kick.gone { transform: translate(110vw, -90%) rotate(28deg); opacity: 0; }
+  .skipword { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%) scale(.6); opacity: 0; transition: transform .5s cubic-bezier(.2, 1.4, .4, 1), opacity .3s; color: var(--down); }
+  .skipword.on { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  /* peers: she stands on your bar */
+  .bars { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: min(820px, 90vw); display: grid; gap: 22px; }
+  .bar { display: grid; grid-template-columns: 200px 1fr 90px; gap: 18px; align-items: center; }
+  .bar span { color: var(--mute); }
+  .bar .track { height: 26px; border-radius: 8px; background: #151513; overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 8px; background: #57574f; width: 0; transition: width 1s cubic-bezier(.2, .8, .2, 1); }
+  .bar.you span { color: var(--atty); } .bar.you .fill { background: var(--atty); }
+  .bar b { font-weight: 700; font-size: 22px; text-align: right; }
+  /* record and the end */
+  .list { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); width: min(620px, 90vw); }
+  .endbox { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: min(620px, 90vw); text-align: center; }
+  .endbox h2 { font-weight: 800; font-size: clamp(40px, 5.5vw, 76px); letter-spacing: -.04em; margin: 0 0 22px; line-height: 1; }
+  .inline { display: flex; gap: 8px; }
+  .inline input { flex: 1; min-width: 0; background: var(--card); border: 1px solid var(--edge); border-radius: 999px; color: var(--ink); font: inherit; font-size: 18px; padding: 14px 20px; outline: none; }
+  .inline input:focus { border-color: var(--atty); }
+  .inline button { background: var(--atty); color: #111; border: 0; border-radius: 999px; padding: 0 22px; font-weight: 700; cursor: pointer; }
+  .endbox .note { margin-top: 12px; min-height: 1.3em; }
+  .news { margin-top: 18px; text-align: left; max-height: 40vh; overflow: auto; }
+  .story { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 12px 14px; border-top: 1px solid var(--rule); text-decoration: none; align-items: center; }
   .story:first-child { border-top: 0; }
   .story .pic { aspect-ratio: 4 / 3; border-radius: 10px; background: #1a1a18; overflow: hidden; }
   .story .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .story b { font-weight: 500; font-size: 17px; line-height: 1.3; display: block; margin-bottom: 4px; }
-  .story:hover b { text-decoration: underline; text-underline-offset: 3px; }
-  .inline { display: flex; gap: 8px; margin-top: 10px; }
-  .inline input { flex: 1; min-width: 0; background: var(--card); border: 1px solid var(--edge); border-radius: 999px; color: var(--ink); font: inherit; font-size: 18px; padding: 13px 18px; outline: none; }
-  .inline input:focus { border-color: var(--atty); }
-  .inline button { background: var(--atty); color: #111; border: 0; border-radius: 999px; padding: 0 20px; font-weight: 600; cursor: pointer; }
+  .story b { font-weight: 500; font-size: 16px; line-height: 1.3; display: block; margin-bottom: 3px; }
 
-  /* your replies, pinned to the bottom */
-  .replies { position: fixed; left: 0; right: 0; bottom: 0; z-index: 14; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 18px 18px 26px; background: linear-gradient(rgba(0, 0, 0, 0), #000 35%); }
-  .replies:empty { display: none; }
-  .replies button { background: transparent; color: var(--atty); border: 1.5px solid var(--atty); border-radius: 999px; padding: 13px 20px; font-weight: 600; font-size: 17px; cursor: pointer; }
-  .replies button.main { background: var(--atty); color: #111; }
-  .replies button:hover { filter: brightness(1.1); }
-  .foot { text-align: center; color: var(--dim); font-size: 13px; padding: 0 20px 140px; }
+  /* controls */
+  .controls { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 16; display: flex; align-items: center; gap: 14px; }
+  .controls[hidden] { display: none; }
+  .back { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--edge); background: #0b0b0a; color: var(--ink); font-size: 22px; cursor: pointer; }
+  .back:disabled { color: var(--dim); cursor: default; }
+  .next { background: var(--atty); color: #111; border: 0; border-radius: 999px; padding: 15px 28px; font-weight: 700; font-size: 17px; cursor: pointer; min-width: 180px; }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: #333; }
+  .dots i.on { background: var(--atty); }
+  .foot { position: fixed; left: 0; right: 0; bottom: 6px; z-index: 14; text-align: center; color: var(--dim); font-size: 11px; }
 
-  @media (max-width: 720px) {
+  @media (max-width: 760px) {
     body { font-size: 17px; }
-    .chat { padding: 0 14px 240px 14px; }
-    .chat:not(:empty) { padding-top: 150px; }
-    .msg.atty .bub { font-size: 18px; }
-    .reports { grid-template-columns: 1fr; }
-    .rep { border-right: 0; border-bottom: 1px solid var(--edge); }
-    .rep { display: grid; grid-template-columns: 110px 1fr; align-items: center; }
-    .rep:last-child { border-bottom: 0; }
-    .rep .ph { height: 100%; aspect-ratio: auto; min-height: 82px; }
-    .kpi b { font-size: 22px; }
-    .story { grid-template-columns: 90px 1fr; }
-    .replies button { padding: 11px 16px; font-size: 15px; }
+    .center.hi { top: 22% !important; }
+    .reports { grid-template-columns: 1fr; width: 86vw; top: 33%; gap: 8px; }
+    .ticket { top: 47%; }
+    .foot .more { display: none; }
+    .rep { display: grid; grid-template-columns: 96px 1fr; }
+    .rep .ph { aspect-ratio: auto; min-height: 64px; }
+    .hits, .fineinfo { left: 50%; right: auto; top: auto; bottom: 200px; transform: translateX(-50%); width: 86vw; }
+    .hits .rows .r:nth-child(n+3) { display: none; }
+    .say { bottom: 96px; font-size: 17px; }
+    .bar { grid-template-columns: 110px 1fr 70px; gap: 10px; }
+    .bar b { font-size: 17px; }
+    .next { min-width: 140px; padding: 14px 20px; }
+    .dots { display: none; }
   }
-  @media (prefers-reduced-motion: reduce) { .msg { animation: none; } .typing i { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .scene.on, .rise, .drop, .ticket.push, .proof .miss { animation: none; } .kick, .skipword, .bar .fill { transition: none; } }
 </style>
 
 <canvas id="atty" aria-hidden="true"></canvas>
+<div class="sign" id="sign" aria-hidden="true"></div>
 
 <header class="top">
   <span class="brand">Atropos</span>
   <span class="right"><button class="chip" id="sound" type="button" aria-pressed="true">Sound on</button><a class="chip" href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></span>
 </header>
 
-<section class="wake" id="wake">
-  <h1>Most hedges miss the days you actually lose.</h1>
-  <p id="claim">Atty checks yours against the days you really lost money.</p>
-  <button class="go" id="wakeBtn" type="button">Wake Atty</button>
-</section>
+<main class="stage" id="stage" aria-live="polite">
+  <section class="scene intro on" data-id="intro">
+    <div class="center">
+      <h1>Most hedges miss the days you actually lose.</h1>
+      <p id="claim">Atty checks yours against the days you really lost money.</p>
+      <button class="go" id="wakeBtn" type="button">Wake Atty</button>
+    </div>
+  </section>
+</main>
 
-<main class="chat" id="chat" aria-live="polite"></main>
-<p class="foot" id="foot">Not investment advice. Atty never trades. Numbers from code, every sentence checked by Jev.</p>
-
-<nav class="replies" id="replies" aria-label="Your replies"></nav>
+<nav class="controls" id="controls" hidden>
+  <button class="back" id="back" type="button" aria-label="Back">‹</button>
+  <button class="next" id="next" type="button">Next</button>
+  <span class="dots" id="dots"></span>
+</nav>
+<p class="foot">Not investment advice.<span class="more"> Atty never trades. Numbers from code, every sentence checked by Jev.</span></p>
 
 <script src="beats.js"></script>
 <script>
@@ -169,7 +209,7 @@
   var cents = function (x) { var c = x * 100; return (Math.abs(c - Math.round(c)) > 1e-6 ? c.toFixed(1) : Math.round(c)) + '¢'; };
   var NAME = { cpi: 'Inflation report', nfp: 'Jobs report', fomc: 'Fed decision' };
   var PHOTO = { cpi: '../photos/cpi.jpg', nfp: '../photos/nfp.jpg', fomc: '../photos/fed.jpg' };
-  var CALL = { good: ['buy', 'Buy it'], fair: ['call', 'Your call'], overpriced: ['skip', 'Skip'], too_small: ['skip', 'Too small'], none: ['watch', 'Watching'] };
+  var CALL = { good: ['buy', 'Buy it'], fair: ['call', 'Your call'], overpriced: ['skip', 'Skip'], too_small: ['skip', 'Too small'], none: ['', 'Watching'] };
   var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   function when(iso) { var d = new Date(iso + 'T12:00:00'); return DAYS[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate(); }
   function ago(iso) { var m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
@@ -194,36 +234,18 @@
       .then(function (r) { DATA.funds = r.data; }).catch(function () { DATA.funds = null; })
       .then(function () { DATA.beats = AttyBeats.beats(DATA); });
   }
-  var ready = loadAll().then(function () { claimLine(); }).catch(function () { $('claim').textContent = 'Atty could not load her last check.'; });
   function mainP() { return DATA.agent.result.portfolio.filter(function (x) { return x.knot && x.best; })[0]; }
-  function claimLine() {
-    var p = mainP(), th = DATA.thread || {}, f = p && th.history && th.history.fits && th.history.fits[p.release + ':' + p.side];
-    if (f && f.lossDays) $('claim').textContent = 'Inflation protection paid on ' + f.paidOnLoss + ' of your ' + f.lossDays + ' worst days. Atty can show you why.';
-  }
-
-  /* ---------------------------------------------------------------- cards */
-  function threshold(p) { return p.unit === '%' ? (p.side === 'high' ? Math.ceil(p.threshold * 10 - 1e-9) : Math.floor(p.threshold * 10 + 1e-9)) / 10 + '%' : Math.round(p.threshold) + 'K'; }
   function sig(id) { return ((DATA.tape && DATA.tape.signals) || []).filter(function (s) { return s.id === id; })[0]; }
   function oddsOf(p) { var o = null; DATA.agent.result.holdings.forEach(function (x) { x.exposures.forEach(function (e) { if (o == null && e.release === p.release && e.side === p.side) o = e.odds; }); }); return o; }
-  function reportsCard() {
-    var cells = ['cpi', 'fomc', 'nfp'].map(sig).filter(Boolean).sort(function (a, b) { return a.date < b.date ? -1 : 1; }).map(function (s) {
-      var i = s.p.indexOf(Math.max.apply(null, s.p)), fav = s.id === 'cpi' ? s.labels[i].replace('-', '–') + '%' : s.id === 'nfp' ? s.labels[i].replace('-', 'K–') + 'K jobs' : s.labels[i];
-      return '<div class="rep"><div class="ph" style="background-image:url(' + PHOTO[s.id] + ')"></div><div class="t"><b>' + NAME[s.id] + '</b><small>' + when(s.date) + '</small><small>Likely ' + esc(fav) + ' · ' + Math.round(s.p[i] * 100) + '%</small></div></div>';
-    }).join('');
-    return '<div class="card"><div class="reports">' + cells + '</div></div>';
-  }
-  function tradeCard(p) {
-    var c = CALL[p.knot.verdict] || CALL.none, odds = oddsOf(p), yes = /^YES/.test(p.best.contract);
-    var head = p.release === 'cpi' && p.side === 'high' ? 'If inflation hits ' + threshold(p) + '+' : p.release === 'nfp' && p.side === 'low' ? 'If job growth is ' + Math.round(p.threshold) + 'K or less' : 'If the ' + NAME[p.release].toLowerCase() + ' comes in ' + p.word;
-    return '<div class="card"><div class="pad"><span class="lab">' + NAME[p.release] + ' · ' + when(p.best.expiry) + '</span><p style="font-size:24px;font-weight:600;letter-spacing:-.02em;margin-top:6px">' + esc(head) + '</p></div>' +
-      '<div class="kpis"><div class="kpi"><span class="lab">You lose</span><b class="down n">' + money(-p.loss) + '</b></div><div class="kpi"><span class="lab">Odds</span><b class="n">' + (odds != null ? Math.round(odds * 100) + '%' : '–') + '</b></div><div class="kpi"><span class="lab">Atty says</span><span class="tag ' + c[0] + '" style="margin-top:8px">' + c[1] + '</span></div></div>' +
-      '<div class="rows"><div class="r"><span>Buy</span><b>' + (yes ? 'YES' : 'NO') + ' · ' + esc(p.best.contract.replace(/^(YES|NO) on /, '').replace(/"/g, '')) + '</b></div>' +
-      '<div class="r"><span>On</span><b>' + esc(p.best.venue) + '</b></div>' +
-      '<div class="r"><span>Contracts</span><b class="n">' + p.knot.contracts.toLocaleString('en-US') + '</b></div>' +
-      '<div class="r"><span>Price</span><b class="n">' + cents(p.best.ask + 0.01) + '<em>fair ' + cents(p.best.fair) + '</em></b></div>' +
-      '<div class="r"><span>Cost</span><b class="n" style="font-size:22px">' + money2(p.knot.cost) + '</b></div>' +
-      '<div class="r"><span>Pays if it happens</span><b class="n up">' + money(p.knot.payout) + '</b></div></div></div>';
-  }
+  function threshold(p) { return p.unit === '%' ? (p.side === 'high' ? Math.ceil(p.threshold * 10 - 1e-9) : Math.floor(p.threshold * 10 + 1e-9)) / 10 + '%' : Math.round(p.threshold) + 'K'; }
+  var ready = loadAll().then(function () {
+    var p = mainP(), th = DATA.thread || {}, f = p && th.history && th.history.fits && th.history.fits[p.release + ':' + p.side];
+    if (f && f.lossDays) $('claim').textContent = 'Inflation protection paid on ' + f.paidOnLoss + ' of your ' + f.lossDays + ' worst days. Atty will show you.';
+  }).catch(function () { $('claim').textContent = 'Atty could not load her last check.'; });
+
+  /* --------------------------------------------------------------- scenes
+     Each scene: its markup, where Atty stands (an element and a way of standing by it), her
+     mood, and a little choreography once it is on stage. */
   function proofSVG(p) {
     var th = DATA.thread || {}, days = (th.history && th.history.days && th.history.days[p.release]) || [];
     if (!days.length) return '';
@@ -238,44 +260,56 @@
     });
     return out + '</svg>';
   }
-  function proofCard(p, nb) {
-    return '<div class="card"><div class="pad"><span class="big n">' + nb.paidOnLoss + '<span class="mute"> / ' + nb.lossDays + '</span></span><p class="mute" style="margin-top:8px">bad days it would have paid</p></div>' +
-      '<div class="pad proof" style="padding-top:0">' + proofSVG(p) + '<div class="key lab"><span><i class="kp"></i>Paid</span><span><i class="km"></i>Missed</span><span>One bar per report</span></div></div></div>';
-  }
-  function fineCard(sh) {
-    return '<div class="card"><div class="pad"><span class="big ' + (sh.pays ? 'up' : 'down') + '" style="font-size:clamp(38px,5vw,58px)">' + (sh.pays ? 'Still pays' : 'Won’t pay') + '</span><p class="mute" style="margin-top:8px">if the report is never published</p></div>' +
-      '<div class="rows"><div class="r"><span>Settles on</span><b>' + esc(sh.fallback) + '</b></div><div class="r"><span>Last trade</span><b>' + esc(sh.stops) + '</b></div>' + (sh.latest ? '<div class="r"><span>Latest payout</span><b>' + esc(sh.latest) + '</b></div>' : '') + '</div></div>';
-  }
-  function skipCard(sh) {
-    return '<div class="card"><div class="pad"><span class="big down">Skip</span></div>' + (sh.contract ? '<div class="rows"><div class="r"><span>Price with fee</span><b class="down">' + esc(sh.ask) + '</b></div><div class="r"><span>Worth</span><b>' + esc(sh.fair) + '</b></div></div>' : '') + '</div>';
-  }
-  function barsCard(rows) {
-    var max = Math.max.apply(null, rows.map(function (b) { return Math.abs(b.v); })) || 1;
-    return '<div class="card"><div class="rows">' + rows.map(function (b) {
-      return '<div class="r" style="display:grid;grid-template-columns:1fr 1.2fr auto;align-items:center"><span' + (b.you ? ' class="yel"' : '') + '>' + esc(b.who) + '</span><span class="barline"><i class="' + (b.you ? 'you' : '') + '" style="width:' + (Math.abs(b.v) / max * 100).toFixed(1) + '%"></i></span><b class="n">' + (b.v < 0 ? '−' : '+') + Math.abs(b.v).toFixed(2) + '%</b></div>';
-    }).join('') + '</div></div>';
-  }
-  function listCard(rows) { return '<div class="card"><div class="rows">' + rows.map(function (r) { return '<div class="r"><span>' + esc(r[0]) + '</span><b class="' + (r[2] || '') + '">' + esc(r[1]) + '</b></div>'; }).join('') + '</div></div>'; }
-  function holdingsCard() {
-    return listCard(DATA.agent.result.holdings.map(function (x) {
-      var w = x.exposures[0], c = CALL[w && w.knot ? w.knot.verdict : 'none'] || CALL.none;
-      return [x.symbol + ' · ' + money(x.value), w ? money(-w.loss) + ' · ' + c[1] : 'nothing pulls at it', w ? 'down' : ''];
-    }));
-  }
-  function cardFor(b) {
+  function rowsHTML(rows) { return '<div class="rows">' + rows.map(function (r) { return '<div class="r"><span>' + esc(r[0]) + '</span><b class="' + (r[2] || '') + '">' + r[1] + '</b></div>'; }).join('') + '</div>'; }
+  function sceneFor(b) {
     var sh = b.show || {}, nb = b.numbers || {}, p = mainP();
-    if (b.id === 'hello') return reportsCard();
-    if (b.id === 'risk') return listCard((sh.rows || []).map(function (x) { return [x.sym, '−' + x.loss, 'down']; }));
-    if (b.id === 'trade') return p ? tradeCard(p) : '';
-    if (b.id === 'fit') return p ? proofCard(p, nb) : '';
-    if (b.id === 'fine') return fineCard(sh);
-    if (b.id === 'skip') return skipCard(sh);
-    if (b.id === 'peers') return barsCard(sh.rows || []);
-    if (b.id === 'record') return listCard((sh.rows || []).map(function (x) { return [x.date + ' · ' + x.what, x.call + ' · ' + x.status]; }));
-    return '';
+    var say = '<p class="say" data-say></p>';
+    if (b.id === 'hello') {
+      var cells = ['cpi', 'fomc', 'nfp'].map(sig).filter(Boolean).sort(function (a, c) { return a.date < c.date ? -1 : 1; }).map(function (s, k) {
+        var i = s.p.indexOf(Math.max.apply(null, s.p)), fav = s.id === 'cpi' ? s.labels[i].replace('-', '–') + '%' : s.id === 'nfp' ? s.labels[i].replace('-', 'K–') + 'K jobs' : s.labels[i];
+        return '<div class="rep rise" style="animation-delay:' + (0.4 + k * 0.15) + 's"><div class="ph" style="background-image:url(' + PHOTO[s.id] + ')"></div><div class="t"><b>' + NAME[s.id] + '</b><small>' + when(s.date) + ' · likely ' + esc(fav) + ' (' + Math.round(s.p[i] * 100) + '%)</small></div></div>';
+      }).join('');
+      return { html: '<div class="center hi" style="top:30%"><span class="huge n" data-anchor>' + money(DATA.total) + '</span></div><div class="reports">' + cells + '</div>' + say, stand: 'on', at: 0.78, mood: 'happy' };
+    }
+    if (b.id === 'risk') {
+      return { html: '<div class="center" style="top:30%"><p class="mute rise" style="animation-delay:.9s;font-size:22px;margin-bottom:6px">if inflation runs hot · odds ' + Math.round((nb.odds || 0) * 100) + '%</p><span class="huge n down drop" data-anchor>' + money(-nb.loss) + '</span></div>' +
+        '<div class="hits card rise" style="animation-delay:1.1s">' + rowsHTML((sh.rows || []).map(function (x) { return [x.sym, '−' + x.loss, 'down']; })) + '</div>' + say,
+        stand: 'under', mood: 'worried', impact: reduce ? 0 : 640 };
+    }
+    if (b.id === 'trade' && p) {
+      var c = CALL[p.knot.verdict] || CALL.none, odds = oddsOf(p), yes = /^YES/.test(p.best.contract);
+      var head = p.release === 'cpi' && p.side === 'high' ? 'If inflation hits ' + threshold(p) + '+' : 'If the ' + NAME[p.release].toLowerCase() + ' comes in ' + p.word;
+      return { html: '<div class="ticket card push" data-anchor><div class="hd"><span class="lab">' + NAME[p.release] + ' · ' + when(p.best.expiry) + '</span><p>' + esc(head) + '</p></div>' +
+        rowsHTML([['Buy', (yes ? 'YES' : 'NO') + ' · ' + esc(p.best.contract.replace(/^(YES|NO) on /, '').replace(/"/g, ''))], ['On', esc(p.best.venue)], ['Contracts', p.knot.contracts.toLocaleString('en-US')], ['Price', cents(p.best.ask + 0.01) + '<em>fair ' + cents(p.best.fair) + '</em>'], ['Pays if it happens', money(p.knot.payout), 'up']]) +
+        '<div class="cost"><span class="tag ' + c[0] + '">' + c[1] + '</span><b class="n">' + money2(p.knot.cost) + '</b></div></div>' + say,
+        stand: 'push', mood: 'neutral', hopOn: reduce ? 0 : 1300 };
+    }
+    if (b.id === 'fit' && p) {
+      return { html: '<div class="chart"><div style="text-align:center"><span class="huge n" data-anchor>' + nb.paidOnLoss + '<span class="mute"> / ' + nb.lossDays + '</span></span><p class="mute">bad days it would have paid</p></div><div class="proof">' + proofSVG(p) + '<div class="key lab"><span><i class="kp"></i>Paid</span><span><i class="km"></i>Missed</span></div></div></div>' + say,
+        stand: 'left', mood: 'skeptical' };
+    }
+    if (b.id === 'fine') {
+      return { html: '<div class="fineinfo card rise" style="animation-delay:.5s">' + rowsHTML([['If never published', esc(sh.fallback)], ['Last trade', esc(sh.stops)]].concat(sh.latest ? [['Latest payout', esc(sh.latest)]] : [])) + '</div>' + say,
+        stand: 'carry', mood: 'curious', sign: '<b class="' + (sh.pays ? 'up' : 'down') + '">' + (sh.pays ? 'Still pays' : 'Won’t pay') + '</b><small>if the report never comes out</small>' };
+    }
+    if (b.id === 'skip') {
+      return { html: '<div class="kick card" data-anchor>' + rowsHTML([['Overpriced', esc(sh.contract || 'Protection').replace(/"/g, '')], ['Price with fee', esc(sh.ask || ''), 'down'], ['Worth', esc(sh.fair || '')]]) + '</div><span class="huge skipword">Skip</span>' + say,
+        stand: 'left', mood: 'stern', kick: reduce ? 0 : 1600 };
+    }
+    if (b.id === 'peers') {
+      var rows = sh.rows || [], max = Math.max.apply(null, rows.map(function (x) { return Math.abs(x.v); })) || 1;
+      return { html: '<div class="bars">' + rows.map(function (x) { return '<div class="bar' + (x.you ? ' you' : '') + '"><span>' + esc(x.who) + '</span><div class="track"><div class="fill"' + (x.you ? ' data-anchor' : '') + ' data-w="' + (Math.abs(x.v) / max * 100).toFixed(1) + '"></div></div><b class="n">' + (x.v < 0 ? '−' : '+') + Math.abs(x.v).toFixed(2) + '%</b></div>'; }).join('') + '</div>' + say,
+        stand: 'on', at: 0.8, mood: 'neutral' };
+    }
+    if (b.id === 'record') {
+      return { html: '<div class="list card rise" data-anchor>' + rowsHTML((sh.rows || []).map(function (x) { return [x.date + ' · ' + x.what, esc(x.call + ' · ' + x.status)]; })) + '</div>' + say, stand: 'left', mood: 'happy' };
+    }
+    return { html: '<div class="endbox"><h2 data-anchor>Your turn.</h2><form class="inline" id="tryForm" autocomplete="off"><input id="tryQ" maxlength="200" placeholder="Your tickers: NVDA 20000, SPY, TLT" aria-label="Your tickers"><button type="submit">Check</button></form>' +
+      '<p class="lab note" id="tryNote"></p><form class="inline" id="newsForm" autocomplete="off" style="margin-top:10px"><input id="newsQ" maxlength="200" placeholder="Ask about any news" aria-label="Ask about any news"><button type="submit">Ask</button></form><div class="news card" id="newsOut" hidden></div></div>' + say,
+      stand: 'on', at: 0.95, mood: 'happy', end: true };
   }
 
-  /* ---------------------------------------------------------- her voice */
+  /* ----------------------------------------------------------- her voice */
   var AC = null, analyser = null, abuf = null, decoded = {}, src = null, sound = true;
   function voiceUrl(text) { return DATA.live ? '/api/voice?t=' + encodeURIComponent(text) : 'voice/' + AttyBeats.hash(text) + '.mp3'; }
   function ensureAudio() {
@@ -290,7 +324,6 @@
     return decoded[url];
   }
   function stopVoice() { if (src) { try { src.stop(); } catch (_) {} src = null; } }
-  /** Plays a recorded line; resolves with its length in ms, or null without sound. */
   function speak(text) {
     stopVoice();
     if (!sound || !ensureAudio()) return Promise.resolve(null);
@@ -298,125 +331,85 @@
   }
   $('sound').addEventListener('click', function () { sound = !sound; this.setAttribute('aria-pressed', String(sound)); this.textContent = sound ? 'Sound on' : 'Sound off'; if (!sound) stopVoice(); });
 
-  /* ------------------------------------------------------- the conversation */
-  var chat = $('chat'), lastAtty = null, step = 0, busy = false;
-  var REPLY = { hello: 'What could hurt me?', risk: 'Can I protect it?', trade: 'Does that actually work?', fit: 'What if the report never comes out?', fine: 'Anything I should skip?', skip: 'How do I compare?', peers: 'Do you keep score?', record: 'Got it' };
-  var MOOD = { hello: 'happy', risk: 'worried', trade: 'neutral', fit: 'skeptical', fine: 'curious', skip: 'stern', peers: 'neutral', record: 'happy', end: 'happy' };
-  function scrollDown() { setTimeout(function () { window.scrollTo({ top: document.body.scrollHeight, behavior: reduce ? 'auto' : 'smooth' }); }, 40); }
-  function you(text) { var m = h('<div class="msg you"><div class="bub">' + esc(text) + '</div></div>'); chat.appendChild(m); scrollDown(); }
-  /** Atty says a line (typing first, then words lighting up with her voice) and shows a card. */
-  function say(text, sub, card, mood, voiced) {
-    return new Promise(function (done) {
-      var t = h('<div class="msg atty typing"><div class="bub"><i></i><i></i><i></i></div></div>');
-      chat.appendChild(t); lastAtty = t; scrollDown(); A.mood = 'thinking';
-      setTimeout(function () {
-        var m = h('<div class="msg atty"><div class="bub"></div></div>'), bub = m.firstChild;
-        var words = text.split(' ').map(function (w, k) { var s = el('span', 'w', (k ? ' ' : '') + w); bub.appendChild(s); return s; });
-        if (sub) bub.appendChild(el('span', 'sub', sub));
-        chat.replaceChild(m, t); lastAtty = m; A.mood = mood || 'neutral'; A.hop(0.6);
-        (voiced ? speak(text) : Promise.resolve(null)).then(function (ms) {
-          var dur = reduce ? 0 : (ms || words.length * 170), t0 = performance.now();
-          (function tick(now) {
-            var n = dur ? Math.floor((now - t0) / dur * words.length) + 1 : words.length;
-            words.forEach(function (w, k) { w.classList.toggle('on', k < n); });
-            A.talking = n < words.length || !!src;
-            if (n < words.length) return requestAnimationFrame(tick);
-            if (card) { var c = h(card); m.appendChild(c); scrollDown(); }
-            setTimeout(function () { A.talking = !!src; done(m); }, card ? 350 : 120);
-          })(performance.now());
+  /* ----------------------------------------------------------- the show */
+  var stage = $('stage'), cur = -1, S = null, token = 0;
+  function show(i) {
+    var beats = DATA.beats; i = Math.max(0, Math.min(beats.length - 1, i));
+    cur = i; var b = beats[i], my = ++token;
+    [].forEach.call(stage.querySelectorAll('.scene'), function (n) { n.remove(); });
+    S = sceneFor(b); S.id = b.id;
+    var sc = h('<section class="scene on" data-id="' + b.id + '">' + S.html + '</section>'); stage.appendChild(sc);
+    S.el = sc; S.anchor = sc.querySelector('[data-anchor]'); S.t0 = performance.now();
+    A.mood = S.mood; A.hop(0.8); if (b.id === 'skip') A.shake = 0;
+    $('sign').style.display = S.sign ? 'block' : 'none'; if (S.sign) $('sign').innerHTML = S.sign;
+    [].forEach.call(sc.querySelectorAll('.fill'), function (f) { setTimeout(function () { f.style.width = f.getAttribute('data-w') + '%'; }, 250); });
+    // choreography
+    if (S.impact != null) setTimeout(function () { if (my !== token) return; A.wv += 16; A.vy += 420; A.squish = 1; }, S.impact);
+    if (S.hopOn) setTimeout(function () { if (my !== token) return; S.stand = 'on'; S.at = 0.86; A.hop(1.4); A.mood = 'happy'; }, S.hopOn);
+    if (S.kick != null) setTimeout(function () { if (my !== token) return; A.lunge = performance.now(); A.shake = 1; setTimeout(function () { if (my !== token) return; var k = sc.querySelector('.kick'); if (k) k.classList.add('gone'); var w = sc.querySelector('.skipword'); if (w) w.classList.add('on'); S.anchor = w; S.stand = 'on'; S.at = 0.9; A.hop(1); }, 260); }, S.kick);
+    if (S.end) wireEnd(sc);
+    // her line, word by word with her voice
+    var host = sc.querySelector('[data-say]'), words = b.say.split(' ').map(function (w, k) { var s = el('span', 'w', (k ? ' ' : '') + w); host.appendChild(s); return s; });
+    if (b.sub) host.appendChild(el('span', 'sub', b.sub));
+    speak(b.say).then(function (ms) {
+      if (my !== token) return;
+      var dur = reduce ? 0 : (ms || words.length * 170), t0 = performance.now();
+      (function tick(now) {
+        if (my !== token) return;
+        var n = dur ? Math.floor((now - t0) / dur * words.length) + 1 : words.length;
+        words.forEach(function (w, k) { w.classList.toggle('on', k < n); });
+        A.talking = n < words.length || !!src;
+        if (n < words.length || src) requestAnimationFrame(tick); else A.talking = false;
+      })(performance.now());
+    });
+    $('back').disabled = i === 0;
+    $('next').textContent = i === beats.length - 1 ? 'Start over' : i === beats.length - 2 ? 'Your turn' : 'Next';
+    var dots = $('dots'); dots.textContent = ''; beats.forEach(function (_, k) { dots.appendChild(el('i', k === i ? 'on' : '')); });
+  }
+  function wireEnd(sc) {
+    sc.querySelector('#tryForm').addEventListener('submit', function (e) {
+      e.preventDefault(); var q = $('tryQ').value.trim(); if (!q) return;
+      $('tryNote').textContent = 'Checking ' + q.toUpperCase() + '…'; A.mood = 'thinking';
+      fetch('/api/try?h=' + encodeURIComponent(q)).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'That did not work.'); return j; }); })
+        .then(function (j) { DATA.agent = { result: j.agent.result, everyMinutes: null }; DATA.thread = j.thread; DATA.live = true; return loadFunds().then(function () { show(0); }); })
+        .catch(function (err) { var m = String(err && err.message || err); $('tryNote').textContent = /fetch|network|JSON|token/i.test(m) ? 'Checking your own tickers needs the live app.' : m; A.mood = 'worried'; });
+    });
+    sc.querySelector('#newsForm').addEventListener('submit', function (e) {
+      e.preventDefault(); var q = $('newsQ').value.trim(); if (!q) return; A.mood = 'thinking';
+      fetch('/api/news?q=' + encodeURIComponent(q)).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .catch(function () { return fetch('../news-sample.json').then(function (r) { return r.json(); }); })
+        .then(function (r) {
+          var arts = r.articles.filter(function (a) { return /^[\x20-\x7e‘’“”–—…]+$/.test(a.title); }).slice(0, 12);
+          arts = arts.filter(function (a) { return a.image; }).concat(arts.filter(function (a) { return !a.image; })).slice(0, 4);
+          var out = $('newsOut'); out.hidden = false;
+          out.innerHTML = arts.map(function (a) { var img = a.image || (a.bearsOn ? PHOTO[a.bearsOn] : ''); return '<a class="story" href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer"><span class="pic">' + (img ? '<img alt="" loading="lazy" referrerpolicy="no-referrer" src="' + esc(img) + '">' : '') + '</span><span><b>' + esc(a.title) + '</b><span class="lab">' + esc([a.source, a.published ? ago(a.published) : ''].filter(Boolean).join(' · ')) + '</span></span></a>'; }).join('');
+          A.mood = 'happy';
         });
-      }, reduce ? 0 : 650);
     });
   }
-  function replies(list) {
-    var host = $('replies'); host.textContent = '';
-    list.forEach(function (r, i) { var b = el('button', i === 0 ? 'main' : '', r.label); b.type = 'button'; b.addEventListener('click', function () { if (busy) return; host.textContent = ''; r.go(); }); host.appendChild(b); });
-  }
-  function next() {
-    var b = DATA.beats[step]; if (!b || b.id === 'end') return endMenu();
-    busy = true;
-    if (b.id === 'skip') A.shake = 1;
-    say(b.say, b.sub, cardFor(b), MOOD[b.id], true).then(function () {
-      busy = false; step++;
-      var nb = DATA.beats[step];
-      if (!nb || nb.id === 'end') return endMenu();
-      replies([{ label: REPLY[b.id] || 'Next', go: function () { you(REPLY[b.id] || 'Next'); next(); } }, { label: 'Skip to the end', go: function () { you('Skip to the end'); step = DATA.beats.length - 1; endMenu(); } }]);
-    });
-  }
-  function menu() {
-    replies([
-      { label: 'Check my tickers', go: askTickers },
-      { label: 'Show my holdings', go: function () { you('Show my holdings'); say('Here is everything you hold, and what could hurt each one.', null, holdingsCard(), 'neutral').then(menu); } },
-      { label: 'What’s in the news?', go: askNews },
-      { label: 'Start over', go: function () { you('Start over'); step = 0; next(); } },
-    ]);
-  }
-  function endMenu() {
-    var b = DATA.beats[DATA.beats.length - 1];
-    busy = true;
-    say(b.say, null, null, 'happy', true).then(function () { busy = false; menu(); });
-  }
-  function askForm(placeholder, button, onSubmit) {
-    var f = h('<form class="inline" autocomplete="off"><input type="text" maxlength="200" placeholder="' + esc(placeholder) + '" aria-label="' + esc(placeholder) + '"><button type="submit">' + esc(button) + '</button></form>');
-    f.addEventListener('submit', function (e) { e.preventDefault(); var q = f.querySelector('input').value.trim(); if (!q) return; f.remove(); onSubmit(q); });
-    lastAtty.appendChild(f); setTimeout(function () { f.querySelector('input').focus({ preventScroll: true }); }, 50); scrollDown();
-  }
-  function askTickers() {
-    you('Check my tickers');
-    say('Type your tickers. Add dollar amounts if you like.', null, null, 'curious').then(function () {
-      askForm('NVDA 20000, SPY, TLT', 'Check', function (q) {
-        you(q.toUpperCase()); A.mood = 'thinking';
-        fetch('/api/try?h=' + encodeURIComponent(q)).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'That did not work.'); return j; }); })
-          .then(function (j) {
-            DATA.agent = { result: j.agent.result, everyMinutes: null }; DATA.thread = j.thread; DATA.live = true;
-            return loadFunds().then(function () { claimLine(); step = 0; say('Got it. Here is your week.', null, null, 'happy').then(next); });
-          })
-          .catch(function (err) {
-            var m = String(err && err.message || err);
-            say(/fetch|network|JSON|token/i.test(m) ? 'I can only check your own tickers in the live app. The sample is still here.' : m, null, null, 'worried').then(menu);
-          });
-      });
-    });
-  }
-  function askNews() {
-    you('What’s in the news?');
-    say('Ask me about anything.', null, null, 'curious').then(function () {
-      askForm('The Fed, layoffs, Nvidia…', 'Ask', function (q) {
-        you(q); A.mood = 'thinking';
-        fetch('/api/news?q=' + encodeURIComponent(q)).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (r) { return { r: r, saved: false }; })
-          .catch(function () { return fetch('../news-sample.json').then(function (r) { return r.json(); }).then(function (r) { return { r: r, saved: true }; }); })
-          .then(function (o) {
-            var arts = o.r.articles.filter(function (a) { return /^[\x20-\x7e‘’“”–—…]+$/.test(a.title); }).slice(0, 12);
-            arts = arts.filter(function (a) { return a.image; }).concat(arts.filter(function (a) { return !a.image; })).slice(0, 4);
-            var card = '<div class="card">' + arts.map(function (a) {
-              var img = a.image || (a.bearsOn ? PHOTO[a.bearsOn] : '');
-              return '<a class="story" href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer"><span class="pic">' + (img ? '<img alt="" loading="lazy" referrerpolicy="no-referrer" src="' + esc(img) + '">' : '') + '</span><span><b>' + esc(a.title) + '</b><span class="lab">' + esc([a.source, a.published ? ago(a.published) : ''].filter(Boolean).join(' · ')) + '</span></span></a>';
-            }).join('') + '</div>';
-            return say(o.saved ? 'I can only search live in the app, so here is my last search: “' + o.r.query + '”.' : 'Here is what matters most on “' + q + '”.', null, card, 'neutral');
-          })
-          .then(menu);
-      });
-    });
-  }
+  $('next').addEventListener('click', function () { show(cur === DATA.beats.length - 1 ? 0 : cur + 1); });
+  $('back').addEventListener('click', function () { show(cur - 1); });
+  addEventListener('keydown', function (e) {
+    if (cur < 0 || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(Math.min(DATA.beats.length - 1, cur + 1)); }
+    if (e.key === 'ArrowLeft') show(cur - 1);
+  });
   var started = false;
-  function start() {
-    if (started) return; started = true; ensureAudio();
-    A.wake(); A.hop(1.2);
-    ready.then(function () { $('wake').style.display = 'none'; window.scrollTo(0, 0); next(); });
-  }
-  $('wakeBtn').addEventListener('click', start);
+  $('wakeBtn').addEventListener('click', function () {
+    if (started) return; started = true; ensureAudio(); A.wake(); A.hop(1.4);
+    ready.then(function () { $('controls').hidden = false; show(0); });
+  });
 
-  /* ------------------------------------------------------------- Atty
-     A soft blob drawn from a ring of points: a spring pulls her toward where she should be
-     (the middle of the landing, then beside her newest message), she stretches along her
-     speed, wobbles after a poke, keeps a little tail at the bottom, and her two eyes follow
-     your cursor. She sleeps until you come near. Grab her to drag her; let go to throw. */
+  /* ---------------------------------------------------------------- Atty
+     A soft blob from a ring of points: a spring pulls her to where the scene wants her, she
+     stretches along her speed, wobbles, keeps a little tail, and her eyes follow your cursor.
+     Grab her to drag her; let go to throw. */
   var cv = $('atty'), ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
   function size() { cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; }
   size(); addEventListener('resize', size);
-  var A = { x: innerWidth / 2, y: innerHeight * 0.36, vx: 0, vy: 0, r: 70, ang: 0, va: 0, wob: 0, wv: 0, mood: 'sleep', asleep: true, talking: false, shake: 0, drag: null, look: { x: 0, y: 0 }, lastActive: performance.now(), blinkAt: performance.now() + 2500, poked: 0 };
+  var A = { x: innerWidth / 2, y: innerHeight * 0.32, vx: 0, vy: 0, r: 80, ang: 0, va: 0, wob: 0, wv: 0, mood: 'sleep', asleep: true, talking: false, shake: 0, squish: 0, lunge: 0, drag: null, look: { x: 0, y: 0 }, lastActive: performance.now(), blinkAt: performance.now() + 2500, poked: 0 };
   A.hop = function (k) { A.vy -= 260 * k; A.wv += 5 * k; };
-  A.wake = function () { if (A.asleep) { A.asleep = false; A.mood = 'surprised'; A.wv += 6; setTimeout(function () { if (A.mood === 'surprised') A.mood = 'happy'; }, 600); } A.lastActive = performance.now(); };
+  A.wake = function () { if (A.asleep) { A.asleep = false; A.mood = 'surprised'; A.wv += 6; setTimeout(function () { if (A.mood === 'surprised') A.mood = S ? S.mood : 'happy'; }, 600); } A.lastActive = performance.now(); };
   var mouse = null;
   addEventListener('pointermove', function (e) {
     mouse = { x: e.clientX, y: e.clientY, t: performance.now() };
@@ -433,24 +426,35 @@
   });
   addEventListener('pointerup', function () {
     if (!A.drag) return;
-    var held = performance.now() - A.drag.at, dv = Math.hypot(A.drag.vx, A.drag.vy);
-    if (held < 220 && dv < 300) { A.wv += 9; A.mood = 'surprised'; A.poked++; setTimeout(function () { A.mood = A.poked % 3 === 0 ? 'stern' : 'happy'; }, 450); }
-    else { A.vx = A.drag.vx * 0.9; A.vy = A.drag.vy * 0.9; A.va = A.drag.vx * 0.0006; A.wv += 4; setTimeout(function () { A.mood = 'happy'; }, 700); }
+    var held = performance.now() - A.drag.at, dv = Math.hypot(A.drag.vx, A.drag.vy), back = S ? S.mood : 'happy';
+    if (held < 220 && dv < 300) { A.wv += 9; A.mood = 'surprised'; A.poked++; setTimeout(function () { A.mood = A.poked % 3 === 0 ? 'stern' : back; }, 450); }
+    else { A.vx = A.drag.vx * 0.9; A.vy = A.drag.vy * 0.9; A.va = A.drag.vx * 0.0006; A.wv += 4; setTimeout(function () { A.mood = back; }, 700); }
     A.drag = null; document.body.classList.remove('dragging');
   });
 
-  function home() {
-    // the middle of the landing; once talking, just left of her newest message (above it on phones)
-    if (!started || !lastAtty) return { x: innerWidth / 2, y: Math.min(innerHeight * 0.36, innerHeight - 380) };
-    var b = lastAtty.getBoundingClientRect();
-    if (innerWidth > 720) return { x: b.left - A.r - 18, y: Math.max(A.r + 70, Math.min(innerHeight - A.r - 120, b.top + A.r * 0.8)) };
-    return { x: b.left + A.r * 0.9, y: Math.max(A.r + 64, Math.min(innerHeight - A.r - 120, b.top - A.r * 0.75)) };
+  function home(now) {
+    var p = spot(now), R = A.r;
+    return { x: Math.max(R + 8, Math.min(innerWidth - R - 8, p.x)), y: Math.max(R + 60, p.y) };
+  }
+  function spot(now) {
+    if (!S || !S.anchor || !started) return { x: innerWidth / 2, y: Math.min(innerHeight * 0.32, innerHeight - 420) };
+    var b = S.anchor.getBoundingClientRect(), R = A.r, narrow = innerWidth <= 760;
+    if (narrow && S.stand === 'left') return { x: b.left + b.width * 0.15, y: b.top - R * 0.82 };
+    if (S.stand === 'on') return { x: b.left + b.width * (S.at == null ? 0.5 : S.at), y: b.top - R * 0.82 };
+    if (S.stand === 'under') { var t = now - S.t0; return { x: b.left + b.width * 0.5, y: t < (S.impact || 0) ? b.bottom + R * 1.1 : b.bottom + R * 0.95 }; }
+    if (S.stand === 'push') return { x: b.left - R * 0.95, y: b.top + b.height * 0.55 };
+    if (S.stand === 'left') {
+      var lunge = A.lunge && now - A.lunge < 260 ? R * 0.9 : 0;
+      return { x: Math.max(R + 8, b.left - R - 22) + lunge, y: b.top + Math.min(b.height * 0.5, R * 1.2) };
+    }
+    if (S.stand === 'carry') return { x: innerWidth > 760 ? innerWidth * 0.36 : innerWidth / 2, y: innerHeight * 0.48 };
+    return { x: innerWidth / 2, y: innerHeight * 0.4 };
   }
   var last = performance.now();
   function frame(now) {
     var dt = Math.min(0.033, (now - last) / 1000); last = now;
-    A.r = innerWidth > 720 ? (started ? 52 : 86) * (A.talking ? 1.04 : 1) : (started ? 40 : 66);
-    if (!A.asleep && !started && now - A.lastActive > 12000) { A.asleep = true; }
+    A.r = (innerWidth > 760 ? (started ? 64 : 92) : (started ? 46 : 70)) * (A.talking ? 1.04 : 1);
+    if (!A.asleep && !started && now - A.lastActive > 12000) A.asleep = true;
     if (A.asleep) A.mood = 'sleep';
     var env = 0;
     if (src && analyser) { analyser.getFloatTimeDomainData(abuf); var s2 = 0; for (var k = 0; k < abuf.length; k++) s2 += abuf[k] * abuf[k]; env = Math.min(1, Math.sqrt(s2 / abuf.length) * 6); }
@@ -458,28 +462,32 @@
     if (env > 0.25 && Math.random() < env * 0.08) A.wv += env * 1.2;
     if (A.drag && mouse) { var tx = mouse.x + A.drag.ox, ty = mouse.y + A.drag.oy; A.vx = (tx - A.x) / dt * 0.5; A.vy = (ty - A.y) / dt * 0.5; A.x += (tx - A.x) * 0.5; A.y += (ty - A.y) * 0.5; }
     else {
-      var hm = home(), kx = 34, c = 7.5;
-      hm.y += (A.asleep ? 4 : 7) * Math.sin(now / (A.asleep ? 900 : 620));
+      var hm = home(now), kx = 30, c = 7;
+      hm.y += (A.asleep ? 4 : 5) * Math.sin(now / (A.asleep ? 900 : 640));
       A.vx += (kx * (hm.x - A.x) - c * A.vx) * dt; A.vy += (kx * (hm.y - A.y) - c * A.vy) * dt;
       A.x += A.vx * dt; A.y += A.vy * dt;
     }
     A.va *= Math.pow(0.08, dt); A.ang += A.va; A.ang *= Math.pow(0.15, dt);
-    A.shake *= Math.pow(0.05, dt);
+    A.shake *= Math.pow(0.05, dt); A.squish *= Math.pow(0.04, dt);
     A.wv += (-140 * A.wob - 7 * A.wv) * dt; A.wob += A.wv * dt;
     var lt = { x: 0, y: 0 };
     if (mouse && now - mouse.t < 3000 && !A.asleep) { var dx = mouse.x - A.x, dy = mouse.y - A.y, dl = Math.hypot(dx, dy) || 1; lt = { x: dx / dl * Math.min(1, dl / 200), y: dy / dl * Math.min(1, dl / 200) }; }
+    else if (S && S.anchor && !A.asleep) { var ab = S.anchor.getBoundingClientRect(), ddx = ab.left + ab.width / 2 - A.x, ddy = ab.top + ab.height / 2 - A.y, dd = Math.hypot(ddx, ddy) || 1; lt = { x: ddx / dd * 0.8, y: ddy / dd * 0.8 }; }
     A.look.x += (lt.x - A.look.x) * 0.15; A.look.y += (lt.y - A.look.y) * 0.15;
     if (now > A.blinkAt + 130) A.blinkAt = now + 2200 + Math.random() * 3200;
-    var blink = now > A.blinkAt && now < A.blinkAt + 130;
-    draw(env, blink, now);
+    // the sign she carries
+    if (S && S.sign) { var sg = $('sign'), sw = sg.offsetWidth, shh = sg.offsetHeight; sg.style.transform = 'translate(' + (A.x - sw / 2).toFixed(1) + 'px,' + (A.y - A.r * 1.05 - 46 - shh).toFixed(1) + 'px) rotate(' + (A.ang * 30 + Math.sin(now / 500) * 2).toFixed(2) + 'deg)'; }
+    draw(env, now > A.blinkAt && now < A.blinkAt + 130, now);
     requestAnimationFrame(frame);
   }
   function draw(env, blink, now) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, innerWidth, innerHeight);
     var R = A.r, sp = Math.hypot(A.vx, A.vy), st = reduce ? 0 : Math.min(0.42, sp / 2200), dir = Math.atan2(A.vy, A.vx);
     var breathe = A.asleep ? 0.03 * Math.sin(now / 700) : 0, talk = 0.05 * env * Math.sin(now / 55);
-    ctx.save(); ctx.translate(A.x, A.y); ctx.rotate(A.ang + 0.1 * Math.sin(now / 45) * A.shake);
-    // the body: a ring of points stretched along her speed, with a wobble and a little tail
+    // the stick for the sign
+    if (S && S.sign) { var sg = $('sign').getBoundingClientRect(); ctx.strokeStyle = '#f5f5f2'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(A.x, A.y - R * 0.6); ctx.lineTo(sg.left + sg.width / 2, sg.bottom - 2); ctx.stroke(); }
+    ctx.save(); ctx.translate(A.x, A.y); ctx.rotate(A.ang + 0.12 * Math.sin(now / 45) * A.shake);
+    ctx.scale(1 + 0.35 * A.squish, 1 - 0.35 * A.squish);
     var N = 40, pts = [];
     for (var i = 0; i < N; i++) {
       var th = i / N * Math.PI * 2;
@@ -491,7 +499,6 @@
     ctx.beginPath();
     for (var j = 0; j <= N; j++) { var a = pts[j % N], b = pts[(j + 1) % N], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; if (!j) ctx.moveTo(mx, my); else ctx.quadraticCurveTo(a[0], a[1], mx, my); }
     ctx.closePath(); ctx.fillStyle = '#f8ca41'; ctx.fill();
-    // the eyes
     var ex = R * 0.27, ey = -R * 0.05, lx = A.look.x * R * 0.13, ly = A.look.y * R * 0.1, ew = R * 0.13, eh = R * 0.15;
     ctx.fillStyle = '#000'; ctx.strokeStyle = '#000'; ctx.lineCap = 'round'; ctx.lineWidth = R * 0.06;
     var mood = A.mood;
@@ -506,7 +513,7 @@
       var k2 = mood === 'surprised' ? 1.3 : mood === 'curious' && s > 0 ? 1.2 : mood === 'thinking' ? 0.85 : 1;
       ctx.ellipse(cx, cy, ew * k2, eh * k2, 0, 0, Math.PI * 2); ctx.fill();
     }
-    if (mood === 'surprised') { ctx.beginPath(); ctx.ellipse(lx * 0.6, R * 0.32 + ly * 0.6, R * 0.06, R * 0.08, 0, 0, Math.PI * 2); ctx.fill(); }
+    if (mood === 'surprised' || (mood === 'worried' && A.squish > 0.2)) { ctx.beginPath(); ctx.ellipse(lx * 0.6, R * 0.32 + ly * 0.6, R * 0.06, R * 0.08, 0, 0, Math.PI * 2); ctx.fill(); }
     if (mood === 'thinking') { ctx.fillStyle = 'rgba(248,202,65,.85)'; for (var d2 = 0; d2 < 3; d2++) { var on = Math.floor(now / 250) % 3 === d2; ctx.beginPath(); ctx.arc(R * 0.85 + d2 * R * 0.22, -R * 0.95, R * (on ? 0.07 : 0.045), 0, Math.PI * 2); ctx.fill(); } }
     ctx.restore();
     if (A.asleep) { ctx.fillStyle = 'rgba(248,202,65,.6)'; ctx.font = '600 ' + Math.round(R * 0.32) + 'px Geist, sans-serif'; var zt = (now / 1400) % 1; ctx.globalAlpha = 1 - zt; ctx.fillText('z', A.x + R * 0.9 + zt * 14, A.y - R * 0.8 - zt * 26); ctx.globalAlpha = 1; }
