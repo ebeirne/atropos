@@ -37,8 +37,9 @@
   .n { font-variant-numeric: tabular-nums; }
   .lab { font: 500 13px/1.2 var(--m); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
 
-  .headhit { position: fixed; left: 0; top: 0; z-index: 2; background: transparent; border: 0; padding: 0; cursor: pointer; }
-  #glass { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; }
+  .headhit { position: fixed; left: 0; top: 0; z-index: 6; background: transparent; border: 0; padding: 0; cursor: pointer; }
+  #glass { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 4; pointer-events: none; }
+  body { background: radial-gradient(circle var(--gr, 460px) at var(--gx, 72%) var(--gy, 45%), rgba(var(--gc, 28, 72, 255), .62) 0%, rgba(var(--gc, 28, 72, 255), .2) 45%, transparent 100%), linear-gradient(180deg, #02030f 0%, #040a33 100%); background-attachment: fixed; }
   .wrap { position: relative; z-index: 1; }
   .shell { max-width: 1320px; margin: 0 auto; padding: 0 var(--gut); }
 
@@ -53,7 +54,7 @@
   /* landing */
   .land { min-height: 100svh; display: flex; align-items: center; }
   .land .shell { width: 100%; }
-  .land .copy { max-width: 700px; padding-block: 110px 210px; }
+  .land .copy { max-width: 600px; padding-block: 110px 210px; }
   h1 { font: 600 clamp(42px, 5.4vw, 92px)/.95 var(--d); letter-spacing: -.045em; margin: 18px 0 26px; }
   .lead { font-size: clamp(20px, 1.7vw, 25px); color: #c9d0f0; max-width: 30ch; }
   .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 36px; }
@@ -152,7 +153,7 @@
   footer .shell { display: grid; gap: 10px; }
 
   /* her voice, along the bottom, on the glass */
-  .player { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 5; width: min(1040px, calc(100% - 24px)); display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
+  .player { position: fixed; left: 24px; bottom: 18px; z-index: 5; width: min(1000px, calc(100% - 230px)); display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
     padding: 10px; background: rgba(4, 7, 30, .86); border: 1px solid var(--edge); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
   .player .pp { width: 52px; height: 52px; border: 0; background: var(--ink); color: #050a35; display: grid; place-items: center; cursor: pointer; }
   .player .pp.on .tri { width: 12px; height: 14px; border: 0; border-left: 4px solid currentColor; border-right: 4px solid currentColor; }
@@ -184,7 +185,7 @@
     .chk:nth-child(3) { grid-column: 1 / -1; border-top: 1px solid var(--rule); }
     .list .li { grid-template-columns: 1fr auto; }
     .list .li .hide-s { display: none; }
-    .player { gap: 10px; bottom: 10px; }
+    .player { gap: 10px; bottom: 10px; left: 12px; width: calc(100% - 24px); }
     .player .pp { width: 44px; height: 44px; }
     .player #prev, .player .nav span { display: none; }
     .cap { font-size: 15px; }
@@ -203,42 +204,42 @@
   </div></header>
 
   <section class="land" id="top" style="padding-top:0"><div class="shell"><div class="copy">
-    <h1>Know what could hit your money this week.</h1>
-    <p class="lead">Atty reads the prediction markets, checks them against what you own, and tells you the one trade worth making, or to skip it.</p>
-    <div class="ctas"><button class="btn main" type="button" id="heroPlay"><i class="tri"></i>Listen to Atty</button><a class="btn" href="#trade">See the next trade</a></div>
+    <h1>What could hit your money this week.</h1>
+    <p class="lead">Atty checks prediction markets against what you own. Then she tells you what to protect, and what to skip.</p>
+    <div class="ctas"><button class="btn main" type="button" id="heroPlay"><i class="tri"></i>Listen</button><a class="btn" href="#trade">Next trade</a></div>
     <div class="facts" id="facts"></div>
   </div></div></section>
 
   <section id="week"><div class="shell">
-    <div class="head"><h2>This week</h2><p class="sub">The reports that could move what you own, what the markets expect, and what Atty would do.</p></div>
+    <div class="head"><h2>This week</h2></div>
     <div class="week" id="weekCards"></div>
   </div></section>
 
   <section id="trade"><div class="shell">
-    <div class="head"><h2>Your next trade</h2><p class="sub">Sized to what you could lose, priced on every venue Atty can reach, and checked against how you actually lose money.</p></div>
+    <div class="head"><h2>Next trade</h2></div>
     <div id="tickets"></div>
   </div></section>
 
   <section id="holdings"><div class="shell">
-    <div class="head"><h2>Your holdings</h2><p class="sub" id="holdSub">What could hurt each one most, and what protecting it would cost.</p></div>
+    <div class="head"><h2>Your holdings</h2></div>
     <div class="panel list" id="holdList"></div>
   </div></section>
 
   <section id="public"><div class="shell">
-    <div class="head"><h2>Public money</h2><p class="sub" id="pubSub">State and city pensions and public universities, from their SEC 13F filings, measured with the same model as you.</p></div>
+    <div class="head"><h2>Public money</h2><p class="sub" id="pubSub">Pensions and universities. Same test.</p></div>
     <div class="panel list" id="pubList"></div>
   </div></section>
 
   <section id="news"><div class="shell">
-    <div class="head"><h2>The news</h2><p class="sub"><span>Any topic, ranked by Jev for what bears on what you own.</span> <span id="newsState"></span></p></div>
-    <form class="panel ask" id="newsForm" role="search"><input id="newsQ" type="search" placeholder="The Fed, layoffs, Nvidia…" aria-label="Ask Atty about anything" autocomplete="off" maxlength="200"><button class="btn main" type="submit">Ask</button></form>
+    <div class="head"><h2>News</h2><p class="sub" id="newsState"></p></div>
+    <form class="panel ask" id="newsForm" role="search"><input id="newsQ" type="search" placeholder="Ask about anything" aria-label="Ask Atty about anything" autocomplete="off" maxlength="200"><button class="btn main" type="submit">Ask</button></form>
     <div class="chips" id="newsChips"><button type="button">The Fed</button><button type="button">Inflation</button><button type="button">Layoffs</button><button type="button">Tariffs</button><button type="button">Oil prices</button><button type="button">Nvidia</button></div>
     <div class="feed" id="newsList"></div>
   </div></section>
 
   <footer><div class="shell">
-    <p>Not investment advice. Atty never trades: brokerage access is read-only.</p>
-    <p>Every number comes from code, and Jev checks every sentence against it. Odds from Kalshi, ForecastEx and CME via Interactive Brokers, Limitless and Futuur. Public funds from SEC 13F. History from BLS, ALFRED and Yahoo.</p>
+    <p>Not investment advice. Atty never trades.</p>
+    <p>Numbers from code. Every sentence checked by Jev. Odds: Kalshi, ForecastEx, CME, Limitless, Futuur. Funds: SEC 13F.</p>
     <p id="credits"></p>
     <p id="asof"></p>
   </div></footer>
@@ -246,7 +247,7 @@
 
 <div class="player" role="region" aria-label="Atty's voice">
   <button class="pp" type="button" id="play" aria-pressed="false" aria-label="Play Atty"><i class="tri"></i></button>
-  <p class="cap" id="line" aria-live="polite">Press play and Atty will walk you through your week.</p>
+  <p class="cap" id="line" aria-live="polite">Press play. Atty walks you through it.</p>
   <div class="nav"><button type="button" id="prev" aria-label="Back">‹</button><span class="n" id="step"></span><button type="button" id="next" aria-label="Next">›</button></div>
 </div>
 
@@ -330,7 +331,7 @@
       var fav = s.id === 'cpi' ? s.labels[i].replace('-', '–') + '%' : s.id === 'nfp' ? s.labels[i].replace('-', 'K–') + 'K jobs' : s.labels[i];
       var card = h('<a class="panel rep" id="w-' + s.id + '" href="' + (p ? '#t-' + s.id : '#trade') + '">' +
         '<div class="ph" style="background-image:url(' + PHOTO[s.id] + ')"><span class="when lab">' + when(s.date) + ' · ' + TIME[s.id] + '</span></div>' +
-        '<div class="in"><h3>' + NAME[s.id] + '</h3><p class="fav">Most likely ' + esc(fav) + ', <span class="n">' + Math.round(s.p[i] * 100) + '%</span> · ' + inDays(s.date) + '</p>' +
+        '<div class="in"><h3>' + NAME[s.id] + '</h3><p class="fav">Likely ' + esc(fav) + ' (<span class="n">' + Math.round(s.p[i] * 100) + '%</span>) · ' + inDays(s.date) + '</p>' +
         '<span class="tag ' + c[0] + '">' + c[1] + '</span></div></a>');
       host.appendChild(card);
     });
@@ -350,34 +351,34 @@
       var fitTxt = f && f.lossDays ? (f.paidOnLoss + ' of ' + f.lossDays) : 'n/a';
       var fitNote = f && f.lossDays ? (f.paidOnLoss / f.lossDays >= 0.6 ? 'usually lines up' : f.paidOnLoss / f.lossDays >= 0.4 ? 'about a coin flip' : 'usually misses') : '';
       var fb = fn && fn.fallback && fn.fallback.basedOn ? fn.fallback : null;
-      var why = skip ? 'Protection costs ' + cents(p.knot.overFair) + ' more per contract than the odds say it is worth, so Atty would not buy it.'
-        : p.knot.verdict === 'good' ? 'It costs less than the odds say it is worth. Atty would buy it.'
-        : 'The price is about what the odds say it is worth. It is your call.';
+      var why = skip ? 'Overpriced by ' + cents(p.knot.overFair) + '. Skip it.' : p.knot.verdict === 'good' ? 'Cheap. Buy it.' : 'Fair price. Your call.';
+      var headline = p.release === 'cpi' && p.side === 'high' ? 'If inflation hits ' + threshold(p) + '+' : p.release === 'nfp' && p.side === 'low' ? 'If job growth is ' + Math.round(p.threshold) + 'K or less'
+        : 'If ' + SHORTNAME[p.release] + ' comes in ' + p.word;
       var t = h('<article class="panel ticket" id="t-' + p.release + '">' +
         '<div class="ph" style="background-image:url(' + PHOTO[p.release] + ')"><span class="when lab">' + NAME[p.release] + ' · ' + when(date) + ' · ' + inDays(date) + '</span></div>' +
         '<div class="tk">' +
           
-          '<h3>If ' + SHORTNAME[p.release] + ' comes in ' + p.word + ' (' + threshold(p) + (p.side === 'high' ? ' or more' : ' or less') + ')</h3>' +
+          '<h3>' + esc(headline) + '</h3>' +
           '<div class="kpis">' +
-            '<div class="kpi"><span class="lab">You could lose</span><b class="n down">' + money(-p.loss) + '</b></div>' +
-            '<div class="kpi"><span class="lab">Chance</span><b class="n">' + (odds != null ? Math.round(odds * 100) + '%' : '–') + '</b></div>' +
-            '<div class="kpi"><span class="lab">Atty’s call</span><span class="tag ' + c[0] + '">' + c[1] + '</span></div>' +
+            '<div class="kpi"><span class="lab">You lose</span><b class="n down">' + money(-p.loss) + '</b></div>' +
+            '<div class="kpi"><span class="lab">Odds</span><b class="n">' + (odds != null ? Math.round(odds * 100) + '%' : '–') + '</b></div>' +
+            '<div class="kpi"><span class="lab">Atty says</span><span class="tag ' + c[0] + '">' + c[1] + '</span></div>' +
           '</div>' +
           '<div class="rows">' +
-            '<div class="r"><span>Protection</span><b>' + esc(protection) + '</b></div>' +
-            '<div class="r"><span>Where</span><b>' + esc(p.best.venue) + '</b></div>' +
+            '<div class="r"><span>Buy</span><b>' + esc(protection.replace(/^Buy /, '')) + '</b></div>' +
+            '<div class="r"><span>On</span><b>' + esc(p.best.venue) + '</b></div>' +
             '<div class="r"><span>Contracts</span><b class="n">' + p.knot.contracts.toLocaleString('en-US') + '</b></div>' +
-            '<div class="r"><span>Price each, with fee</span><b class="n' + (skip ? ' down' : '') + '">' + cents(p.best.ask + 0.01) + '<em>fair ' + cents(p.best.fair) + '</em></b></div>' +
-            '<div class="r tot"><span>Total cost</span><b class="n">' + money2(p.knot.cost) + '</b></div>' +
-            '<div class="r"><span>Pays if it happens</span><b class="n up">' + money(p.knot.payout) + '</b></div>' +
+            '<div class="r"><span>Price</span><b class="n' + (skip ? ' down' : '') + '">' + cents(p.best.ask + 0.01) + '<em>fair ' + cents(p.best.fair) + '</em></b></div>' +
+            '<div class="r tot"><span>Cost</span><b class="n">' + money2(p.knot.cost) + '</b></div>' +
+            '<div class="r"><span>Pays</span><b class="n up">' + money(p.knot.payout) + '</b></div>' +
           '</div>' +
           '<div class="checks">' +
-            '<div class="chk"><span class="lab">Paid on your bad days</span><b class="n">' + fitTxt + '</b><em>' + fitNote + '</em></div>' +
-            '<div class="chk"><span class="lab">If the report is skipped</span><b class="' + (fb ? (fb.pays ? 'up' : 'down') : '') + '">' + (fb ? (fb.pays ? 'Still pays' : 'Won’t pay') : '–') + '</b><em>' + (fb ? (fb.kind === 'formula' ? 'formula gives ' + fb.value + '%' : 'uses ' + fb.basedOn.split(' ')[0] + ', ' + fb.value + 'K') : '') + '</em></div>' +
-            '<div class="chk"><span class="lab">Trading stops</span><b class="n">' + ((fn && fn.stopsTrading) || '–') + '</b><em>' + when(date) + '</em></div>' +
+            '<div class="chk"><span class="lab">Paid on bad days</span><b class="n">' + fitTxt + '</b><em>' + fitNote + '</em></div>' +
+            '<div class="chk"><span class="lab">If report skipped</span><b class="' + (fb ? (fb.pays ? 'up' : 'down') : '') + '">' + (fb ? (fb.pays ? 'Still pays' : 'Won’t pay') : '–') + '</b><em>' + (fb ? (fb.kind === 'formula' ? 'formula gives ' + fb.value + '%' : 'uses ' + fb.basedOn.split(' ')[0] + ', ' + fb.value + 'K') : '') + '</em></div>' +
+            '<div class="chk"><span class="lab">Last trade</span><b class="n">' + ((fn && fn.stopsTrading) || '–') + '</b><em>' + when(date) + '</em></div>' +
           '</div>' +
           '<p class="why">' + esc(why) + '</p>' +
-          '<div class="ctas"><button class="btn" type="button" data-rel="' + p.release + '"><i class="tri"></i>Hear Atty explain</button></div>' +
+          '<div class="ctas"><button class="btn" type="button" data-rel="' + p.release + '"><i class="tri"></i>Hear why</button></div>' +
         '</div></article>');
       t.querySelector('[data-rel]').addEventListener('click', function () { jumpTo(p.release, true); });
       host.appendChild(t);
@@ -412,7 +413,7 @@
           '<div class="barline"><i class="' + (r.you ? 'you' : '') + '" style="width:' + (Math.abs(r.pct) / max * 100).toFixed(1) + '%"></i></div><div class="hide-s"></div>' +
           '<b class="pct n' + (r.you ? ' down' : '') + '">' + (r.pct < 0 ? '−' : '+') + Math.abs(r.pct).toFixed(2) + '%</b></div>'));
       });
-      $('pubSub').textContent = f.funds.length + ' public funds, from SEC 13F filings, measured with the same model as you. If inflation runs hot:';
+      $('pubSub').textContent = f.funds.length + ' pensions and universities. If inflation runs hot:';
     }).catch(function () {}).then(function () { DATA.fundsDone = true; maybeStart(); });
   }
 
@@ -433,7 +434,7 @@
       if (a.bearsOn) pic.appendChild(el('span', 'lab', TOPIC[a.bearsOn]));
       host.appendChild(card);
     });
-    $('newsState').textContent = (saved ? 'Saved search: ' : 'Results for ') + '“' + r.query + '”.';
+    $('newsState').textContent = '“' + r.query + '”';
   }
   var busy = false;
   function search(q) {
@@ -564,13 +565,14 @@
   var PER = { mood: null, until: 0, L: [1, 1, 0, 0], R: [1, 1, 0, 0], tilt: 0, hop: 0, hopV: 0, shake: 0, idleAt: 0, lookAt: null, nearAt: 0 };
   function feel(m, ms) { PER.mood = m; PER.until = performance.now() + (ms || 1200); }
   function hop(v) { if (PER.hop < 0.004) PER.hopV = v || 0.22; }
-  var HELLO = ['Hi! Press play and I will walk you through your week.', 'That tickles. Your next trade is just below.', 'I only say numbers I can check.', 'Still here. Still watching your thread.'], helloN = 0;
-  var cv = $('glass'), gl = cv.getContext('webgl', { antialias: false });
+  var HELLO = ['Hi! Press play.', 'That tickles.', 'Next trade is below.', 'Still here. Still watching.'], helloN = 0;
+  var cv = $('glass'), gl = cv.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: true });
   var FRAG = [
     'precision highp float;',
     'uniform vec2 uRes, uCenter, uLook;',
     'uniform float uTime, uAmp, uForm, uIntro, uCut, uHue, uDim, uBlink, uScale, uRodY, uDock, uTilt, uHop, uSquash;',
     'uniform vec4 uEyeL, uEyeR;',
+    'uniform float uAsm;',
     'float HL;',
     'float sdBox(vec2 p, vec2 b, float r) { vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }',
     'float sdSeg(vec2 p, vec2 a, vec2 b, float r) { vec2 c = 0.5 * (a + b); vec2 hs = vec2(0.5 * abs(b.x - a.x) + r, 0.5 * abs(b.y - a.y) + r); return sdBox(p - c, hs, 0.004); }',
@@ -587,11 +589,41 @@
     '  return sdSeg(q, vec2(-HL, 0.0), vec2(x1, 0.0), r);',
     '}',
     'float headD(vec2 p) { return sdBox(headP(p), vec2(0.25, 0.25) * (1.0 + 0.035 * uAmp), 0.012) * uScale; }',
+    'float hash(float n) { return fract(sin(n * 127.1 + 311.7) * 43758.5453); }',
+    'float sdTri(vec2 p, vec2 p0, vec2 p1, vec2 p2) {',
+    '  vec2 e0 = p1 - p0, e1 = p2 - p1, e2 = p0 - p2, v0 = p - p0, v1 = p - p1, v2 = p - p2;',
+    '  vec2 q0 = v0 - e0 * clamp(dot(v0, e0) / dot(e0, e0), 0.0, 1.0), q1 = v1 - e1 * clamp(dot(v1, e1) / dot(e1, e1), 0.0, 1.0), q2 = v2 - e2 * clamp(dot(v2, e2) / dot(e2, e2), 0.0, 1.0);',
+    '  float sg = sign(e0.x * e2.y - e0.y * e2.x);',
+    '  vec2 d = min(min(vec2(dot(q0, q0), sg * (v0.x * e0.y - v0.y * e0.x)), vec2(dot(q1, q1), sg * (v1.x * e1.y - v1.y * e1.x))), vec2(dot(q2, q2), sg * (v2.x * e2.y - v2.y * e2.x)));',
+    '  return -sqrt(d.x) * sign(d.y);',
+    '}',
+    '/* her head is cut into 18 triangular shards that fly in from all sides, spinning, and lock together */',
+    'float shardsD(vec2 p) {',
+    '  vec2 q = headP(p);',
+    '  float best = 1e5;',
+    '  for (int i = 0; i < 3; i++) for (int j = 0; j < 3; j++) for (int k = 0; k < 2; k++) {',
+    '    float id = float(i * 6 + j * 2 + k);',
+    '    vec2 a = vec2(-0.25 + float(i) / 6.0, -0.25 + float(j) / 6.0), w = vec2(1.0 / 6.0);',
+    '    vec2 v0 = a, v1 = a + vec2(w.x, 0.0), v2 = a + w, v3 = a + vec2(0.0, w.y);',
+    '    bool flip = mod(float(i + j), 2.0) > 0.5;',
+    '    vec2 A = flip ? (k == 0 ? v0 : v1) : v0;',
+    '    vec2 B = flip ? (k == 0 ? v1 : v2) : (k == 0 ? v1 : v2);',
+    '    vec2 C = flip ? (k == 0 ? v3 : v3) : (k == 0 ? v2 : v3);',
+    '    float t = clamp(uAsm * 1.7 - hash(id + 21.7) * 0.7, 0.0, 1.0); t = 1.0 - pow(1.0 - t, 3.0);',
+    '    vec2 c = (A + B + C) / 3.0;',
+    '    float ang = hash(id + 1.0) * 6.2832;',
+    '    vec2 off = vec2(cos(ang), sin(ang)) * (0.45 + 0.7 * hash(id + 7.3)) * (1.0 - t);',
+    '    float rot = (hash(id + 13.1) - 0.5) * 6.0 * (1.0 - t), cs = cos(rot), sn = sin(rot);',
+    '    vec2 pp = q - c - off;',
+    '    if (dot(pp, pp) > 0.04) continue;',
+    '    pp = vec2(cs * pp.x + sn * pp.y, -sn * pp.x + cs * pp.y) + c;',
+    '    best = min(best, sdTri(pp, A, B, C) + 0.006 * (1.0 - t));',
+    '  }',
+    '  return best * uScale;',
+    '}',
     'float shape(vec2 p) {',
-    '  float f = uForm * uForm * (3.0 - 2.0 * uForm);',
-    '  if (f < 0.001) return rodD(p);',
-    '  if (f > 0.999) return headD(p);',
-    '  return mix(rodD(p), headD(p), f);',
+    '  if (uAsm > 0.999) return headD(p);',
+    '  return mix(shardsD(p), headD(p), smoothstep(0.88, 1.0, uAsm));',
     '}',
     'float eye(vec2 q, vec2 c, vec4 e) { vec2 d = q - c - vec2(0.0, e.w); float cs = cos(e.z), sn = sin(e.z); d = vec2(cs * d.x + sn * d.y, -sn * d.x + cs * d.y); return sdBox(d, vec2(0.026 * e.y, 0.052 * uBlink * e.x + 0.006), 0.003); }',
     'float eyesD(vec2 p) {',
@@ -603,7 +635,7 @@
     '  return mix(mix(blue, violet, clamp(t * 1.6, 0.0, 1.0)), rose, clamp(t * 1.6 - 0.6, 0.0, 1.0));',
     '}',
     'vec3 bg(vec2 p, vec3 tc) {',
-    '  vec2 c = mix(vec2(0.0, uRodY), uCenter, uForm);',
+    '  vec2 c = uCenter;',
     '  vec3 col = vec3(0.004, 0.008, 0.035);',
     '  col += tc * 1.05 * exp(-length((p - c) * vec2(0.55, 1.0)) * 1.9) * (0.55 + 0.9 * uAmp) * uDim;',
     '  col += vec3(0.02, 0.06, 0.4) * smoothstep(0.7, -0.6, p.y) * 0.45 * uDim;',
@@ -615,38 +647,36 @@
     '  vec3 tc = tint(uHue);',
     '  float d = shape(p);',
     '  vec2 e = vec2(0.0018, 0.0);',
-    '  vec2 n = normalize(vec2(shape(p + e.xy) - shape(p - e.xy), shape(p + e.yx) - shape(p - e.yx)) + 1e-6);',
+    '  // the edge work (normal, rainbow rim) only near the surface; deep inside and far outside it is not needed',
+    '  bool near = abs(d) < 0.07;',
+    '  vec2 n = near ? normalize(vec2(shape(p + e.xy) - shape(p - e.xy), shape(p + e.yx) - shape(p - e.yx)) + 1e-6) : vec2(0.0);',
     '  float inside = smoothstep(0.002, -0.002, d);',
-    '  float thick = mix(mix(0.042, 0.02, uDock) + 0.024 * uAmp, 0.13 * uScale, uForm);',
+    '  float thick = 0.13 * uScale;',
     '  float depth = clamp(-d / thick, 0.0, 1.0);',
     '  float k = 0.07 * (1.0 - depth) + 0.025;',
     '  vec3 refr = vec3(bg(p - n * k, tc).r, bg(p - n * k * 1.35, tc).g, bg(p - n * k * 1.7, tc).b);',
-    '  vec3 col = mix(bg(p, tc), refr * 2.2 + tc * 0.22, inside);',
+    '  vec3 base = refr * 1.12 + tc * 0.035;',
     '  float sp = 0.006 + 0.008 * uAmp;',
-    '  vec3 rim = vec3(exp(-abs(shape(p + n * sp)) * 120.0), exp(-abs(d) * 120.0), exp(-abs(shape(p - n * sp)) * 120.0));',
-    '  col += rim * vec3(1.05, 0.9, 1.35) * 1.5;',
-    '  col += inside * pow(1.0 - depth, 3.0) * vec3(0.65, 0.78, 1.0) * 1.1;',
+    '  vec3 rim = near ? vec3(exp(-abs(shape(p + n * sp)) * 190.0), exp(-abs(d) * 190.0), exp(-abs(shape(p - n * sp)) * 190.0)) : vec3(0.0);',
+    '  vec3 L = rim * vec3(1.05, 0.9, 1.35) * 0.95;',
+    '  L += inside * pow(1.0 - depth, 7.0) * vec3(0.65, 0.78, 1.0) * 0.5;',
     '  float lit = dot(n, normalize(vec2(-0.45, 1.0)));',
-    '  col += inside * smoothstep(0.2, 1.0, lit) * pow(1.0 - depth, 1.6) * vec3(1.0) * (1.2 + 1.4 * uAmp);',
-    '  col += inside * smoothstep(0.3, 1.0, -lit) * pow(1.0 - depth, 2.5) * tc * 0.8;',
-    '  float sx = mod(uTime * (0.2 + 0.85 * uAmp), 2.0 * HL + 0.8) - HL - 0.4;',
-    '  col += vec3(0.85, 0.9, 1.0) * exp(-pow((p.x - sx) * 3.2, 2.0)) * exp(-max(d, 0.0) * 26.0) * (0.35 + 1.8 * uAmp) * (1.0 - uForm);',
-    '  col += tc * exp(-max(d, 0.0) * mix(8.0, 16.0, uDock)) * (0.35 + 0.9 * uAmp) * (1.0 - 0.5 * uDock);',
-    '  col += vec3(0.75, 0.85, 1.0) * exp(-max(d, 0.0) * 34.0) * 0.25;',
+    '  L += inside * smoothstep(0.35, 1.0, lit) * pow(1.0 - depth, 5.0) * vec3(1.0) * (0.5 + 0.9 * uAmp);',
+    '  L += inside * smoothstep(0.3, 1.0, -lit) * pow(1.0 - depth, 2.5) * tc * 0.8;',
+    '  L += tc * exp(-max(d, 0.0) * 11.0) * (0.12 + 0.55 * uAmp);',
+    '  L += vec3(0.75, 0.85, 1.0) * exp(-max(d, 0.0) * 40.0) * 0.08;',
     '  if (uForm > 0.02) {',
     '    float ed = eyesD(p);',
     '    float on = smoothstep(0.55, 1.0, uForm);',
-    '    col += (vec3(1.0) * smoothstep(0.004, -0.004, ed) * 2.2 + vec3(0.6, 0.75, 1.0) * exp(-max(ed, 0.0) * 28.0) * (0.7 + 1.2 * uAmp)) * on;',
+    '    L += (vec3(1.0) * smoothstep(0.004, -0.004, ed) * 1.7 + vec3(0.6, 0.75, 1.0) * exp(-max(ed, 0.0) * 28.0) * (0.7 + 1.2 * uAmp)) * on;',
     '  }',
-    '  if (uCut > 0.01 && uForm < 0.5) {',
-    '    float gp = uCut * 0.11;',
-    '    float ce = min(length(p - vec2(-gp, uRodY)), length(p - vec2(gp, uRodY)));',
-    '    col += vec3(1.0, 0.6, 0.95) * exp(-ce * 14.0) * uCut * 1.5;',
-    '  }',
-    '  col = 1.0 - exp(-col * 1.5);',
-    '  float g = fract(sin(dot(gl_FragCoord.xy + fract(uTime) * 91.0, vec2(12.9898, 78.233))) * 43758.5453);',
-    '  col += (g - 0.5) * 0.016;',
-    '  gl_FragColor = vec4(col, 1.0);',
+    '  // inside the glass: what is behind her, bent and split; outside: only her light, so the page shows through',
+    '  vec3 c1 = 1.0 - exp(-(base + L) * 1.5);',
+    '  vec3 c0 = 1.0 - exp(-L * 1.5);',
+    '  float a0 = clamp(max(c0.r, max(c0.g, c0.b)) * 1.15, 0.0, 1.0);',
+    '  vec3 premul = mix(c0, c1 * 0.86, inside);',
+    '  float alpha = max(mix(a0, 0.86, inside), max(premul.r, max(premul.g, premul.b)));',
+    '  gl_FragColor = vec4(premul, alpha);',
     '}'].join('\n');
   var prog = null, U = {};
   if (gl) {
@@ -658,7 +688,7 @@
       var vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
       var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ['uRes', 'uCenter', 'uLook', 'uTime', 'uAmp', 'uForm', 'uIntro', 'uCut', 'uHue', 'uDim', 'uBlink', 'uScale', 'uRodY', 'uDock', 'uTilt', 'uHop', 'uSquash', 'uEyeL', 'uEyeR'].forEach(function (k) { U[k] = gl.getUniformLocation(prog, k); });
+      ['uRes', 'uCenter', 'uLook', 'uTime', 'uAmp', 'uForm', 'uIntro', 'uCut', 'uHue', 'uDim', 'uBlink', 'uScale', 'uRodY', 'uDock', 'uTilt', 'uHop', 'uSquash', 'uEyeL', 'uEyeR', 'uAsm'].forEach(function (k) { U[k] = gl.getUniformLocation(prog, k); });
     }
   }
   if (!prog) document.body.style.background = 'radial-gradient(60% 50% at 70% 40%, #0b2bd6 0%, #030620 60%, #020414 100%)';
@@ -687,19 +717,28 @@
 
     // where she is: right of the headline on wide screens, above it on phones
     var aspect = innerWidth / innerHeight, wide = aspect > 0.95;
-    var cx = wide ? Math.min(0.5 * aspect - 0.42, 0.42 * aspect * 0.62) : 0, cy = wide ? 0.02 : 0.23, sc = wide ? Math.min(1, aspect / 1.35) : Math.min(0.72, aspect * 1.25);
-    var scroll = Math.max(0, Math.min(1, scrollY / (innerHeight * 0.7)));
-    var intro = reduce ? 1 : ease(T / 1.1), form = (reduce ? 1 : ease((T - 0.9) / 1.5)) * (1 - ease(scroll));
-    var bottomY = -0.5 + (innerWidth < 880 ? 40 : 52) / innerHeight;
-    var rodY = cy + (bottomY - cy) * ease(scroll);
+    // big beside the headline; as you scroll she shrinks into the bottom right corner and stays
+    // on phones she sits in the space above the headline
+    var phonePx = Math.min(0.24 * innerHeight, 0.6 * innerWidth);
+    var scH = wide ? Math.min(1.3, aspect / 1.15) : 2 * phonePx / innerHeight;
+    var cxH = wide ? 0.5 * aspect - 0.06 - 0.25 * scH : 0, cyH = wide ? 0.02 : (innerHeight / 2 - (76 + phonePx / 2)) / innerHeight;
+    var dockPx = wide ? 150 : 88, dX = innerWidth - (wide ? 30 : 14) - dockPx / 2, dY = innerHeight - (wide ? 22 : 92) - dockPx / 2;
+    var scD = 2 * dockPx / innerHeight, cxD = (dX - innerWidth / 2) / innerHeight, cyD = (innerHeight / 2 - dY) / innerHeight;
+    var scroll = Math.max(0, Math.min(1, scrollY / (innerHeight * 0.7))), dk = ease(scroll);
+    var vel = (scrollY - (frame.lastY == null ? scrollY : frame.lastY)) / Math.max(dt, 0.001); frame.lastY = scrollY;
+    frame.lean = (frame.lean || 0) + (Math.max(-0.16, Math.min(0.16, -vel / 4000)) - (frame.lean || 0)) * Math.min(1, dt * 6);
+    var sc = scH + (scD - scH) * dk;
+    var cx = cxH + (cxD - cxH) * dk + (reduce ? 0 : 0.014 * Math.sin(T * 0.55) * sc), cy = cyH + (cyD - cyH) * dk + (reduce ? 0 : 0.01 * Math.sin(T * 0.83) * sc);
+    var asm = reduce ? 1 : ease((T - 0.15) / 2.1), intro = 1, form = asm;
+    var rodY = -0.6;
     // eyes: open after she forms, blink now and then, look at your cursor
-    var open = ease((T - 2.1) / 0.35);
+    var open = ease((T - 2.25) / 0.35);
     if (now > blinkAt) { if (now > blinkAt + 140) blinkAt = now + 2600 + Math.random() * 3200; else open *= 0.08; }
     var hx = innerWidth / 2 + cx * innerHeight, hy = innerHeight / 2 - cy * innerHeight;
     var base = (G.speaking || G.playing) && G.beats[G.i] && !G.custom ? (BEAT_MOOD[G.beats[G.i].id] || 'neutral') : 'neutral';
     if (PER.mood && now > PER.until) PER.mood = null;
     // habits between lines
-    if (!G.speaking && !PER.mood && form > 0.8 && T > 3.5 && now > PER.idleAt) {
+    if (!G.speaking && !PER.mood && asm > 0.95 && T > 3.5 && now > PER.idleAt) {
       var roll = Math.random();
       if (roll < 0.35) PER.lookAt = { x: (Math.random() - 0.5) * 1.6, y: (Math.random() - 0.3) * 0.8, until: now + 1300 };
       else if (roll < 0.55) { hop(0.16); feel('happy', 900); }
@@ -709,33 +748,36 @@
       PER.idleAt = now + 4200 + Math.random() * 4200;
     }
     // your cursor coming close startles her a little, then she is pleased
-    if (mouse && now - mouse.t < 300 && form > 0.8 && !G.speaking && now > PER.nearAt && Math.hypot(mouse.x - hx, mouse.y - hy) < innerHeight * 0.28) {
+    if (mouse && now - mouse.t < 300 && asm > 0.95 && !G.speaking && now > PER.nearAt && Math.hypot(mouse.x - hx, mouse.y - hy) < innerHeight * 0.28) {
       feel('surprised', 500); setTimeout(function () { feel('happy', 900); hop(0.14); }, 500); PER.nearAt = now + 6000;
     }
     var mt = MOODS[PER.mood || base] || MOODS.neutral, kk = Math.min(1, dt * 9);
     for (var q2 = 0; q2 < 4; q2++) { PER.L[q2] += (mt.L[q2] - PER.L[q2]) * kk; PER.R[q2] += (mt.R[q2] - PER.R[q2]) * kk; }
     PER.shake *= Math.pow(0.04, dt);
     PER.tilt += (mt.tilt - PER.tilt) * kk;
-    var tiltNow = PER.tilt + 0.12 * Math.sin(now / 45) * PER.shake;
+    var tiltNow = PER.tilt + 0.12 * Math.sin(now / 45) * PER.shake + (reduce ? 0 : 0.035 * Math.sin(T * 0.7)) + frame.lean;
     PER.hopV -= 1.6 * dt; PER.hop += PER.hopV * dt; if (PER.hop < 0) { PER.hop = 0; PER.hopV = 0; }
     var squash = 0.05 * envelope + (PER.hop === 0 && PER.hopV === 0 ? 0 : -0.03);
     // the click target follows her head
     var hs = 0.5 * sc * innerHeight, hit = $('headHit');
-    hit.style.width = hit.style.height = hs + 'px'; hit.style.transform = 'translate(' + (hx - hs / 2) + 'px,' + (hy - hs / 2) + 'px)'; hit.style.display = form > 0.6 ? 'block' : 'none';
+    hit.style.width = hit.style.height = hs + 'px'; hit.style.transform = 'translate(' + (hx - hs / 2) + 'px,' + (hy - hs / 2) + 'px)'; hit.style.display = asm > 0.9 ? 'block' : 'none';
     if (PER.lookAt && now < PER.lookAt.until && !(mouse && now - mouse.t < 2500)) { look.x += (PER.lookAt.x - look.x) * 0.1; look.y += (PER.lookAt.y - look.y) * 0.1; }
     else if (mouse && now - mouse.t < 2500) {
       var lx = (mouse.x - hx) / (innerWidth * 0.4), ly = -(mouse.y - hy) / (innerHeight * 0.4), ll = Math.hypot(lx, ly);
       if (ll > 1) { lx /= ll; ly /= ll; }
       look.x += (lx - look.x) * 0.12; look.y += (ly - look.y) * 0.12;
     } else { look.x *= 0.95; look.y *= 0.95; }
+    var gcol = GL.hueNow < 0.5 ? [28 + 120 * GL.hueNow * 2, 72 - 30 * GL.hueNow * 2, 255] : [148 + 107 * (GL.hueNow - 0.5) * 2, 42 + 20 * (GL.hueNow - 0.5) * 2, 255 - 100 * (GL.hueNow - 0.5) * 2];
+    var gkey = Math.round(hx) + ',' + Math.round(hy) + ',' + Math.round(sc * innerHeight * 0.9) + ',' + gcol.map(Math.round).join(' ');
+    if (gkey !== frame.gkey) { frame.gkey = gkey; var bs = document.body.style; bs.setProperty('--gx', Math.round(hx) + 'px'); bs.setProperty('--gy', Math.round(hy) + 'px'); bs.setProperty('--gr', Math.round(Math.max(220, sc * innerHeight * 0.9)) + 'px'); bs.setProperty('--gc', gcol.map(Math.round).join(', ')); }
     if (prog) {
       gl.uniform2f(U.uRes, cv.width, cv.height);
       gl.uniform2f(U.uCenter, cx, cy); gl.uniform2f(U.uLook, look.x, look.y);
       gl.uniform1f(U.uTime, reduce ? 3 : T); gl.uniform1f(U.uAmp, envelope);
       gl.uniform1f(U.uForm, form); gl.uniform1f(U.uIntro, intro); gl.uniform1f(U.uCut, GL.cut); gl.uniform1f(U.uHue, GL.hueNow);
       gl.uniform4f(U.uEyeL, PER.L[0], PER.L[1], PER.L[2], PER.L[3]); gl.uniform4f(U.uEyeR, PER.R[0], PER.R[1], PER.R[2], PER.R[3]);
-      gl.uniform1f(U.uTilt, tiltNow); gl.uniform1f(U.uHop, PER.hop); gl.uniform1f(U.uSquash, squash);
-      gl.uniform1f(U.uDim, 1 - 0.4 * ease(scroll)); gl.uniform1f(U.uBlink, open); gl.uniform1f(U.uScale, sc); gl.uniform1f(U.uRodY, rodY); gl.uniform1f(U.uDock, ease(scroll));
+      gl.uniform1f(U.uTilt, tiltNow); gl.uniform1f(U.uAsm, asm); gl.uniform1f(U.uHop, PER.hop); gl.uniform1f(U.uSquash, squash);
+      gl.uniform1f(U.uDim, 1 - 0.35 * dk); gl.uniform1f(U.uBlink, open); gl.uniform1f(U.uScale, sc); gl.uniform1f(U.uRodY, rodY); gl.uniform1f(U.uDock, ease(scroll));
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
     requestAnimationFrame(frame);
