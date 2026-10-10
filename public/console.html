@@ -591,7 +591,10 @@
   fetch('/api/status').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (s) {
     var linked = new URLSearchParams(location.search).get('linked');
     if (linked) note('Linked.', (linked === 'robinhood' ? 'Robinhood' : 'Fidelity') + ' is connected. Holdings can take a minute to sync.');
-    if (!(s.snaptrade.accounts || []).length) note('Sample portfolio.', 'Link Robinhood or Fidelity to see your own. You sign in on SnapTrade’s page; Atropos never sees your password.');
+    if (s.public) {
+      ['linkRH', 'linkFD'].forEach(function (id) { $(id).disabled = true; });
+      note('Sample portfolio.', 'This is the public demo. Run Atropos yourself to link Robinhood or Fidelity.');
+    } else if (!(s.snaptrade.accounts || []).length) note('Sample portfolio.', 'Link Robinhood or Fidelity to see your own. You sign in on SnapTrade’s page; Atropos never sees your password.');
     if (!s.claude.configured) note('Plain-text writer.', 'Sonnet is not connected, so a plain-text writer explains. The numbers are the same.');
     var q = new URLSearchParams(location.search).get('news'); if (q) searchNews(q);
     run();

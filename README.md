@@ -1,13 +1,21 @@
 # Atropos
 
-**Most hedges miss the days you actually lose.**
+**See what the market expects before it happens.**
 
 Atropos reads what prediction markets expect from the next economic releases (inflation, the
-Fed, jobs), works out what each outcome would do to *your* holdings, and prices protection on
-every venue it can reach. Then Atty, a little yellow blob, walks you through it one scene at a
-time, out loud, and tells you when protection is not worth buying.
+Fed, jobs), works out what each outcome would do to *your* holdings, and suggests one trade, or
+none. Read-only: you place every trade yourself.
 
-## The demo, scene by scene
+## The site
+
+- **`/`** the landing page: what traders expect this week (live odds with the move since the
+  last check), how it works, and the research behind it.
+- **`/console.html`** the console: your portfolio (or the sample), what each report would do
+  to it, and this week's trade, or none. Link Robinhood or Fidelity read-only when you run it
+  yourself.
+- **`/atty/`** Atty's walkthrough, below.
+
+## Atty's walkthrough, scene by scene
 
 Open `/atty/` and wake Atty (she is asleep on a board of this week's real odds).
 
@@ -63,7 +71,7 @@ Built for a hackathon track on prediction markets as economic signals.
 ```
 npm install
 cp .env.example .env        # every key is optional
-node server.js              # http://127.0.0.1:4411/atty/
+node server.js              # http://127.0.0.1:4411
 ```
 
 Without keys it runs on a sample portfolio and saved odds. See `.env.example` for what each key
@@ -79,7 +87,7 @@ node scripts/build-atty.js  # dist/atty/
 ## Put it online (Fly.io)
 
 `ATROPOS_PUBLIC=1` (set in the Dockerfile) turns on the public demo: sample portfolio only, no
-brokerage linking, per-visitor and hourly limits on ticker checks, news and voice, and Atty only
+brokerage linking, per-visitor and hourly limits on portfolio checks, news and voice, and Atty only
 records audio for her own lines. The image never contains `.env`.
 
 ```

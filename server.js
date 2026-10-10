@@ -212,16 +212,18 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
   const route = url.pathname;
   try {
-    // the Atty page is the app; the earlier landing page stays at /index.html
-    if (route === '/') { res.writeHead(302, { Location: '/atty/' }); return res.end(); }
     if (guard.PUBLIC) {
-      // linking a brokerage, the status page (it lists linked accounts) and the full ticket
-      // pipeline are for your own machine only
-      if (/^\/api\/(link|status|tickets)$/.test(route)) return send(res, 404, { error: 'not available in the public demo' });
+      // linking a brokerage is for your own machine only
+      if (route === '/api/link') return send(res, 404, { error: 'Linking a brokerage only works when you run Atropos yourself.' });
       if (route.startsWith('/api/')) {
-        const kind = route === '/api/try' ? 'try' : route === '/api/news' ? 'news' : route === '/api/voice' ? 'voice' : 'api';
+        const kind = route === '/api/try' || route === '/api/tickets' ? 'try' : route === '/api/news' ? 'news' : route === '/api/voice' ? 'voice' : 'api';
         if (!guard.allow(req, kind) || (kind !== 'api' && !guard.allow(req, 'api'))) return send(res, 429, { error: 'Too many requests. Try again in a few minutes.' });
       }
+    }
+    if (route === '/api/status' && guard.PUBLIC) {
+      // the public demo: no accounts or brokers, just what the console needs to run on the sample
+      return send(res, 200, { live: true, public: true, snaptrade: { configured: false, accounts: [], error: null, brokers: [] },
+        jev: { configured: jev.configured() }, claude: { configured: claude.configured(), model: claude.MODEL } });
     }
     if (route === '/api/status') {
       const [j, accts, brokers] = await Promise.all([
