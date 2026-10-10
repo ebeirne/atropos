@@ -1,0 +1,56 @@
+{
+ "fetched_at": "2026-10-10T04:31:14Z",
+ "source": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/",
+ "families": {
+  "YOYCPI": {
+   "release": "cpi",
+   "chars": 3771,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/YOYCPI.pdf"
+  },
+  "ACPI": {
+   "release": "cpi",
+   "chars": 4721,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/ACPI.pdf"
+  },
+  "CPI": {
+   "release": "cpi",
+   "chars": 4361,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/CPI.pdf"
+  },
+  "CORECPI": {
+   "release": "cpi",
+   "chars": 4576,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/CORECPI.pdf"
+  },
+  "CPIDELAY": {
+   "release": "cpi",
+   "chars": 2629,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/CPIDELAY.pdf"
+  },
+  "PAYROLLS": {
+   "release": "nfp",
+   "chars": 4011,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/PAYROLLS.pdf"
+  },
+  "JOBS": {
+   "release": "nfp",
+   "chars": 4304,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/JOBS.pdf"
+  },
+  "NFPDELAY": {
+   "release": "nfp",
+   "chars": 2641,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/NFPDELAY.pdf"
+  },
+  "FEDDECISION": {
+   "release": "fomc",
+   "chars": 3052,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/FEDDECISION.pdf"
+  },
+  "FED": {
+   "release": "fomc",
+   "chars": 4700,
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/FED.pdf"
+  }
+ }
+}

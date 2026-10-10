@@ -24,3 +24,9 @@ scripts/readme-atropos.js
 # our own competitive notes for the track stay private
 data/strategy-*
 data/pressure-jev.json
+
+# runtime state and caches (rebuilt by the server and scripts)
+data/history-cache.json
+data/ledger.json
+# full contract-term texts are re-fetched by scripts/fetch_rules.py; data/rules.json keeps the clauses we use
+data/rules/*.txt

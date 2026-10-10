@@ -4,6 +4,12 @@
 (function (root) {
   var FEE = 0.01;   // the per-contract cost lib/agent.js adds to every quote
   var NAME = { cpi: 'inflation report', nfp: 'jobs report', fomc: 'Fed decision' };
+  var DAY_NAME = { cpi: 'inflation report', nfp: 'jobs report', fomc: 'Fed' };
+  var SIDE_PHRASE = { 'cpi:high': 'Inflation came in above the month before', 'cpi:low': 'Inflation came in below the month before',
+    'nfp:low': 'Job growth came in below the month before', 'nfp:high': 'Job growth came in above the month before' };
+  var LONGM = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function monthName(releaseIso) { var m = +String(releaseIso).split('-')[1]; return LONGM[(m + 10) % 12]; }   // the month a release reports on
+  function dayY(iso) { return day(iso) + ', ' + String(iso).slice(0, 4); }
   function money(x) { return '$' + Math.round(Math.abs(x)).toLocaleString('en-US'); }
   function money2(x) { return '$' + Number(x).toFixed(2); }
   function price(x) { var c = x * 100; return Math.abs(c - Math.round(c)) > 1e-6 ? '$' + Number(x).toFixed(3) : money2(x); }
@@ -55,6 +61,33 @@
       }
     }
 
+    // 3b. does it pay when you lose? (release-day history) and the fine print (contract terms)
+    var th = d.thread || {};
+    if (p && th.history && th.history.fits) {
+      var f0 = th.history.fits[p.release + ':' + p.side], what = DAY_NAME[p.release];
+      if (f0 && f0.lossDays) {
+        var hr = f0.paidOnLoss / f0.lossDays;
+        out.push({ id: 'fit', say: 'But does it pay when you lose? Since ' + f0.from.slice(0, 4) + ', your holdings fell half a percent or more on ' + f0.lossDays + ' ' + what + ' days. ' +
+            SIDE_PHRASE[p.release + ':' + p.side] + ' on ' + (hr < 0.5 ? 'only ' : '') + f0.paidOnLoss + ' of them.',
+          sub: hr >= 0.6 ? 'So this protection usually lines up with your losses.' : hr >= 0.4 ? "That's close to a coin flip, so don't count on it alone." : 'So it usually misses the days you actually lose.',
+          show: { kind: 'fit', unit: p.release === 'cpi' ? '%' : 'K', rows: f0.worst.map(function (w) { return { date: dayY(w.date), ret: w.ret, value: w.value, before: w.before, happened: w.happened }; }) },
+          numbers: { lossDays: f0.lossDays, paidOnLoss: f0.paidOnLoss, since: f0.from, test: 'came in above/below the month before, first print' } });
+      }
+    }
+    if (p && th.fine) {
+      var fn = th.fine[p.release + ':' + p.side];
+      if (fn && fn.fallback && fn.fallback.basedOn) {
+        var fb = fn.fallback, measured = monthName(fn.releaseDate);
+        var how = fb.kind === 'formula' ? "settles on a formula from " + fb.basedOn.split(' ')[0] + "'s numbers, which works out to " + fb.value + '%'
+          : 'settles on ' + fb.basedOn.split(' ')[0] + "'s number, " + fb.value + 'K';
+        var prec = (fn.precedent || [])[0];
+        out.push({ id: 'fine', say: 'One more thing in the fine print: if the government never publishes ' + measured + "'s number, this contract " + how + ', so it would ' + (fb.pays ? 'still pay.' : 'not pay.'),
+          sub: prec ? 'That really happened in ' + prec.month + ', during the government shutdown.' : '',
+          show: { kind: 'fine', stops: fn.stopsTrading + ', ' + day(fn.releaseDate), fallback: (fb.kind === 'formula' ? 'Formula on ' + fb.basedOn + ' CPI: ' + fb.value + '%' : fb.basedOn + ': ' + fb.value + 'K'), pays: fb.pays, latest: fn.latestSettle ? dayY(fn.latestSettle) : null, url: fn.url },
+          numbers: { measuredMonth: measured, releaseDate: fn.releaseDate, ifNeverPublished: fb.kind === 'formula' ? 'settles on (last published CPI / CPI 12 months earlier)^(13/12) - 1, using ' + fb.basedOn + ' data' : 'settles on the last published month, ' + fb.basedOn, fallbackValue: fb.value + (fb.kind === 'formula' ? '%' : 'K'), contract: p.best.contract, contractPaysIfFallbackValue: fb.pays, precedent: prec ? prec.month + ': ' + prec.note : null } });
+      }
+    }
+
     // 4. the snip: protection that is not worth buying
     var q = r.portfolio.filter(function (x) { return x.knot && x.knot.verdict === 'overpriced'; })[0];
     if (q) {
@@ -83,7 +116,21 @@
       }
     }
 
-    // 6. the end
+    // 6. keeping score: her calls, settled once the numbers are out
+    var calls = (th.ledger || []).slice();
+    if (calls.length) {
+      var done = calls.filter(function (c) { return c.settled; }), open = calls.filter(function (c) { return !c.settled; });
+      var said = open.slice(0, 2).map(function (c) { return DAY_NAME[c.release] + ' on ' + day(c.releaseDate) + ', ' + c.call; });
+      var lastDone = done[done.length - 1];
+      out.push({ id: 'record', say: (lastDone
+          ? 'Keeping score: on ' + day(lastDone.releaseDate) + ' I said ' + lastDone.call + ', and the protection ' + (lastDone.settled.paid ? 'paid.' : "didn't pay.") + ' '
+          : "I keep score, so you can check me. ") + (said.length ? 'Still open: ' + said.join('; ') + '.' : ''),
+        show: { kind: 'ledger', rows: calls.slice(-5).map(function (c) { return { date: day(c.releaseDate), what: DAY_NAME[c.release].replace(/^./, function (x) { return x.toUpperCase(); }) + ', ' + c.word, call: c.call,
+          status: c.settled ? (c.settled.paid ? 'paid ' + money(c.payout) : 'no payout') : 'open' }; }) },
+        numbers: { open: said, settled: done.length } });
+    }
+
+    // 7. the end
     out.push({ id: 'end', say: "That's this week. Ask me about anything in the news, or see everything below.", show: { kind: 'end' }, numbers: {} });
     out.forEach(function (b) { b.hash = hash(b.say); });
     return out;

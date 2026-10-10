@@ -22,6 +22,9 @@ const news = require('./lib/news');
 const agent = require('./lib/agent');
 const funds = require('./lib/funds');
 const voice = require('./lib/voice');
+const history = require('./lib/history');
+const rules = require('./lib/rules');
+const ledger = require('./lib/ledger');
 
 const PORT = Number(process.env.PORT || 4411);
 const HOST = '127.0.0.1';
@@ -253,6 +256,18 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, await news.search(url.searchParams.get('q')));
     }
 
+    if (route === '/api/thread') {
+      // does protection pay when you lose (release-day history), the fine print on each
+      // quote (contract terms), and Atty's record of calls
+      const r = agent.status().result;
+      if (!r) return send(res, 503, { error: 'the agent has not finished its first round yet' });
+      const holdings = r.holdings.map((h) => ({ symbol: h.symbol, value: h.value }));
+      const [check, cpiData] = await Promise.all([history.check(holdings), history.cpi()]);
+      const fine = {};
+      for (const p of r.portfolio) if (p.best) fine[`${p.release}:${p.side}`] = rules.edge(p.best, { cpi: cpiData, nfpDays: check.days.nfp, gaps: check.gaps });
+      return send(res, 200, { at: new Date().toISOString(), history: check, fine, ledger: ledger.list() });
+    }
+
     if (route === '/api/voice') {
       // Atty reads one line aloud (ElevenLabs, cached on disk per line)
       try { return send(res, 200, await voice.speak(url.searchParams.get('t')), 'audio/mpeg'); }
@@ -307,7 +322,11 @@ async function agentInputs() {
 let agentRound = null;
 
 if (require.main === module) {
-  agentRound = agent.start(agentInputs, Number(process.env.AGENT_EVERY_MIN || 10) * 60000);
+  // every round also records Atty's calls, and settles the ones whose release is out
+  agentRound = agent.start(agentInputs, Number(process.env.AGENT_EVERY_MIN || 10) * 60000, async (result) => {
+    ledger.record(result);
+    await ledger.settle(result.holdings.map((h) => ({ symbol: h.symbol, value: h.value })));
+  });
   server.listen(PORT, HOST, () => {
     console.log(`Atropos  http://${HOST}:${PORT}`);
     console.log(`  snaptrade  ${snaptrade.configured() ? 'keys set (personal, read-only)' : 'MISSING keys'}`);

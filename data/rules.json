@@ -1,0 +1,76 @@
+{
+ "built_at": "2026-10-10T04:34:40.032Z",
+ "source": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/",
+ "fetched_at": "2026-10-10T04:31:14Z",
+ "releases": {
+  "cpi": {
+   "family": "YOYCPI",
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/YOYCPI.pdf",
+   "underlying": "The Underlying for this Contract is the single decimal value from the Consumer Price Index Summary representing the percent increase in the all items index of the Consumer Price Index for All Urban Consumers before seasonal adjustment for the twelve months ending in <month>. Revisions to the Underlying made after Expiration will not be accounted for in determining the Expiration Value.",
+   "lastTrading": "The Last Trading Date for the Contract will be the day of the scheduled data release for <month>. The Last Trading Time will be 8:29 AM ET.",
+   "expiration": "The latest Expiration Date of the Contract shall be three months after the scheduled data release for <month>. If no data is released, or the Source Agency announces that they will not release the Underlying data, expiration will be moved to an earlier date and time in accordance with Rule 7.2.",
+   "fallback": "If no data is available on the Expiration Date at the Expiration time, the Expiration Value will be calculated by (Last available value of the Consumer Price Index / the Consumer Price Index value from 12 months prior to that)^(13/12) - 1.",
+   "contingencies": "Before Settlement, Kalshi may, at its sole discretion, initiate the Market Outcome Review Process pursuant to Rule 6.3(d) of the Rulebook. If an Expiration Value cannot be determined on the Expiration Date, Kalshi has the right to determine payouts pursuant to Rule 6.3(b) in the Rulebook.",
+   "exchangeCanReview": true,
+   "delayMarket": {
+    "family": "CPIDELAY",
+    "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/CPIDELAY.pdf"
+   },
+   "fallbackKind": {
+    "pick": "formula",
+    "confidence": 1,
+    "all": {
+     "formula": 1,
+     "last_month": 0,
+     "exchange_decides": 0,
+     "waits": 0
+    }
+   }
+  },
+  "nfp": {
+   "family": "PAYROLLS",
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/PAYROLLS.pdf",
+   "underlying": "The Underlying for this Contract is the change in total nonfarm payroll employment reported by the Bureau of Labor Statistics (“BLS”) Monthly Employment Situation Report for <month>. Revisions to the Underlying made after Expiration will not be accounted for in determining the Expiration Value.",
+   "lastTrading": "The Last Trading Date of the Contract will be the day of the scheduled data release for <month>. The Last Trading Time will be 8:29 AM ET.",
+   "expiration": "The latest Expiration Date of the Contract shall be three months after the scheduled data release for <month>. If the data is released, or the Source Agency announces that they will not release the Underlying data, expiration will be moved to an earlier date and time in accordance with Rule 7.2.",
+   "fallback": "If no data is released by the Expiration Date at the Expiration time, then the market will resolve based on the last available month of data.",
+   "contingencies": "Before Settlement, Kalshi may, at its sole discretion, initiate the Market Outcome Review Process pursuant to Rule 6.3(d) of the Rulebook. If an Expiration Value cannot be determined on the Expiration Date, Kalshi has the right to determine payouts pursuant to Rule 6.3(b) in the Rulebook.",
+   "exchangeCanReview": true,
+   "delayMarket": {
+    "family": "NFPDELAY",
+    "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/NFPDELAY.pdf"
+   },
+   "fallbackKind": {
+    "pick": "last_month",
+    "confidence": 1,
+    "all": {
+     "last_month": 1,
+     "formula": 0,
+     "exchange_decides": 0,
+     "waits": 0
+    }
+   }
+  },
+  "fomc": {
+   "family": "FEDDECISION",
+   "url": "https://kalshi-public-docs.s3.amazonaws.com/contract_terms/FEDDECISION.pdf",
+   "underlying": "The Underlying for this Contract is Federal Open Market Committee (“FOMC”) decisions to change (or not change) the target federal funds rate range. Revisions to the Underlying made after Expiration will not be accounted for in determining the Expiration Value.",
+   "lastTrading": "The Last Trading Date of the Contract will be <date>. The Last Trading Time will be 1:55 PM ET.",
+   "expiration": "The Expiration Date of the Contract shall be the sooner of the date of the first 2:05 PM ET following the release of a decision for <meeting> or three months after <date>.",
+   "fallback": null,
+   "contingencies": "Before Settlement, Kalshi may, at its sole discretion, initiate the Market Outcome Review Process pursuant to Rule 6.3(d) of the Rulebook. If an Expiration Value cannot be determined on the Expiration Date, Kalshi has the right to determine payouts pursuant to Rule 6.3(b) in the Rulebook.",
+   "exchangeCanReview": true,
+   "delayMarket": null,
+   "fallbackKind": {
+    "pick": "waits",
+    "confidence": 0.74,
+    "all": {
+     "waits": 0.74,
+     "exchange_decides": 0.26,
+     "formula": 0,
+     "last_month": 0
+    }
+   }
+  }
+ }
+}

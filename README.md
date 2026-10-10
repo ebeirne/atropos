@@ -22,6 +22,17 @@ Built for a hackathon track on prediction markets as economic signals.
 - **The cheapest credible protection, or none.** For each tail, Atty's agent (`lib/agent.js`)
   finds the cheapest contract with enough open interest, sizes it to the dollar loss, compares the
   price with the fair value from the odds, and says buy, fair, or skip. It runs every 10 minutes.
+- **Does it pay when you lose?** A contract pays on the printed number; you lose on how markets
+  react, and the two can split. For every CPI and jobs release since 2021, `lib/history.js` checks
+  how your current holdings moved and which way the number came in (first prints from BLS and
+  ALFRED, prices from Yahoo). For the sample portfolio, hot-inflation protection lined up with only
+  6 of the 13 inflation days it fell 0.5% or more.
+- **The fine print.** `scripts/fetch_rules.py` reads Kalshi's published contract terms;
+  `lib/rules.js` works out what each quoted contract would settle on if the government never
+  publishes the number (a formula from the last CPI; last month's payrolls), using today's data.
+  BLS skipped the October 2025 CPI and jobs reports during the shutdown, so this is not hypothetical.
+- **Atty keeps score.** Every round records her calls (protect, your call, skip) in a ledger;
+  `lib/ledger.js` settles each one against the first print after the release.
 - **You next to public money.** The same model runs on the latest SEC 13F filings of state and
   city pensions and public university funds (`lib/thirteenf.js`, `lib/funds.js`), and shows who
   else holds what you hold and what they bought or sold last quarter.
@@ -53,7 +64,7 @@ node scripts/build-atty.js  # dist/atty/
 
 | Path | What |
 |---|---|
-| `server.js` | API (`/api/agent`, `/api/events`, `/api/funds`, `/api/news`, `/api/voice`, `/api/venues`) and static files |
+| `server.js` | API (`/api/agent`, `/api/events`, `/api/funds`, `/api/thread`, `/api/news`, `/api/voice`, `/api/venues`) and static files |
 | `lib/` | odds venues, engine, agent, 13F benchmark, news, Jev, voice |
 | `public/atty/` | the Atty page; `beats.js` builds her walkthrough lines from the numbers |
 | `public/index.html`, `public/console.html` | the earlier Atropos landing page and console |

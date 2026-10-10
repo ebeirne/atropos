@@ -360,6 +360,7 @@
   [].forEach.call($('newsChips').querySelectorAll('button'), function (b) { b.addEventListener('click', function () { search(b.textContent); }); });
   fetch('../news-sample.json').then(function (r) { return r.json(); }).then(function (r) { renderNews(r, true); }).catch(function () {});
 
+  getJSON('/api/thread', 'thread.json').then(function (res) { DATA.thread = res.data; }).catch(function () { DATA.thread = {}; }).then(function () { DATA.threadDone = true; maybeStart(); });
   getJSON('/api/agent', 'agent.json').then(function (res) { renderAgent(res.data, res.live); }).catch(function () { $('status').textContent = 'Atty could not load her last check.'; });
   getJSON('/api/events', '../tape.json').then(function (res) {
     var s = (res.data.signals || []).map(function (x) { var i = x.p.indexOf(Math.max.apply(null, x.p)); return CODE[x.id] + ' ' + Math.round(x.p[i] * 100) + '%'; });
@@ -374,7 +375,7 @@
   var G = { beats: [], i: 0, playing: false, audio: null, started: false, words: [], speaking: false, cutUntil: 0 };
   var snipAt = -1;
   function maybeStart() {
-    if (G.started || !DATA.agent || !DATA.tape || !DATA.fundsDone || !window.AttyBeats) return;
+    if (G.started || !DATA.agent || !DATA.tape || !DATA.fundsDone || !DATA.threadDone || !window.AttyBeats) return;
     G.beats = AttyBeats.beats(DATA); if (!G.beats.length) return;
     G.started = true; showBeat(0);
   }
@@ -399,6 +400,17 @@
         host.appendChild(miniRow(b.who, bar, (b.v < 0 ? '−' : '+') + Math.abs(b.v).toFixed(2) + '%', 'num' + (b.you ? ' down' : '')));
       });
     }
+    if (s.kind === 'fit') s.rows.forEach(function (x) {
+      host.appendChild(miniRow(x.date, x.value + s.unit + ' after ' + x.before + s.unit + (x.happened ? ', paid' : ', missed'), (x.ret < 0 ? '−' : '+') + Math.abs(x.ret).toFixed(2) + '%', 'num ' + (x.ret < 0 ? 'down' : 'up')));
+    });
+    if (s.kind === 'fine') {
+      host.appendChild(miniRow('Trading stops', '', s.stops));
+      host.appendChild(miniRow('If never published', s.fallback, s.pays ? 'pays' : 'no payout', s.pays ? 'up' : 'down'));
+      if (s.latest) host.appendChild(miniRow('Latest it can settle', '', s.latest));
+      var src = el('div', 'mini'), a3 = el('a', 'g', 'Kalshi’s contract terms'); a3.href = s.url; a3.target = '_blank'; a3.rel = 'noopener noreferrer';
+      src.appendChild(a3); src.appendChild(el('span')); src.appendChild(el('span')); host.appendChild(src);
+    }
+    if (s.kind === 'ledger') s.rows.forEach(function (x) { host.appendChild(miniRow(x.date + ', ' + x.what, x.call, x.status, x.status === 'open' ? 'g' : '')); });
     if (s.kind === 'end') {
       var r = el('div', 'mini'), a1 = el('a', null, 'Ask about the news'), a2 = el('a', 'g', 'See everything');
       a1.href = '#news'; a2.href = '#quotes';

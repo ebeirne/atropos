@@ -10,7 +10,7 @@ const out = path.join(__dirname, '..', 'dist', 'atty');
 
 (async () => {
   fs.mkdirSync(out, { recursive: true });
-  for (const f of ['index.html', 'agent.json', 'funds.json', 'beats.js']) fs.copyFileSync(path.join(pub, 'atty', f), path.join(out, f));
+  for (const f of ['index.html', 'agent.json', 'funds.json', 'thread.json', 'beats.js']) fs.copyFileSync(path.join(pub, 'atty', f), path.join(out, f));
   for (const f of ['tape.json', 'news-sample.json']) fs.copyFileSync(path.join(pub, f), path.join(out, f));
   // in the artifact the shared snapshots sit next to the page, not one folder up
   const page = path.join(out, 'index.html');
@@ -19,7 +19,7 @@ const out = path.join(__dirname, '..', 'dist', 'atty');
   // the walkthrough exactly as the saved page will build it
   const { beats } = require(path.join(pub, 'atty', 'beats.js'));
   const read = (f) => JSON.parse(fs.readFileSync(path.join(out, f), 'utf8'));
-  const list = beats({ agent: read('agent.json'), funds: read('funds.json'), tape: read('tape.json') });
+  const list = beats({ agent: read('agent.json'), funds: read('funds.json'), tape: read('tape.json'), thread: read('thread.json') });
   list.forEach((b, i) => console.log(`${i + 1}. ${b.say}${b.sub ? '  / ' + b.sub : ''}`));
 
   const jev = require('../lib/jev');
