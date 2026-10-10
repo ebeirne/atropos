@@ -9,13 +9,13 @@ time, out loud, and tells you when protection is not worth buying.
 
 ## The demo, scene by scene
 
-Open `/atty/` and wake Atty (she is asleep on a board of this week's real odds).
+Open `/atty/` and wake Atty.
 
 1. **Your total.** She sits on it; this week's three reports sit below.
 2. **The risk.** A hot inflation print could cost you $461. The number drops on her head.
 3. **The trade.** She pushes the ticket in: 839 contracts on Kalshi for $377.55, fair price.
-4. **Does it pay when you lose?** She hops across your 13 worst inflation days since 2021 and
-   stamps each one. It would have paid on 6. Your two worst days: both missed.
+4. **Does it pay when you lose?** On your 13 worst inflation days since 2021 it would have
+   paid 6 times, shown over every report day, misses in red.
 5. **The fine print.** If the report is never published, this contract still pays (a formula on
    last month's number). It happened in October 2025.
 6. **Skip.** The jobs-report protection is overpriced; she kicks it off the stage.
@@ -104,7 +104,7 @@ Do not give the public demo SnapTrade keys.
 |---|---|
 | `server.js` | API (`/api/agent`, `/api/events`, `/api/funds`, `/api/thread`, `/api/news`, `/api/voice`, `/api/venues`) and static files |
 | `lib/` | odds venues, engine, agent, 13F benchmark, news, Jev, voice |
-| `public/atty/` | the Atty page: one scene per line, Atty drawn on a canvas, shared numbers flying between scenes; `beats.js` builds her lines from the numbers |
+| `public/atty/` | the Atty page: one scene per line, Atty drawn on a canvas; `beats.js` builds her lines from the numbers |
 | `lib/guard.js` | public-demo limits (`ATROPOS_PUBLIC=1`) |
 | `Dockerfile`, `fly.toml` | the public demo on Fly.io |
 | `public/index.html`, `public/console.html` | the earlier Atropos landing page and console |

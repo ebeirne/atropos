@@ -22,7 +22,6 @@
     --down: #ff5470;
     --f: "Geist", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
     --m: "Geist Mono", ui-monospace, monospace;
-    --H: min(220px, 24vh);
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
@@ -49,14 +48,8 @@
   /* scenes */
   .stage { position: fixed; inset: 0; }
   .scene { position: absolute; inset: 0; display: none; }
-  /* scenes hand over to each other: the old one slides away while anything the two share
-     (your total, the loss, the contract) flies from where it was to where it goes next */
-  .scene.on, .scene.out { display: block; }
-  .scene.in { animation: sceneIn .45s ease both; }
-  .scene.out { animation: sceneOut .45s cubic-bezier(.4, 0, .8, .4) both; pointer-events: none; }
+  .scene.on { display: block; animation: sceneIn .5s ease both; }
   @keyframes sceneIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes sceneOut { to { opacity: 0; translate: calc(-5vw * var(--dir, 1)) 0; scale: .97; } }
-  .carrying { visibility: hidden !important; }
   .center { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); text-align: center; width: min(1100px, 92vw); }
   .huge { display: inline-block; font-weight: 800; font-size: clamp(64px, 13vw, 210px); line-height: .9; letter-spacing: -.05em; }
   .say { position: absolute; left: 50%; bottom: 112px; transform: translateX(-50%); width: min(820px, 90vw); text-align: center; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.35; }
@@ -100,54 +93,19 @@
   .ticket .hd p { font-size: 24px; font-weight: 700; letter-spacing: -.02em; margin-top: 4px; }
   .ticket .cost { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 20px; border-top: 1px solid var(--edge); }
   .ticket .cost b { font-size: 40px; font-weight: 800; letter-spacing: -.03em; }
-  /* the contract this part of the story is about, pinned at the top */
-  .pill { position: absolute; left: 50%; top: 78px; transform: translateX(-50%); border: 1px solid var(--edge); background: var(--card); border-radius: 999px; padding: 9px 18px; font-size: 15px; white-space: nowrap; color: var(--ink); }
-  .pill b { font-weight: 600; }
-  /* fit: Atty hops along your 13 worst days and checks each one */
-  .ctr { position: absolute; left: 50%; top: 26%; transform: translate(-50%, -50%); text-align: center; white-space: nowrap; }
-  .ctr .huge { font-size: clamp(72px, 11vw, 160px); }
-  .bump { display: inline-block; animation: bump .4s cubic-bezier(.2, 1.6, .4, 1); }
-  @keyframes bump { from { transform: scale(1.4); color: var(--atty); } }
-  .days { position: absolute; left: 50%; top: 42%; transform: translateX(-50%); width: min(1000px, 92vw); display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: clamp(4px, 1vw, 10px); border-top: 2px solid #3a3a36; }
-  .day { position: relative; height: calc(var(--H) + 50px); }
-  .day i { position: absolute; left: 6%; right: 6%; top: 0; height: calc(var(--h) * var(--H)); border-radius: 0 0 6px 6px; background: #232321; transform-origin: 50% 0; animation: grow .5s cubic-bezier(.2, .9, .3, 1.1) both; }
-  @keyframes grow { from { transform: scaleY(0); } }
-  .day.paid i { background: var(--ink); }
-  .day.miss i { background: rgba(255, 84, 112, .22); box-shadow: inset 0 0 0 2px var(--down); }
-  .day.miss.hot i { animation: hot .9s ease-in-out infinite alternate; }
-  @keyframes hot { to { background: rgba(255, 84, 112, .65); } }
-  .day .mk { position: absolute; left: 0; right: 0; top: 6px; text-align: center; font-weight: 800; font-size: 18px; opacity: 0; transform: scale(.3); transition: transform .3s cubic-bezier(.2, 1.6, .4, 1), opacity .15s; }
-  .day.paid .mk, .day.miss .mk { opacity: 1; transform: none; }
-  .day.paid .mk { color: #111; } .day.miss .mk { color: var(--down); }
-  .day small { position: absolute; left: -12px; right: -12px; bottom: 0; text-align: center; font: 500 12px/1.35 var(--m); color: var(--mute); }
-  .day small b { display: block; font-weight: 500; color: var(--ink); }
-  .worst { position: absolute; left: 50%; top: calc(42% + var(--H) + 66px); transform: translateX(-50%); color: var(--down); font-weight: 600; font-size: 20px; opacity: 0; transition: opacity .5s; white-space: nowrap; }
-  .worst.on { opacity: 1; }
-  /* the opening: a field of the real odds on this week's reports, Atty asleep on top */
-  .field { position: absolute; inset: 64px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4vw; padding: 0 clamp(18px, 4vw, 60px); opacity: .42; transition: opacity 1.2s; -webkit-mask-image: linear-gradient(#000, #000 38%, transparent 60%); mask-image: linear-gradient(#000, #000 38%, transparent 60%); }
-  .intro.awake .field { opacity: .85; }
-  .col { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
-  .colh { padding: 18px 0 10px; border-bottom: 1px solid var(--edge); color: var(--ink); text-align: left; }
-  .colh b { display: block; font-weight: 700; font-size: 17px; }
-  .colh small { color: var(--mute); font-size: 13px; }
-  .rail { flex: 1; overflow: hidden; }
-  .roll { animation: roll var(--t, 40s) linear infinite; }
-  @keyframes roll { to { transform: translateY(-50%); } }
-  .o { display: grid; grid-template-columns: 7.2em minmax(0, 1fr) 3em 3.4em; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 14px; }
-  .o span { color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .o i { height: 6px; border-radius: 3px; background: #1c1c1a; position: relative; overflow: hidden; }
-  .o i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--p) * 100%); background: #6b6b65; border-radius: 3px; transition: width .8s; }
-  .o.lead span { color: var(--ink); } .o.lead i::after { background: var(--atty); }
-  .o b { font-weight: 600; text-align: right; } .o em { font-style: normal; font-size: 12px; text-align: right; font-family: var(--m); }
-  .o.flash b { animation: flash 1.4s ease; }
-  @keyframes flash { from { color: var(--atty); } }
-  .livebadge { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; color: var(--mute); font-size: 14px; }
-  .livebadge[hidden] { display: none; }
-  .livebadge i { width: 8px; height: 8px; border-radius: 50%; background: var(--up); animation: ping 1.8s infinite; }
-  .livebadge.snap i { background: var(--mute); animation: none; }
-  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(70, 227, 159, .6); } 70%, 100% { box-shadow: 0 0 0 10px rgba(70, 227, 159, 0); } }
-  .ctx { font-size: 22px; margin-bottom: 6px; color: var(--mute); }
-  .ctx .n { color: var(--ink); }
+  /* fit: the miss chart */
+  .chart { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(1000px, 92vw); }
+  .chart .huge { font-size: clamp(64px, 10vw, 150px); }
+  .proof svg { width: 100%; height: auto; display: block; margin-top: 10px; }
+  .proof .paid { fill: #f5f5f2; }
+  .proof .miss { fill: rgba(255, 84, 112, .18); stroke: #ff5470; stroke-width: 2; animation: blink 1.4s ease-in-out infinite alternate; }
+  @keyframes blink { from { fill-opacity: .1; } to { fill-opacity: .55; } }
+  .proof .calm { fill: #2a2a27; }
+  .proof .base { stroke: #3a3a36; stroke-width: 1; }
+  .proof .yr { fill: #8e8e8a; font: 500 16px "Geist Mono", monospace; }
+  .key { display: flex; gap: 16px; justify-content: center; margin-top: 8px; }
+  .key i { display: inline-block; width: 11px; height: 11px; margin-right: 6px; vertical-align: -1px; border-radius: 2px; }
+  .key .kp { background: #f5f5f2; } .key .km { border: 2px solid #ff5470; }
   /* fine: the sign she carries */
   .sign { position: fixed; left: 0; top: 0; z-index: 19; background: var(--ink); color: #111; border-radius: 14px; padding: 14px 20px; text-align: center; display: none; transform-origin: 50% 100%; }
   .sign b { display: block; font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
@@ -209,25 +167,8 @@
     .bar b { font-size: 17px; }
     .next { min-width: 140px; padding: 14px 20px; }
     .dots { display: none; }
-    :root { --H: 20vh; }
-    .pill { top: 70px; font-size: 13px; padding: 7px 14px; }
-    .ctr { top: 21%; }
-    .ctr .huge { font-size: 72px; }
-    .days { top: 31%; width: 92vw; }
-    .day .mk { font-size: 12px; top: 3px; }
-    .day small .mo, .day small b { display: none; }
-    .day:not(.yr) small { visibility: hidden; }
-    .day small { left: -6px; right: -12px; text-align: left; }
-    .worst { top: calc(31% + var(--H) + 58px); font-size: 16px; white-space: normal; width: 86vw; text-align: center; }
-    .field { gap: 12px; padding: 0 14px; opacity: .32; -webkit-mask-image: linear-gradient(#000, #000 28%, transparent 46%); mask-image: linear-gradient(#000, #000 28%, transparent 46%); }
-    .intro h1 { font-size: 34px; }
-    .intro .center { top: 70%; }
-    .colh b { font-size: 14px; } .colh small { font-size: 11px; }
-    .o { grid-template-columns: minmax(0, 1fr) 2.6em; font-size: 12px; gap: 4px; }
-    .o i, .o em { display: none; }
-    .ctx { font-size: 17px; }
   }
-  @media (prefers-reduced-motion: reduce) { .scene.in, .scene.out, .rise, .drop, .ticket.push, .day i, .day.miss.hot i, .roll, .livebadge i, .bump { animation: none; } .kick, .skipword, .bar .fill, .day .mk { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .scene.on, .rise, .drop, .ticket.push, .proof .miss { animation: none; } .kick, .skipword, .bar .fill { transition: none; } }
 </style>
 
 <canvas id="atty" aria-hidden="true"></canvas>
@@ -240,12 +181,10 @@
 
 <main class="stage" id="stage" aria-live="polite">
   <section class="scene intro on" data-id="intro">
-    <div class="field" id="field" aria-hidden="true"></div>
     <div class="center">
       <h1>Most hedges miss the days you actually lose.</h1>
       <p id="claim">Atty checks yours against the days you really lost money.</p>
       <button class="go" id="wakeBtn" type="button">Wake Atty</button>
-      <div><span class="livebadge" id="livebadge" hidden><i></i><span></span></span></div>
     </div>
   </section>
 </main>
@@ -286,7 +225,7 @@
     return Promise.all([
       getJSON('/api/agent', 'agent.json').then(function (r) { DATA.agent = r.data; DATA.live = r.live; }),
       getJSON('/api/thread', 'thread.json').then(function (r) { DATA.thread = r.data; }).catch(function () { DATA.thread = {}; }),
-      getJSON('/api/events', '../tape.json').then(function (r) { DATA.tape = r.data; DATA.tapeLive = r.live; DATA.tapeAt = r.live ? new Date().toISOString() : r.data.asOf; }).catch(function () { DATA.tape = { signals: [] }; }),
+      getJSON('/api/events', '../tape.json').then(function (r) { DATA.tape = r.data; }).catch(function () { DATA.tape = { signals: [] }; }),
     ]).then(loadFunds);
   }
   function loadFunds() {
@@ -302,78 +241,24 @@
   var ready = loadAll().then(function () {
     var p = mainP(), th = DATA.thread || {}, f = p && th.history && th.history.fits && th.history.fits[p.release + ':' + p.side];
     if (f && f.lossDays) $('claim').textContent = 'Inflation protection paid on ' + f.paidOnLoss + ' of your ' + f.lossDays + ' worst days. Atty will show you.';
-    fillField();
   }).catch(function () { $('claim').textContent = 'Atty could not load her last check.'; });
-
-  /* the opening field: every bucket of this week's three reports with its real odds and how
-     much it moved since the last check. The columns drift; the numbers only change when the
-     market does (polled every 30 seconds when the app is live). */
-  function pct(x) { return x > 0 && x < 0.005 ? '<1%' : Math.round(x * 100) + '%'; }
-  function bucketLabel(s, l) {
-    var u = s.id === 'cpi' ? '%' : s.id === 'nfp' ? 'K' : '', m = l.match(/^(-?[\d.]+)-(-?[\d.]+)$/);
-    return u ? (m ? m[1] + '–' + m[2] : l).replace(/-/g, '−') + u : l;
-  }
-  function fieldRows(s) {
-    var top = s.p.indexOf(Math.max.apply(null, s.p)), dp = (s.change && s.change.deltaPp) || [];
-    return s.labels.map(function (l, k) {
-      var d = dp[k] || 0;
-      return '<div class="o' + (k === top ? ' lead' : '') + '" data-k="' + k + '"><span>' + esc(bucketLabel(s, l)) + '</span><i style="--p:' + s.p[k].toFixed(3) + '"></i><b class="n">' + pct(s.p[k]) + '</b><em class="' + (d > 0 ? 'up' : d < 0 ? 'down' : 'mute') + '">' + (d ? (d > 0 ? '▲' : '▼') + Math.abs(d).toFixed(1) : '·') + '</em></div>';
-    }).join('');
-  }
-  function fieldSigs() { return ['cpi', 'fomc', 'nfp'].map(sig).filter(Boolean).sort(function (a, c) { return a.date < c.date ? -1 : 1; }); }
-  function fillField() {
-    var f = $('field'); if (!f) return;
-    var sigs = fieldSigs(); if (!sigs.length) return;
-    f.innerHTML = sigs.map(function (s) {
-      var n = s.labels.length, reps = Math.max(1, Math.ceil(16 / n)), block = new Array(reps + 1).join(fieldRows(s));
-      return '<div class="col" data-id="' + s.id + '"><div class="colh" data-carry="rep-' + s.id + '"><b>' + NAME[s.id] + '</b><small>' + when(s.date) + '</small></div><div class="rail"><div class="roll" style="--t:' + Math.round(n * reps * 2.4) + 's">' + block + block + '</div></div></div>';
-    }).join('');
-    var lb = $('livebadge'), venue = /kalshi/i.test(sigs[0].source || '') ? 'Kalshi' : 'prediction markets';
-    lb.hidden = false; lb.classList.toggle('snap', !DATA.tapeLive);
-    lb.lastChild.textContent = DATA.tapeLive ? 'Live odds from ' + venue : 'Odds from ' + venue + ', ' + new Date(DATA.tapeAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-    if (DATA.tapeLive && !fillField.timer) fillField.timer = setInterval(pollField, 30000);
-  }
-  function pollField() {
-    var f = $('field'); if (!f) { clearInterval(fillField.timer); return; }
-    fetch('/api/events').then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (j) {
-      (j.signals || []).forEach(function (s) {
-        var col = f.querySelector('.col[data-id="' + s.id + '"]'); if (!col) return;
-        [].forEach.call(col.querySelectorAll('.o'), function (row) {
-          var k = +row.getAttribute('data-k'), b = row.querySelector('b'), txt = pct(s.p[k] || 0);
-          if (b.textContent !== txt) { b.textContent = txt; row.querySelector('i').style.setProperty('--p', (s.p[k] || 0).toFixed(3)); row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); }
-        });
-      });
-    }).catch(function () {});
-  }
 
   /* --------------------------------------------------------------- scenes
      Each scene: its markup, where Atty stands (an element and a way of standing by it), her
      mood, and a little choreography once it is on stage. */
-  function tradeHead(p) { return p.release === 'cpi' && p.side === 'high' ? 'If inflation hits ' + threshold(p) + '+' : 'If the ' + NAME[p.release].toLowerCase() + ' comes in ' + p.word; }
-  function pill(p) { return '<div class="pill" data-carry="contract">' + esc(tradeHead(p)) + ' · <b>' + money2(p.knot.cost) + '</b></div>'; }
-  function beatOf(id) { return (DATA.beats || []).filter(function (x) { return x.id === id; })[0]; }
-  // your loss days on this report (the same cut the history check uses: down half a percent
-  // or more), in date order, each marked paid or missed
-  function lossDays(p) {
+  function proofSVG(p) {
     var th = DATA.thread || {}, days = (th.history && th.history.days && th.history.days[p.release]) || [];
-    return days.filter(function (d) { return d.ret <= -0.5; }).map(function (d) {
-      return { date: d.date, ret: d.ret, paid: p.side === 'high' ? d.value > d.before : d.value < d.before };
+    if (!days.length) return '';
+    var n = days.length, W = 1000, H = 230, base = H * 0.4, bw = W / n, last = '';
+    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Report days since 2021"><line class="base" x1="0" x2="' + W + '" y1="' + base + '" y2="' + base + '"/>';
+    days.forEach(function (d, i) {
+      var x = i * bw + bw * 0.16, w = bw * 0.68, m = Math.abs(d.ret), lost = d.ret <= -0.5;
+      var hgt = Math.max(3, Math.min(d.ret < 0 ? H - base - 28 : base - 4, m * 32));
+      var happened = p.side === 'high' ? d.value > d.before : d.value < d.before, cls = lost ? (happened ? 'paid' : 'miss') : 'calm';
+      out += '<rect class="' + cls + '" x="' + x.toFixed(1) + '" y="' + (d.ret < 0 ? base : base - hgt).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + hgt.toFixed(1) + '" rx="2"><title>' + d.date + ': ' + (d.ret < 0 ? '−' : '+') + m.toFixed(2) + '%</title></rect>';
+      var yr = d.date.slice(0, 4); if (yr !== last) { if (last) out += '<text class="yr" x="' + x.toFixed(1) + '" y="' + (H - 4) + '">' + yr + '</text>'; last = yr; }
     });
-  }
-  function daysHTML(p) {
-    var L = lossDays(p); if (!L.length) return null;
-    var max = Math.max.apply(null, L.map(function (d) { return -d.ret; })), lastYr = '';
-    // how many of your very worst days in a row it missed
-    var byLoss = L.slice().sort(function (a, c) { return a.ret - c.ret; }), k = 0;
-    while (k < byLoss.length && !byLoss[k].paid) k++;
-    var worst = byLoss.slice(0, k).map(function (d) { return d.date; });
-    var cols = L.map(function (d) {
-      var dt = new Date(d.date + 'T12:00:00'), yr = '’' + d.date.slice(2, 4), first = yr !== lastYr; lastYr = yr;
-      return '<div class="day' + (first ? ' yr' : '') + (worst.indexOf(d.date) >= 0 ? ' w' : '') + '" data-paid="' + (d.paid ? 1 : 0) + '" style="--h:' + (-d.ret / max).toFixed(3) + '"><i title="' + d.date + ': −' + (-d.ret).toFixed(2) + '%"></i><span class="mk">' + (d.paid ? '✓' : '✕') + '</span>' +
-        '<small><span class="mo">' + MON[dt.getMonth()] + ' </span>' + yr + '<b>−' + (-d.ret).toFixed(2) + '%</b></small></div>';
-    }).join('');
-    var note = k >= 2 ? 'Your ' + k + ' worst days: ' + (k === 2 ? 'both' : 'all') + ' missed.' : k === 1 ? 'Your worst day: missed.' : '';
-    return { html: '<div class="days">' + cols + '</div>' + (note ? '<p class="worst">' + note + '</p>' : ''), n: L.length };
+    return out + '</svg>';
   }
   function rowsHTML(rows) { return '<div class="rows">' + rows.map(function (r) { return '<div class="r"><span>' + esc(r[0]) + '</span><b class="' + (r[2] || '') + '">' + r[1] + '</b></div>'; }).join('') + '</div>'; }
   function sceneFor(b) {
@@ -382,31 +267,29 @@
     if (b.id === 'hello') {
       var cells = ['cpi', 'fomc', 'nfp'].map(sig).filter(Boolean).sort(function (a, c) { return a.date < c.date ? -1 : 1; }).map(function (s, k) {
         var i = s.p.indexOf(Math.max.apply(null, s.p)), fav = s.id === 'cpi' ? s.labels[i].replace('-', '–') + '%' : s.id === 'nfp' ? s.labels[i].replace('-', 'K–') + 'K jobs' : s.labels[i];
-        return '<div class="rep rise" data-carry="rep-' + s.id + '" style="animation-delay:' + (0.4 + k * 0.15) + 's"><div class="ph" style="background-image:url(' + PHOTO[s.id] + ')"></div><div class="t"><b>' + NAME[s.id] + '</b><small>' + when(s.date) + ' · likely ' + esc(fav) + ' (' + Math.round(s.p[i] * 100) + '%)</small></div></div>';
+        return '<div class="rep rise" style="animation-delay:' + (0.4 + k * 0.15) + 's"><div class="ph" style="background-image:url(' + PHOTO[s.id] + ')"></div><div class="t"><b>' + NAME[s.id] + '</b><small>' + when(s.date) + ' · likely ' + esc(fav) + ' (' + Math.round(s.p[i] * 100) + '%)</small></div></div>';
       }).join('');
-      return { html: '<div class="center hi" style="top:30%"><span class="huge n" data-anchor data-carry="total">' + money(DATA.total) + '</span></div><div class="reports">' + cells + '</div>' + say, stand: 'on', at: 0.78, mood: 'happy' };
+      return { html: '<div class="center hi" style="top:30%"><span class="huge n" data-anchor>' + money(DATA.total) + '</span></div><div class="reports">' + cells + '</div>' + say, stand: 'on', at: 0.78, mood: 'happy' };
     }
     if (b.id === 'risk') {
-      return { html: '<div class="center" style="top:30%"><p class="ctx">On your <span class="n" data-carry="total">' + money(DATA.total) + '</span>, if inflation runs hot · ' + Math.round((nb.odds || 0) * 100) + '% odds</p><span class="huge n down drop" data-anchor data-carry="loss">' + money(-nb.loss) + '</span></div>' +
+      return { html: '<div class="center" style="top:30%"><p class="mute rise" style="animation-delay:.9s;font-size:22px;margin-bottom:6px">if inflation runs hot · odds ' + Math.round((nb.odds || 0) * 100) + '%</p><span class="huge n down drop" data-anchor>' + money(-nb.loss) + '</span></div>' +
         '<div class="hits card rise" style="animation-delay:1.1s">' + rowsHTML((sh.rows || []).map(function (x) { return [x.sym, '−' + x.loss, 'down']; })) + '</div>' + say,
         stand: 'under', mood: 'worried', impact: reduce ? 0 : 640 };
     }
     if (b.id === 'trade' && p) {
       var c = CALL[p.knot.verdict] || CALL.none, odds = oddsOf(p), yes = /^YES/.test(p.best.contract);
-      var head = tradeHead(p), rk = beatOf('risk'), rn = (rk && rk.numbers) || {}, hit = rn.release === p.release && rn.side === p.side && rn.loss;
-      return { html: '<div class="ticket card push" data-anchor data-carry="contract"><div class="hd"><span class="lab">' + NAME[p.release] + ' · ' + when(p.best.expiry) + '</span><p>' + esc(head) + '</p></div>' +
-        rowsHTML((hit ? [['Your hit if it happens', '<span data-carry="loss">' + money(-hit) + '</span>', 'down']] : []).concat([['Buy', (yes ? 'YES' : 'NO') + ' · ' + esc(p.best.contract.replace(/^(YES|NO) on /, '').replace(/"/g, ''))], ['On', esc(p.best.venue)], ['Contracts', p.knot.contracts.toLocaleString('en-US')], ['Price', cents(p.best.ask + 0.01) + '<em>fair ' + cents(p.best.fair) + '</em>'], ['Pays if it happens', money(p.knot.payout), 'up']])) +
+      var head = p.release === 'cpi' && p.side === 'high' ? 'If inflation hits ' + threshold(p) + '+' : 'If the ' + NAME[p.release].toLowerCase() + ' comes in ' + p.word;
+      return { html: '<div class="ticket card push" data-anchor><div class="hd"><span class="lab">' + NAME[p.release] + ' · ' + when(p.best.expiry) + '</span><p>' + esc(head) + '</p></div>' +
+        rowsHTML([['Buy', (yes ? 'YES' : 'NO') + ' · ' + esc(p.best.contract.replace(/^(YES|NO) on /, '').replace(/"/g, ''))], ['On', esc(p.best.venue)], ['Contracts', p.knot.contracts.toLocaleString('en-US')], ['Price', cents(p.best.ask + 0.01) + '<em>fair ' + cents(p.best.fair) + '</em>'], ['Pays if it happens', money(p.knot.payout), 'up']]) +
         '<div class="cost"><span class="tag ' + c[0] + '">' + c[1] + '</span><b class="n">' + money2(p.knot.cost) + '</b></div></div>' + say,
         stand: 'push', mood: 'neutral', hopOn: reduce ? 0 : 1300 };
     }
     if (b.id === 'fit' && p) {
-      var dh = daysHTML(p), small = innerWidth <= 760 ? 0.6 : 0.8;
-      if (!dh) return { html: pill(p) + '<div class="ctr"><span class="huge n" data-anchor>' + nb.paidOnLoss + '<span class="mute"> / ' + nb.lossDays + '</span></span><p class="mute">bad days it would have paid</p></div>' + say, stand: 'left', mood: 'skeptical' };
-      return { html: pill(p) + '<div class="ctr"><span class="huge n" data-anchor><span class="paidN">0</span><span class="mute"> / ' + dh.n + '</span></span><p class="mute">bad days it would have paid</p></div>' + dh.html + say,
-        stand: 'left', mood: 'curious', scale: small, stamp: true };
+      return { html: '<div class="chart"><div style="text-align:center"><span class="huge n" data-anchor>' + nb.paidOnLoss + '<span class="mute"> / ' + nb.lossDays + '</span></span><p class="mute">bad days it would have paid</p></div><div class="proof">' + proofSVG(p) + '<div class="key lab"><span><i class="kp"></i>Paid</span><span><i class="km"></i>Missed</span></div></div></div>' + say,
+        stand: 'left', mood: 'skeptical' };
     }
     if (b.id === 'fine') {
-      return { html: (p ? pill(p) : '') + '<div class="fineinfo card rise" style="animation-delay:.5s">' + rowsHTML([['If never published', esc(sh.fallback)], ['Last trade', esc(sh.stops)]].concat(sh.latest ? [['Latest payout', esc(sh.latest)]] : [])) + '</div>' + say,
+      return { html: '<div class="fineinfo card rise" style="animation-delay:.5s">' + rowsHTML([['If never published', esc(sh.fallback)], ['Last trade', esc(sh.stops)]].concat(sh.latest ? [['Latest payout', esc(sh.latest)]] : [])) + '</div>' + say,
         stand: 'carry', mood: 'curious', sign: '<b class="' + (sh.pays ? 'up' : 'down') + '">' + (sh.pays ? 'Still pays' : 'Won’t pay') + '</b><small>if the report never comes out</small>' };
     }
     if (b.id === 'skip') {
@@ -446,65 +329,24 @@
     if (!sound || !ensureAudio()) return Promise.resolve(null);
     return decode(voiceUrl(text)).then(function (buf) { var s = AC.createBufferSource(); s.buffer = buf; s.connect(analyser); s.onended = function () { if (src === s) src = null; }; src = s; s.start(); return buf.duration * 1000; }).catch(function () { return null; });
   }
-  // little sounds, made on the spot (no files): a thud when the loss lands on her, a whoosh
-  // when she kicks, a ding or a buzz for each day she checks. They skip her analyser so they
-  // never move her body the way her voice does.
-  var sfxOut = null, noiseBuf = null;
-  function sfx(kind) {
-    if (!sound || !AC || AC.state !== 'running') return;
-    if (!sfxOut) {
-      sfxOut = AC.createGain(); sfxOut.gain.value = 0.55; sfxOut.connect(AC.destination);
-      noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate); var nd = noiseBuf.getChannelData(0); for (var k = 0; k < nd.length; k++) nd[k] = Math.random() * 2 - 1;
-    }
-    var t = AC.currentTime + 0.005;
-    function tone(type, f0, f1, dur, vol) {
-      var o = AC.createOscillator(), g = AC.createGain(); o.type = type;
-      o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g); g.connect(sfxOut); o.start(t); o.stop(t + dur + 0.03);
-    }
-    function noise(dur, f0, f1, q, vol) {
-      var s = AC.createBufferSource(), bp = AC.createBiquadFilter(), g = AC.createGain(); s.buffer = noiseBuf; bp.type = 'bandpass'; bp.Q.value = q;
-      bp.frequency.setValueAtTime(f0, t); bp.frequency.exponentialRampToValueAtTime(f1, t + dur);
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + dur * 0.4); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      s.connect(bp); bp.connect(g); g.connect(sfxOut); s.start(t); s.stop(t + dur + 0.03);
-    }
-    if (kind === 'thud') { tone('sine', 150, 40, 0.34, 0.9); noise(0.14, 320, 110, 1, 0.5); }
-    else if (kind === 'tap') tone('sine', 230, 90, 0.09, 0.22);
-    else if (kind === 'pop') tone('sine', 480, 960, 0.1, 0.28);
-    else if (kind === 'ding') { tone('sine', 1046, 1040, 0.38, 0.22); tone('sine', 1568, 1560, 0.26, 0.07); }
-    else if (kind === 'buzz') { tone('triangle', 150, 110, 0.22, 0.2); tone('sine', 75, 60, 0.22, 0.22); }
-    else if (kind === 'swish') noise(0.32, 500, 2600, 0.9, 0.1);
-    else if (kind === 'whoosh') noise(0.55, 280, 3200, 0.7, 0.4);
-  }
   $('sound').addEventListener('click', function () { sound = !sound; this.setAttribute('aria-pressed', String(sound)); this.textContent = sound ? 'Sound on' : 'Sound off'; if (!sound) stopVoice(); });
 
   /* ----------------------------------------------------------- the show */
   var stage = $('stage'), cur = -1, S = null, token = 0;
   function show(i) {
     var beats = DATA.beats; i = Math.max(0, Math.min(beats.length - 1, i));
-    var dir = i >= cur ? 1 : -1;
     cur = i; var b = beats[i], my = ++token;
-    [].forEach.call(stage.querySelectorAll('.scene.out'), function (n) { n.remove(); });
-    [].forEach.call(document.querySelectorAll('.ghost'), function (n) { n.remove(); });
-    var old = stage.querySelector('.scene.on');
+    [].forEach.call(stage.querySelectorAll('.scene'), function (n) { n.remove(); });
     S = sceneFor(b); S.id = b.id;
-    var sc = h('<section class="scene on in" data-id="' + b.id + '">' + S.html + '</section>'); stage.appendChild(sc);
+    var sc = h('<section class="scene on" data-id="' + b.id + '">' + S.html + '</section>'); stage.appendChild(sc);
     S.el = sc; S.anchor = sc.querySelector('[data-anchor]'); S.t0 = performance.now();
-    if (old) {
-      old.classList.remove('on', 'in'); old.classList.add('out'); old.style.setProperty('--dir', dir);
-      if (!reduce) carry(old, sc, my);
-      setTimeout(function () { old.remove(); }, 460);
-    }
     A.mood = S.mood; A.hop(0.8); if (b.id === 'skip') A.shake = 0;
-    $('sign').style.display = S.sign ? 'block' : 'none'; if (S.sign) { $('sign').innerHTML = S.sign; sfx('pop'); }
+    $('sign').style.display = S.sign ? 'block' : 'none'; if (S.sign) $('sign').innerHTML = S.sign;
     [].forEach.call(sc.querySelectorAll('.fill'), function (f) { setTimeout(function () { f.style.width = f.getAttribute('data-w') + '%'; }, 250); });
     // choreography
-    if (S.impact != null) setTimeout(function () { if (my !== token) return; A.wv += 16; A.vy += 420; A.squish = 1; sfx('thud'); }, S.impact);
-    if (b.id === 'trade' && !reduce) sfx('swish');
-    if (S.hopOn) setTimeout(function () { if (my !== token) return; S.stand = 'on'; S.at = 0.86; A.hop(1.4); A.mood = 'happy'; sfx('pop'); }, S.hopOn);
-    if (S.kick != null) setTimeout(function () { if (my !== token) return; A.lunge = performance.now(); A.shake = 1; setTimeout(function () { if (my !== token) return; var k = sc.querySelector('.kick'); if (k) k.classList.add('gone'); sfx('whoosh'); var w = sc.querySelector('.skipword'); if (w) w.classList.add('on'); S.anchor = w; S.stand = 'on'; S.at = 0.9; A.hop(1); }, 260); }, S.kick);
-    if (S.stamp) stamp(sc, my);
+    if (S.impact != null) setTimeout(function () { if (my !== token) return; A.wv += 16; A.vy += 420; A.squish = 1; }, S.impact);
+    if (S.hopOn) setTimeout(function () { if (my !== token) return; S.stand = 'on'; S.at = 0.86; A.hop(1.4); A.mood = 'happy'; }, S.hopOn);
+    if (S.kick != null) setTimeout(function () { if (my !== token) return; A.lunge = performance.now(); A.shake = 1; setTimeout(function () { if (my !== token) return; var k = sc.querySelector('.kick'); if (k) k.classList.add('gone'); var w = sc.querySelector('.skipword'); if (w) w.classList.add('on'); S.anchor = w; S.stand = 'on'; S.at = 0.9; A.hop(1); }, 260); }, S.kick);
     if (S.end) wireEnd(sc);
     // her line, word by word with her voice
     var host = sc.querySelector('[data-say]'), words = b.say.split(' ').map(function (w, k) { var s = el('span', 'w', (k ? ' ' : '') + w); host.appendChild(s); return s; });
@@ -523,65 +365,6 @@
     $('back').disabled = i === 0;
     $('next').textContent = i === beats.length - 1 ? 'Start over' : i === beats.length - 2 ? 'Your turn' : 'Next';
     var dots = $('dots'); dots.textContent = ''; beats.forEach(function (_, k) { dots.appendChild(el('i', k === i ? 'on' : '')); });
-  }
-  // Anything the old scene and the new one share (same data-carry) flies from where it was to
-  // where it is now, cross-fading on the way. If the new spot is still sliding in (the ticket
-  // Atty pushes), the old copy waits where it was and lands once the ticket has arrived.
-  function ghost(src, r) {
-    var g = src.cloneNode(true), cs = getComputedStyle(src), st = g.style;
-    [g].concat([].slice.call(g.querySelectorAll('*'))).forEach(function (x) { x.removeAttribute('id'); x.removeAttribute('data-anchor'); x.removeAttribute('data-carry'); x.classList.remove('carrying', 'rise', 'drop', 'push'); });
-    g.classList.add('ghost');
-    ['font-size', 'font-weight', 'font-family', 'color', 'letter-spacing', 'line-height', 'text-align', 'white-space'].forEach(function (k) { st.setProperty(k, cs.getPropertyValue(k)); });
-    st.position = 'fixed'; st.left = r.left + 'px'; st.top = r.top + 'px'; st.width = r.width + 'px'; st.height = r.height + 'px';
-    st.margin = '0'; st.transform = 'none'; st.translate = 'none'; st.scale = 'none'; st.animation = 'none'; st.transition = 'none';
-    st.zIndex = '12'; st.pointerEvents = 'none'; st.boxSizing = 'border-box'; st.visibility = 'visible'; st.opacity = '1'; st.transformOrigin = '50% 50%';
-    if (cs.display === 'inline') st.display = 'inline-block';
-    document.body.appendChild(g); return g;
-  }
-  function carry(old, sc, my) {
-    [].forEach.call(sc.querySelectorAll('[data-carry]'), function (n) {
-      var o = old.querySelector('[data-carry="' + n.getAttribute('data-carry') + '"]'); if (!o) return;
-      var a = o.getBoundingClientRect(); if (!a.width || !a.height) return;
-      var go = ghost(o, a); o.style.visibility = 'hidden';
-      n.style.animation = 'none'; n.classList.add('carrying');
-      var waits = [], p = n.parentElement;
-      for (; p && p !== sc; p = p.parentElement) p.getAnimations().forEach(function (x) { waits.push(x.finished.catch(function () {})); });
-      Promise.all(waits).then(function () {
-        if (my !== token) { go.remove(); return; }
-        var b = n.getBoundingClientRect(), gn = ghost(n, b);
-        var dx = (a.left + a.width / 2) - (b.left + b.width / 2), dy = (a.top + a.height / 2) - (b.top + b.height / 2);
-        var s = Math.sqrt((b.width * b.height) / (a.width * a.height)) || 1, opt = { duration: 720, easing: 'cubic-bezier(.65, 0, .25, 1)', fill: 'both' };
-        go.animate([{ transform: 'none', opacity: 1 }, { opacity: 0, offset: 0.6 }, { transform: 'translate(' + -dx + 'px,' + -dy + 'px) scale(' + s + ')', opacity: 0 }], opt);
-        gn.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + 1 / s + ')', opacity: 0 }, { opacity: 0, offset: 0.25 }, { transform: 'none', opacity: 1 }], opt)
-          .finished.then(function () { go.remove(); gn.remove(); n.classList.remove('carrying'); }, function () {});
-        sfx('swish');
-      });
-    });
-  }
-  // the fit scene: she hops from day to day and stamps each one paid or missed
-  function stamp(sc, my) {
-    var days = [].slice.call(sc.querySelectorAll('.day')), ctr = S.anchor, num = sc.querySelector('.paidN'), note = sc.querySelector('.worst'), n = 0, paid = 0;
-    function mark(d) { var ok = d.getAttribute('data-paid') === '1'; d.classList.add(ok ? 'paid' : 'miss'); return ok; }
-    function finish() {
-      S.anchor = ctr; S.stand = 'left'; S.scale = 1; A.mood = 'skeptical';
-      [].forEach.call(sc.querySelectorAll('.day.w'), function (d) { d.classList.add('hot'); });
-      if (note) note.classList.add('on');
-    }
-    if (reduce) { days.forEach(function (d) { if (mark(d)) paid++; }); num.textContent = paid; return finish(); }
-    function step() {
-      if (my !== token) return;
-      if (n >= days.length) { A.hop(0.9); return finish(); }
-      var d = days[n++]; S.anchor = d; S.stand = 'on'; S.at = 0.5; A.hop(0.5);
-      setTimeout(function () {
-        if (my !== token) return;
-        var ok = mark(d);
-        if (ok) { paid++; num.innerHTML = '<span class="bump">' + paid + '</span>'; }
-        A.mood = ok ? 'happy' : 'worried'; A.wv += ok ? 3 : 7; if (!ok) A.shake = 0.6;
-        sfx(ok ? 'ding' : 'buzz');
-      }, 300);
-      setTimeout(step, 450);
-    }
-    setTimeout(step, 900);
   }
   function wireEnd(sc) {
     sc.querySelector('#tryForm').addEventListener('submit', function (e) {
@@ -625,13 +408,8 @@
   function size() { cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; }
   size(); addEventListener('resize', size);
   var A = { x: innerWidth / 2, y: innerHeight * 0.32, vx: 0, vy: 0, r: 80, ang: 0, va: 0, wob: 0, wv: 0, mood: 'sleep', asleep: true, talking: false, shake: 0, squish: 0, lunge: 0, drag: null, look: { x: 0, y: 0 }, lastActive: performance.now(), blinkAt: performance.now() + 2500, poked: 0 };
-  // a hop winds up first: a quick crouch, then up
-  A.hop = function (k) {
-    if (reduce) { A.vy -= 260 * k; return; }
-    A.squish = Math.max(A.squish, 0.22 * Math.min(1.5, k));
-    setTimeout(function () { A.vy -= 260 * k; A.wv += 5 * k; }, 90);
-  };
-  A.wake = function () { var ii = document.querySelector('.intro'); if (ii) ii.classList.add('awake'); if (A.asleep) { A.asleep = false; A.mood = 'surprised'; A.wv += 6; setTimeout(function () { if (A.mood === 'surprised') A.mood = S ? S.mood : 'happy'; }, 600); } A.lastActive = performance.now(); };
+  A.hop = function (k) { A.vy -= 260 * k; A.wv += 5 * k; };
+  A.wake = function () { if (A.asleep) { A.asleep = false; A.mood = 'surprised'; A.wv += 6; setTimeout(function () { if (A.mood === 'surprised') A.mood = S ? S.mood : 'happy'; }, 600); } A.lastActive = performance.now(); };
   var mouse = null;
   addEventListener('pointermove', function (e) {
     mouse = { x: e.clientX, y: e.clientY, t: performance.now() };
@@ -649,8 +427,8 @@
   addEventListener('pointerup', function () {
     if (!A.drag) return;
     var held = performance.now() - A.drag.at, dv = Math.hypot(A.drag.vx, A.drag.vy), back = S ? S.mood : 'happy';
-    if (held < 220 && dv < 300) { A.wv += 9; A.squish = 0.5; sfx('pop'); A.mood = 'surprised'; A.poked++; setTimeout(function () { A.mood = A.poked % 3 === 0 ? 'stern' : back; }, 450); }
-    else { if (dv > 600) sfx('swish'); A.vx = A.drag.vx * 0.9; A.vy = A.drag.vy * 0.9; A.va = A.drag.vx * 0.0006; A.wv += 4; setTimeout(function () { A.mood = back; }, 700); }
+    if (held < 220 && dv < 300) { A.wv += 9; A.mood = 'surprised'; A.poked++; setTimeout(function () { A.mood = A.poked % 3 === 0 ? 'stern' : back; }, 450); }
+    else { A.vx = A.drag.vx * 0.9; A.vy = A.drag.vy * 0.9; A.va = A.drag.vx * 0.0006; A.wv += 4; setTimeout(function () { A.mood = back; }, 700); }
     A.drag = null; document.body.classList.remove('dragging');
   });
 
@@ -659,7 +437,6 @@
     return { x: Math.max(R + 8, Math.min(innerWidth - R - 8, p.x)), y: Math.max(R + 60, p.y) };
   }
   function spot(now) {
-    if (started && S && S.stand === 'carry') return { x: innerWidth > 760 ? innerWidth * 0.36 : innerWidth / 2, y: innerHeight * (innerWidth > 760 ? 0.62 : 0.45) };
     if (!S || !S.anchor || !started) return { x: innerWidth / 2, y: Math.min(innerHeight * 0.32, innerHeight - 420) };
     var b = S.anchor.getBoundingClientRect(), R = A.r, narrow = innerWidth <= 760;
     if (narrow && S.stand === 'left') return { x: b.left + b.width * 0.15, y: b.top - R * 0.82 };
@@ -670,15 +447,13 @@
       var lunge = A.lunge && now - A.lunge < 260 ? R * 0.9 : 0;
       return { x: Math.max(R + 8, b.left - R - 22) + lunge, y: b.top + Math.min(b.height * 0.5, R * 1.2) };
     }
-    if (S.stand === 'carry') return { x: innerWidth > 760 ? innerWidth * 0.36 : innerWidth / 2, y: innerHeight * (innerWidth > 760 ? 0.62 : 0.45) };
+    if (S.stand === 'carry') return { x: innerWidth > 760 ? innerWidth * 0.36 : innerWidth / 2, y: innerHeight * 0.48 };
     return { x: innerWidth / 2, y: innerHeight * 0.4 };
   }
   var last = performance.now();
   function frame(now) {
     var dt = Math.min(0.033, (now - last) / 1000); last = now;
-    var want = (innerWidth > 760 ? (started ? 64 : 92) : (started ? 46 : 70)) * (S && S.scale || 1);
-    A.base = A.base ? A.base + (want - A.base) * Math.min(1, dt * 6) : want;
-    A.r = A.base * (A.talking ? 1.04 : 1);
+    A.r = (innerWidth > 760 ? (started ? 64 : 92) : (started ? 46 : 70)) * (A.talking ? 1.04 : 1);
     if (!A.asleep && !started && now - A.lastActive > 12000) A.asleep = true;
     if (A.asleep) A.mood = 'sleep';
     var env = 0;
@@ -691,10 +466,6 @@
       hm.y += (A.asleep ? 4 : 5) * Math.sin(now / (A.asleep ? 900 : 640));
       A.vx += (kx * (hm.x - A.x) - c * A.vx) * dt; A.vy += (kx * (hm.y - A.y) - c * A.vy) * dt;
       A.x += A.vx * dt; A.y += A.vy * dt;
-      // landing: squash on the way down through her spot, harder the faster she falls
-      var below = A.y - hm.y;
-      if (A.prevBelow != null && A.prevBelow < -2 && below >= -2 && A.vy > 170) { A.squish = Math.max(A.squish, Math.min(0.7, A.vy / 1300)); A.wv += A.vy / 300; if (A.vy > 450 && started) sfx('tap'); }
-      A.prevBelow = below; A.groundY = hm.y + A.r * 0.9;
     }
     A.va *= Math.pow(0.08, dt); A.ang += A.va; A.ang *= Math.pow(0.15, dt);
     A.shake *= Math.pow(0.05, dt); A.squish *= Math.pow(0.04, dt);
@@ -715,13 +486,7 @@
     var breathe = A.asleep ? 0.03 * Math.sin(now / 700) : 0, talk = 0.05 * env * Math.sin(now / 55);
     // the stick for the sign
     if (S && S.sign) { var sg = $('sign').getBoundingClientRect(); ctx.strokeStyle = '#f5f5f2'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(A.x, A.y - R * 0.6); ctx.lineTo(sg.left + sg.width / 2, sg.bottom - 2); ctx.stroke(); }
-    // a soft pool of her own light under her; smaller and fainter the higher she hops
-    var gy = A.groundY != null ? A.groundY : A.y + R * 0.9, up = Math.max(0, gy - (A.y + R * 0.9)), gk = 1 / (1 + up / 90);
-    ctx.save(); ctx.translate(A.x, gy); ctx.scale(1, 0.2);
-    var pool = ctx.createRadialGradient(0, 0, 0, 0, 0, R * (0.7 + 0.6 * gk)); pool.addColorStop(0, 'rgba(248,202,65,' + (0.26 * gk).toFixed(3) + ')'); pool.addColorStop(1, 'rgba(248,202,65,0)');
-    ctx.fillStyle = pool; ctx.beginPath(); ctx.arc(0, 0, R * 1.4, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-    var rot = A.ang + 0.12 * Math.sin(now / 45) * A.shake;
-    ctx.save(); ctx.translate(A.x, A.y + R * 0.3 * A.squish); ctx.rotate(rot);
+    ctx.save(); ctx.translate(A.x, A.y); ctx.rotate(A.ang + 0.12 * Math.sin(now / 45) * A.shake);
     ctx.scale(1 + 0.35 * A.squish, 1 - 0.35 * A.squish);
     var N = 40, pts = [];
     for (var i = 0; i < N; i++) {
@@ -733,16 +498,7 @@
     }
     ctx.beginPath();
     for (var j = 0; j <= N; j++) { var a = pts[j % N], b = pts[(j + 1) % N], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; if (!j) ctx.moveTo(mx, my); else ctx.quadraticCurveTo(a[0], a[1], mx, my); }
-    ctx.closePath();
-    // lit from the top left: a warm gradient, a shine that stays put while she turns
-    var cr = Math.cos(-rot), sr = Math.sin(-rot), lxx = -R * 0.36, lyy = -R * 0.44, hx = cr * lxx - sr * lyy, hy = sr * lxx + cr * lyy;
-    var body = ctx.createRadialGradient(hx, hy, R * 0.08, 0, 0, R * 1.3);
-    body.addColorStop(0, '#ffe486'); body.addColorStop(0.5, '#f8ca41'); body.addColorStop(1, '#e3a920');
-    ctx.fillStyle = body; ctx.fill();
-    ctx.save(); ctx.clip();
-    var sx = cr * (-R * 0.46) - sr * (-R * 0.5), sy = sr * (-R * 0.46) + cr * (-R * 0.5);
-    ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.beginPath(); ctx.ellipse(sx, sy, R * 0.15, R * 0.075, -0.7 - rot, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+    ctx.closePath(); ctx.fillStyle = '#f8ca41'; ctx.fill();
     var ex = R * 0.27, ey = -R * 0.05, lx = A.look.x * R * 0.13, ly = A.look.y * R * 0.1, ew = R * 0.13, eh = R * 0.15;
     ctx.fillStyle = '#000'; ctx.strokeStyle = '#000'; ctx.lineCap = 'round'; ctx.lineWidth = R * 0.06;
     var mood = A.mood;
@@ -756,8 +512,6 @@
       if (mood === 'skeptical' && s > 0) { ctx.fillRect(cx - ew, cy - eh * 0.2, ew * 2, eh * 0.4); continue; }
       var k2 = mood === 'surprised' ? 1.3 : mood === 'curious' && s > 0 ? 1.2 : mood === 'thinking' ? 0.85 : 1;
       ctx.ellipse(cx, cy, ew * k2, eh * k2, 0, 0, Math.PI * 2); ctx.fill();
-      // a glint in each eye
-      ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.beginPath(); ctx.arc(cx + ew * 0.32 * k2, cy - eh * 0.38 * k2, ew * 0.26 * k2, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#000';
     }
     if (mood === 'surprised' || (mood === 'worried' && A.squish > 0.2)) { ctx.beginPath(); ctx.ellipse(lx * 0.6, R * 0.32 + ly * 0.6, R * 0.06, R * 0.08, 0, 0, Math.PI * 2); ctx.fill(); }
     if (mood === 'thinking') { ctx.fillStyle = 'rgba(248,202,65,.85)'; for (var d2 = 0; d2 < 3; d2++) { var on = Math.floor(now / 250) % 3 === d2; ctx.beginPath(); ctx.arc(R * 0.85 + d2 * R * 0.22, -R * 0.95, R * (on ? 0.07 : 0.045), 0, Math.PI * 2); ctx.fill(); } }
