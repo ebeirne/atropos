@@ -66,7 +66,7 @@ node scripts/build-atty.js  # dist/atty/
 |---|---|
 | `server.js` | API (`/api/agent`, `/api/events`, `/api/funds`, `/api/thread`, `/api/news`, `/api/voice`, `/api/venues`) and static files |
 | `lib/` | odds venues, engine, agent, 13F benchmark, news, Jev, voice |
-| `public/atty/` | the Atty page; `beats.js` builds her walkthrough lines from the numbers |
+| `public/atty/` | the Atty page: the thread is the interface (past report days as beads, Atty at today, the reports ahead as knots she tied or cut); `beats.js` builds her walkthrough lines from the numbers |
 | `public/index.html`, `public/console.html` | the earlier Atropos landing page and console |
 | `scripts/` | data builds (13F, odds snapshot, venue survey) and the Jev judgments |
 | `data/` | 13F benchmark, venue survey, Jev decisions |

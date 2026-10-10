@@ -4,14 +4,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..500&display=swap">
 <style>
-  /* Layout: Swiss index. One face, one size; hierarchy only from position and grey.
-     Text sits in four columns; every list is a numbered index; the only picture is Atty,
-     a ball of yarn whose loose thread follows your cursor. Committed to black by design. */
+  /* The thread is the interface. One line across the screen is time: past report days
+     hang off it as beads, Atty stands at today, and the reports ahead are knots she has
+     tied (worth protecting) or cut (skip). One face, one size, black and white. */
   :root {
     color-scheme: dark;
     --bg: #000000;
     --ink: #f2f2f2;
     --grey: #808080;
+    --dim: #3a3a3a;
     --rule: #242424;
     --up: #4fd18f;
     --down: #ff6150;
@@ -22,8 +23,7 @@
   }
   * { box-sizing: border-box; }
   html { background: var(--bg); }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--t)/var(--lh) var(--f); letter-spacing: -0.01em;
-    -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--t)/var(--lh) var(--f); letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-decoration: none; }
   a:hover, button:hover { color: var(--grey); }
   :focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
@@ -32,42 +32,62 @@
   .num { font-variant-numeric: tabular-nums; }
   p { margin: 0; }
 
-  #trail { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  #dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
   .page { position: relative; z-index: 1; padding-inline: var(--gut); padding-block: var(--gut) calc(var(--gut) * 3); }
 
   /* the four columns */
   .top { display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); align-items: start; }
   .top nav { display: grid; }
-  .top nav a[aria-current="true"] { color: var(--grey); text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; }
   .copy { text-align: right; }
 
-  /* Atty is Atropos's scissors, drawn as one continuous white line with two dot eyes
-     in the handle loops (Jev's pick). She stays still; only her eyes follow you. Dust
-     streams out from behind her, and your thread runs through her open blades. */
-  .stage { display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); align-items: center; min-height: calc(100vh - 12em); padding-block: 3vh; }
-  .castWrap { grid-column: 1; grid-row: 1; display: flex; justify-content: center; }
-  .cast { height: min(62vh, 640px); width: auto; max-width: 100%; aspect-ratio: 240 / 340; overflow: visible; }
-  /* the walkthrough: one sentence at a time, lit word by word as she says it */
-  .guide { grid-column: 2 / -1; grid-row: 1; position: relative; z-index: 2; }
-  .guide .line { max-width: 27ch; }
+  /* the thread */
+  .threadScroll { margin-top: 5vh; margin-inline: calc(var(--gut) * -1); padding-inline: var(--gut); overflow-x: auto; scrollbar-width: none; }
+  .threadScroll::-webkit-scrollbar { display: none; }
+  .threadBox { position: relative; width: 100%; min-width: 820px; aspect-ratio: 1000 / 300; }
+  .threadBox svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .threadBox .lbl { position: absolute; white-space: nowrap; pointer-events: none; }
+  .threadBox .lbl.k { pointer-events: auto; cursor: pointer; }
+  .threadBox .lbl.up1 { transform: translateY(-100%); }
+  #thread .line { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
+  #thread .year { stroke: #161616; stroke-width: 1; }
+  #thread .hang { stroke: #2c2c2c; stroke-width: 1; }
+  #thread .bead { fill: var(--ink); stroke: var(--ink); stroke-width: 1.4; cursor: pointer; transition: opacity .3s; }
+  #thread .bead.hollow { fill: var(--bg); stroke: #9a9a9a; }
+  #thread .bead.dim, #thread .hang.dim { opacity: .12; }
+  #thread .bead.sel { stroke-width: 3; }
+  #thread .knot { cursor: pointer; outline: none; }
+  #thread .knot:focus-visible .hit { stroke: var(--grey); stroke-width: 1; }
+  #thread .knot .loop { fill: var(--bg); stroke: var(--ink); stroke-width: 2.4; }
+  #thread .knot .tick { stroke: var(--grey); stroke-width: 2; }
+  #thread .knot .end { stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+  #thread .knot.on .loop { stroke-width: 4; }
+  #thread .knot .hit { fill: transparent; }
+  #thread .atty .blade { fill: none; stroke: var(--ink); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+  #thread .atty .eye { fill: var(--ink); }
+  #thread .atty .eyes { animation: blink 5.5s linear infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes blink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+  .lbl.k.on .nm { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; }
+  .legend { margin-top: .4em; max-width: 46ch; }
+
+  /* Atty talking: one sentence at a time, lit word by word as she says it */
+  .guide { display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); margin-top: 4vh; align-items: start; }
+  .guide .side { grid-column: 1; }
+  .guide .body { grid-column: 2 / -1; }
+  .guide .line { max-width: 30ch; }
   .guide .w { opacity: .2; transition: opacity .18s; }
   .guide .w.on { opacity: 1; }
-  .guide .sub { margin-top: .5em; max-width: 30ch; transition: opacity .4s; }
-  .guide .show { margin-top: 1.3em; border-top: 1px solid var(--rule); max-width: 34em; }
+  .guide .sub { margin-top: .5em; max-width: 34ch; transition: opacity .4s; }
+  .guide .show { margin-top: 1.2em; border-top: 1px solid var(--rule); max-width: 36em; }
   .mini { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--gut); padding-block: .32em; border-bottom: 1px solid var(--rule); align-items: baseline; }
   .mini > * { min-width: 0; }
   .mini .bar { margin-top: 0; align-self: center; width: 8em; }
-  .controls { margin-top: 1.3em; display: flex; flex-wrap: wrap; gap: .3em 1.1em; }
+  .controls { margin-top: .6em; display: flex; flex-wrap: wrap; gap: .3em 1.1em; }
   .controls button { font: inherit; letter-spacing: inherit; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; }
-  .controls button:disabled { color: #3a3a3a; cursor: default; }
+  .controls button:disabled { color: var(--dim); cursor: default; }
   .controls #play { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px; }
-  .cast .line { fill: none; stroke: var(--ink); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
-  .cast .eye { fill: var(--ink); }
-  .cast .eyes { animation: blink 5.5s linear infinite; transform-box: fill-box; transform-origin: center; }
-  @keyframes blink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
 
-  /* sections as indexes */
-  section { margin-top: calc(var(--gut) * 3); }
+  /* the detail below, as plain indexes */
+  section { margin-top: calc(var(--gut) * 3.5); }
   .sec { display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); padding-bottom: .5em; border-bottom: 1px solid var(--rule); }
   .row { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 0.9fr) 6.5em; gap: var(--gut); padding-block: .42em; border-bottom: 1px solid var(--rule);
     align-items: baseline; width: 100%; background: none; border-left: 0; border-right: 0; border-top: 0; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
@@ -84,8 +104,6 @@
   .bar { display: block; height: 1px; background: var(--rule); margin-top: .35em; }
   .bar i { display: block; height: 1px; background: var(--ink); }
   .bar i.you { background: var(--down); }
-
-  /* news */
   .ask { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto; gap: var(--gut); padding-block: .42em; border-bottom: 1px solid var(--rule); align-items: baseline; }
   .ask input { font: inherit; letter-spacing: inherit; color: var(--ink); background: transparent; border: 0; outline: none; width: 100%; padding: 0; caret-color: var(--down); }
   .ask input::placeholder { color: var(--grey); }
@@ -93,19 +111,15 @@
   .chips { display: flex; flex-wrap: wrap; gap: .2em .8em; padding-block: .42em; border-bottom: 1px solid var(--rule); padding-left: calc(2.2em + var(--gut)); }
   .chips button { color: var(--grey); }
   .chips button:hover { color: var(--ink); }
-
   footer { margin-top: calc(var(--gut) * 3); display: grid; grid-template-columns: 1.15fr 1fr 0.8fr auto; gap: var(--gut); color: var(--grey); }
 
   @media (max-width: 760px) {
-    .top, .stage, .sec, footer { grid-template-columns: 1fr 1fr; }
+    .top, .sec, footer, .guide { grid-template-columns: 1fr 1fr; }
     .copy { text-align: left; }
-    .castWrap { grid-column: 1 / -1; }
-    .guide { grid-column: 1 / -1; grid-row: 2; }
-    .stage { min-height: 0; }
-    .cast { height: min(40vh, 360px); }
+    .guide .side { grid-column: 1 / -1; grid-row: 2; }
+    .guide .body { grid-column: 1 / -1; grid-row: 1; }
     .mini .bar { width: 4em; }
     .row, .detail { grid-template-columns: 1.6em minmax(0, 1fr) auto; }
-    .stage { padding-block: 3vh 2vh; }
     .wide { display: none; }
     .row .c3 { grid-column: 2; grid-row: 2; color: var(--grey); }
     .row .c4 { grid-column: 3; grid-row: 2; color: var(--grey); text-align: right; }
@@ -115,39 +129,43 @@
     .plain .c3 { grid-column: 2 / span 2; color: var(--grey); }
     .plain .v { grid-column: 3; grid-row: 1; }
   }
-  @media (prefers-reduced-motion: reduce) { #trail { display: none; } .cast .eyes { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { #dust { display: none; } #thread .atty .eyes { animation: none; } }
 </style>
 
-<canvas id="trail" aria-hidden="true"></canvas>
+<canvas id="dust" aria-hidden="true"></canvas>
 
 <div class="page">
   <header class="top">
     <p><a href="#top">Atropos</a><br><span class="g">Atty looks after<br>the thread of<br>what you own.</span></p>
     <p id="status"><span class="g">Checking…</span></p>
-    <nav aria-label="Sections"><a href="#quotes">Quotes</a><a href="#public">Public funds</a><a href="#watching">Watching</a><a href="#news">News</a><a href="#how">How it works</a></nav>
+    <nav aria-label="Sections"><a href="#quotes">Quotes</a><a href="#public">Public funds</a><a href="#news">News</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></nav>
     <p class="copy">©2026</p>
   </header>
 
-  <div class="stage" id="top">
-    <div class="castWrap"><svg class="cast" id="cast" viewBox="-120 -190 240 340" role="img" aria-label="Atty, a pair of scissors drawn in one line, with two dot eyes in the handles">
-      <g id="bladeA"><path class="line" d="M44.4 -156 L-31 58 A30 30 0 1 0 -61 110 A30 30 0 1 0 -31 58"/>
-        <g class="look" data-x="-46" data-y="84"><g class="eyes"><circle class="eye" cx="-46" cy="84" r="7"/></g></g></g>
-      <g id="bladeB"><path class="line" d="M-44.4 -156 L31 58 A30 30 0 1 1 61 110 A30 30 0 1 1 31 58"/>
-        <g class="look" data-x="46" data-y="84"><g class="eyes"><circle class="eye" cx="46" cy="84" r="7"/></g></g></g>
-      <circle id="cut" cx="0" cy="-104" r="0.5" fill="none"/>
-    </svg></div>
+  <div id="top">
+    <div class="threadScroll" id="threadScroll">
+      <div class="threadBox" id="threadBox">
+        <svg id="thread" viewBox="0 0 1000 300" role="group" aria-label="Your thread: past report days, Atty at today, and the reports ahead"></svg>
+      </div>
+    </div>
+    <p class="g legend" id="legend">Past report days hang off the thread: below it when you lost, above when you gained. A filled bead means protection would have paid.</p>
+
     <div class="guide">
-      <p class="g" id="step">Atty</p>
-      <p class="line" id="line" aria-live="polite">Each week a few numbers can pull at your thread. I price protection on every venue I can reach, and I tell you when it is not worth buying.</p>
-      <p class="g sub" id="sub"></p>
-      <div class="show" id="show"></div>
-      <p class="controls"><button type="button" id="prev">Back</button><button type="button" id="next">Next</button><button type="button" id="play" aria-pressed="false">Listen</button><a class="g" href="#quotes">Skip</a></p>
-      <p class="g" id="voiceNote"></p>
+      <div class="side">
+        <p class="g" id="step">Atty</p>
+        <p class="controls"><button type="button" id="prev">Back</button><button type="button" id="next">Next</button><button type="button" id="play" aria-pressed="false">Listen</button></p>
+        <p class="g" id="voiceNote"></p>
+      </div>
+      <div class="body">
+        <p class="line" id="line" aria-live="polite">Each week a few numbers can pull at your thread. I price protection on every venue I can reach, and I tell you when it is not worth buying.</p>
+        <p class="g sub" id="sub"></p>
+        <div class="show" id="show"></div>
+      </div>
     </div>
   </div>
 
   <section id="quotes" aria-labelledby="qH">
-    <div class="sec"><span id="qH">Quotes</span><span class="g">What would hurt each holding most,<br>and what it costs to protect it</span><span class="g" id="qCount"></span><span></span></div>
+    <div class="sec"><span id="qH">Quotes</span><span class="g">What would hurt each holding most,<br>and what it costs to protect it</span><span></span><span></span></div>
     <div id="quoteList"></div>
     <div class="plain" id="knot"></div>
   </section>
@@ -159,11 +177,6 @@
     <div id="holders"></div>
   </section>
 
-  <section id="watching" aria-labelledby="wH">
-    <div class="sec"><span id="wH">Watching</span><span class="g">Markets about each holding,<br>matched by Jev</span><span></span><span></span></div>
-    <div id="watchList"></div>
-  </section>
-
   <section id="news" aria-labelledby="nH">
     <div class="sec"><span id="nH">News</span><span class="g">Any topic, ranked by Jev</span><span class="g" id="newsState"></span><span></span></div>
     <form class="ask" id="newsForm" role="search"><span class="g">?</span><input id="newsQ" type="search" placeholder="Ask Atty about anything" aria-label="Ask Atty about anything" autocomplete="off" maxlength="200"><button type="submit">Search</button></form>
@@ -171,16 +184,9 @@
     <div id="newsList"></div>
   </section>
 
-  <section id="how" aria-labelledby="hH">
-    <div class="sec"><span id="hH">How it works</span><span></span><span></span><span></span></div>
-    <div class="plain"><span class="g">1</span><span>Every number comes from code.</span><span class="c3 g">Losses, sizes and prices are computed from the odds and your holdings. Nothing is guessed by a language model.</span><span></span></div>
-    <div class="plain"><span class="g">2</span><span>Every sentence is checked.</span><span class="c3 g">Jev reads each line Atty says against its numbers before you see it.</span><span></span></div>
-    <div class="plain"><span class="g">3</span><span>She never trades for you.</span><span class="c3 g">Brokerage access is read-only. Most weeks the answer is to buy nothing.</span><span></span></div>
-  </section>
-
   <footer>
-    <span>Not investment advice.</span>
-    <span>Odds from Kalshi and ForecastEx through Interactive Brokers, Limitless and Futuur. Public funds from SEC 13F filings.</span>
+    <span>Not investment advice. Read-only: Atty never trades.</span>
+    <span>Every number comes from code, and Jev checks every sentence against it. Odds from Kalshi, ForecastEx and CME via Interactive Brokers, Limitless and Futuur; public funds from SEC 13F; history from BLS, ALFRED and Yahoo.</span>
     <span id="asof"></span>
     <span>©2026</span>
   </footer>
@@ -191,12 +197,15 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var DATA = {};
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
   var money = function (x, signed) { var s = '$' + Math.abs(Math.round(x)).toLocaleString('en-US'); return signed ? (x >= 0 ? '+' : '−') + s : (x < 0 ? '−' + s : s); };
   var money2 = function (x) { return '$' + Number(x).toFixed(2); };
   var big = function (x) { return x >= 1e9 ? '$' + (x / 1e9).toFixed(1) + 'B' : x >= 1e6 ? '$' + (x / 1e6).toFixed(0) + 'M' : money(x); };
   var CODE = { cpi: 'CPI', fomc: 'FOMC', nfp: 'NFP' };
   var VERDICT = { good: 'Good price', fair: 'Fair price', overpriced: 'Skip', too_small: 'Too small', no_fair_value: 'No price', none: 'No quote' };
+  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function day(iso, withYear) { var p = String(iso).split('-'); return MON[+p[1] - 1] + ' ' + (+p[2]) + (withYear ? ', ' + p[0] : ''); }
   function ago(iso) { var m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
   function getJSON(live, fallback) {
     return fetch(live).then(function (r) { if (!r.ok) throw 0; return r.json(); })
@@ -219,14 +228,12 @@
   function renderAgent(a, live) {
     var r = a.result, hs = r.holdings;
     var total = hs.reduce(function (s, h) { return s + h.value; }, 0);
-    DATA.agent = a; DATA.total = total;
-    DATA.live = live;
-    // status column
+    DATA.agent = a; DATA.total = total; DATA.live = live;
     var st = $('status'); st.textContent = '';
     st.append(money(total)); st.appendChild(document.createElement('br'));
     st.appendChild(el('span', 'g', (live ? 'Checked ' : 'Saved check, ') + ago(r.at))); st.appendChild(document.createElement('br'));
     st.appendChild(el('span', 'g', live && a.everyMinutes ? 'every ' + a.everyMinutes + ' min' : r.log.length + ' steps, ' + (r.log[r.log.length - 1].ms / 1000).toFixed(1) + 's'));
-    renderQuotes(hs); renderKnot(r.portfolio); renderWatch(hs); loadFunds(hs, total);
+    renderQuotes(hs); renderKnot(r.portfolio); loadFunds(hs, total); maybeStart();
   }
 
   function renderQuotes(hs) {
@@ -276,24 +283,6 @@
     host.appendChild(el('span', 'v num', money2(k.knot.cost)));
   }
 
-  function renderWatch(hs) {
-    var host = $('watchList'); host.textContent = ''; var n = 0;
-    hs.forEach(function (h) {
-      (h.markets || []).forEach(function (m) {
-        n++;
-        var r = el('div', 'plain');
-        r.appendChild(el('span', 'g num', String(n)));
-        r.appendChild(el('span', null, h.symbol));
-        var c3 = el('span', 'c3', m.name.replace(/\?$/, '') + ' ');
-        c3.appendChild(el('span', 'g', [m.strike, m.odds != null ? Math.round(m.odds * 100) + '% odds' : ''].filter(Boolean).join(', ')));
-        r.appendChild(c3);
-        r.appendChild(el('span', 'v ' + (m.direction === 'hurts' ? 'down' : 'up'), m.direction === 'hurts' ? 'Hurts' : 'Helps'));
-        host.appendChild(r);
-      });
-    });
-    if (!n) host.appendChild(el('div', 'plain', 'Nothing in the catalogs moves your holdings this week.'));
-  }
-
   /* -------------------------------------------------------- public funds */
   function loadFunds(hs, total) {
     var tickers = hs.map(function (h) { return h.symbol; }).join(',');
@@ -301,7 +290,7 @@
       var f = res.data; if (!f || !f.ready) return;
       var you = hs.reduce(function (s, h) { var e = h.exposures.filter(function (x) { return x.release === 'cpi' && x.side === 'high'; })[0]; return s + (e ? e.loss : 0); }, 0);
       var rows = [{ who: 'You', pct: -you / total * 100, you: true }];
-      DATA.funds = f; DATA.youCpi = -you / total * 100;
+      DATA.funds = f;
       f.byKind.forEach(function (k) { if (k.exposure.cpi) rows.push({ who: k.label + ' (' + k.count + ')', pct: k.exposure.cpi.high }); });
       var bySize = f.funds.slice().sort(function (a, b) { return b.total - a.total; });
       bySize.filter(function (x) { return x.kind === 'state_pension'; }).slice(0, 3)
@@ -368,20 +357,139 @@
     DATA.tape = res.data; maybeStart();
   }).catch(function () { DATA.tape = { signals: [] }; maybeStart(); });
 
+  /* ------------------------------------------------------------ the thread
+     Time runs left to right. The past is to scale, one bead per CPI or jobs report since
+     2021, hanging below the thread on days your holdings fell and above on days they rose,
+     filled when the protection Atty quotes today would have paid. Atty stands at today.
+     The reports ahead are spaced evenly: a loop where she would tie a knot (protect, or
+     your call), a cut where she says skip, a tick for one she only watches. */
+  var NAME = { cpi: 'Inflation', nfp: 'Jobs', fomc: 'Fed' };
+  var Y = 150, TODAY_X = 600, ATTY_S = 0.5;
+  var T = { knots: [], beads: [], sel: null };
+  function svgEl(tag, attrs) { var n = document.createElementNS('http://www.w3.org/2000/svg', tag); for (var k in attrs) n.setAttribute(k, attrs[k]); return n; }
+  function lbl(x, y, cls, parts) {
+    var n = el('div', 'lbl ' + (cls || '')); n.style.left = (x / 10) + '%'; n.style.top = (y / 3) + '%';
+    parts.forEach(function (p, i) { if (i) n.appendChild(document.createElement('br')); n.appendChild(typeof p === 'string' ? document.createTextNode(p) : p); });
+    $('threadBox').appendChild(n); return n;
+  }
+  function renderThread() {
+    var svg = $('thread'), box = $('threadBox');
+    svg.textContent = ''; [].slice.call(box.querySelectorAll('.lbl')).forEach(function (n) { n.remove(); });
+    var r = DATA.agent.result, th = DATA.thread || {}, days = (th.history && th.history.days) || { cpi: [], nfp: [] };
+    var sideOf = function (rel, d) { var p = r.portfolio.filter(function (x) { return x.release === rel && x.knot; })[0] || r.portfolio.filter(function (x) { return x.release === rel; })[0]; return p ? p.side : d; };
+    var side = { cpi: sideOf('cpi', 'high'), nfp: sideOf('nfp', 'low') };
+    var word = { cpi: side.cpi === 'high' ? 'hot' : 'soft', nfp: side.nfp === 'low' ? 'weak' : 'strong' };
+    var today = new Date().toISOString().slice(0, 10);
+
+    // the past, to scale
+    T.beads = [].concat(days.cpi.map(function (d) { return Object.assign({ rel: 'cpi' }, d); }), days.nfp.map(function (d) { return Object.assign({ rel: 'nfp' }, d); }))
+      .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    var t0 = T.beads.length ? Date.parse(T.beads[0].date) : Date.now() - 3 * 365 * 864e5, tN = Date.now();
+    var X = function (iso) { return 30 + (Date.parse(iso) - t0) / (tN - t0) * (TODAY_X - 70); };
+    var y0 = new Date(t0).getUTCFullYear() + 1;
+    for (var yr = y0; yr <= new Date().getUTCFullYear(); yr++) {
+      var xx = X(yr + '-01-01'); svg.appendChild(svgEl('line', { class: 'year', x1: xx, x2: xx, y1: 40, y2: 270 }));
+      lbl(xx, 36, 'g up1', [String(yr)]);
+    }
+
+    // the reports ahead, from Atty's calls (merged per release day) plus anything she only watches
+    var calls = (th.ledger || []).filter(function (c) { return !c.settled && c.releaseDate >= today; });
+    var ahead = {};
+    calls.forEach(function (c) {
+      var k = c.release + ':' + c.releaseDate, a = ahead[k] || (ahead[k] = { release: c.release, date: c.releaseDate, calls: [] });
+      a.calls.push(c);
+    });
+    ((DATA.tape && DATA.tape.signals) || []).forEach(function (s) {
+      if (s.date >= today && !Object.keys(ahead).some(function (k) { return k.indexOf(s.id + ':') === 0; })) ahead[s.id + ':' + s.date] = { release: s.id, date: s.date, calls: [] };
+    });
+    T.knots = Object.keys(ahead).map(function (k) { return ahead[k]; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    T.knots.forEach(function (k, i) {
+      var main = k.calls.filter(function (c) { return c.side === side[k.release]; })[0] || k.calls[0];
+      k.kind = !main ? 'watch' : main.call === 'skip' ? 'cut' : 'tie';
+      k.call = main ? main.call : 'watching';
+      k.x = 700 + i * (230 / Math.max(1, T.knots.length - 1));
+    });
+
+    // the thread itself, broken where Atty cut it
+    var cuts = T.knots.filter(function (k) { return k.kind === 'cut'; }).map(function (k) { return k.x; });
+    var segs = [], from = 20;
+    cuts.forEach(function (x) { segs.push([from, x - 9]); from = x + 9; });
+    segs.push([from, 995]);
+    segs.forEach(function (s) { svg.appendChild(svgEl('path', { class: 'line', d: 'M' + s[0] + ' ' + Y + ' L' + s[1] + ' ' + Y })); });
+
+    // beads
+    T.beads.forEach(function (b, i) {
+      var x = X(b.date), m = Math.abs(b.ret), off = (b.ret < 0 ? 1 : -1) * (12 + Math.min(92, m * 26)), rad = 2.2 + Math.min(4.6, m * 1.4);
+      b.happened = side[b.rel] === 'high' ? b.value > b.before : b.value < b.before;
+      b.hang = svgEl('line', { class: 'hang', x1: x, x2: x, y1: Y, y2: Y + off });
+      b.node = svgEl('circle', { class: 'bead' + (b.happened ? '' : ' hollow'), cx: x, cy: Y + off, r: rad });
+      var tt = svgEl('title', {}); tt.textContent = day(b.date, true) + ': ' + NAME[b.rel].toLowerCase() + ' ' + b.value + (b.rel === 'cpi' ? '%' : 'K') + ' after ' + b.before + (b.rel === 'cpi' ? '%' : 'K') + ', you ' + (b.ret < 0 ? '−' : '+') + Math.abs(b.ret).toFixed(2) + '%';
+      b.node.appendChild(tt);
+      b.node.addEventListener('click', function () { aboutBead(b, word); });
+      svg.appendChild(b.hang); svg.appendChild(b.node);
+    });
+
+    // knots and their labels
+    T.knots.forEach(function (k, i) {
+      var g = svgEl('g', { class: 'knot', tabindex: '0', role: 'button', 'aria-label': NAME[k.release] + ', ' + day(k.date) + ', ' + k.call });
+      g.appendChild(svgEl('circle', { class: 'hit', cx: k.x, cy: Y, r: 22 }));
+      if (k.kind === 'tie') g.appendChild(svgEl('circle', { class: 'loop', cx: k.x, cy: Y, r: 10 }));
+      if (k.kind === 'cut') { g.appendChild(svgEl('path', { class: 'end', d: 'M' + (k.x - 9) + ' ' + Y + ' l-5 -7 M' + (k.x + 9) + ' ' + Y + ' l5 7' })); }
+      if (k.kind === 'watch') g.appendChild(svgEl('line', { class: 'tick', x1: k.x, x2: k.x, y1: Y - 9, y2: Y + 9 }));
+      g.addEventListener('click', function () { aboutKnot(k); });
+      g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); aboutKnot(k); } });
+      svg.appendChild(g); k.node = g;
+      var nm = el('span', 'nm', NAME[k.release]);
+      k.lbl = lbl(k.x - 10, i % 2 ? Y - 24 : Y + 24, 'k' + (i % 2 ? ' up1' : ''), [day(k.date), nm, el('span', 'g', k.call)]);
+      k.lbl.addEventListener('click', function () { aboutKnot(k); });
+    });
+
+    // Atty at today, the thread running between her open blades
+    var a = svgEl('g', { class: 'atty', id: 'atty', transform: 'translate(' + TODAY_X + ' ' + (Y + 104 * ATTY_S) + ') scale(' + ATTY_S + ')' });
+    a.innerHTML = '<g id="bladeA"><path class="blade" d="M44.4 -156 L-31 58 A30 30 0 1 0 -61 110 A30 30 0 1 0 -31 58"/><g class="look" data-x="-46" data-y="84"><g class="eyes"><circle class="eye" cx="-46" cy="84" r="7"/></g></g></g>' +
+      '<g id="bladeB"><path class="blade" d="M-44.4 -156 L31 58 A30 30 0 1 1 61 110 A30 30 0 1 1 31 58"/><g class="look" data-x="46" data-y="84"><g class="eyes"><circle class="eye" cx="46" cy="84" r="7"/></g></g></g>';
+    svg.appendChild(a);
+    lbl(TODAY_X - 14, Y - 70, 'g up1', ['Today']);
+    T.atty = a; T.bladeA = $('bladeA'); T.bladeB = $('bladeB'); T.looks = [].slice.call(a.querySelectorAll('.look'));
+    var sc = $('threadScroll'); sc.scrollLeft = Math.max(0, $('threadBox').offsetWidth * TODAY_X / 1000 - sc.clientWidth * 0.45);   // phones: start with Atty in view
+  }
+  function light(release, dimOthers) {
+    T.knots.forEach(function (k) { var on = k.release === release; k.node.classList.toggle('on', on); k.lbl.classList.toggle('on', on); });
+    T.beads.forEach(function (b) { var d = dimOthers && b.rel !== release; b.node.classList.toggle('dim', d); b.hang.classList.toggle('dim', d); });
+    var k = T.knots.filter(function (x) { return x.release === release; })[0];
+    T.sel = k ? k.node : null;
+  }
+  function aboutKnot(k) {
+    var i = -1; G.beats.some(function (b, j) { if (b.release === k.release) { i = j; return true; } return false; });
+    if (i >= 0) return showBeat(i);
+    // nothing to say in the walkthrough: a line built from the odds
+    var s = ((DATA.tape && DATA.tape.signals) || []).filter(function (x) { return x.id === k.release; })[0], fav = '';
+    if (s) { var j = s.p.indexOf(Math.max.apply(null, s.p)); fav = ' Markets make "' + s.labels[j] + '" the favourite, ' + Math.round(s.p[j] * 100) + '%.'; }
+    say('The ' + (k.release === 'fomc' ? 'Fed decides' : NAME[k.release].toLowerCase() + ' report is out') + ' on ' + day(k.date) + '.' + fav, 'I watch it, but I am not quoting protection on it this week.', k.release);
+  }
+  function aboutBead(b, word) {
+    T.beads.forEach(function (x) { x.node.classList.toggle('sel', x === b); });
+    var unit = b.rel === 'cpi' ? '%' : 'K', what = b.rel === 'cpi' ? 'inflation' : 'job growth';
+    say(day(b.date, true) + ': ' + what + ' came in at ' + b.value + unit + ' after ' + b.before + unit + ', and your holdings ' + (b.ret < 0 ? 'fell ' : 'rose ') + Math.abs(b.ret).toFixed(2) + '%.',
+      'Protection against a ' + word[b.rel] + ' ' + (b.rel === 'cpi' ? 'inflation' : 'jobs') + ' report would ' + (b.happened ? '' : 'not ') + 'have paid.', b.rel);
+    T.sel = b.node;
+  }
+
   /* ------------------------------------------------------- the walkthrough
      Atty talks you through the week one sentence at a time (lines from beats.js, all
      built from computed numbers). Words light up as she says them; Listen plays her
-     recorded voice and moves on by itself. When she says skip, she snips the thread. */
-  var G = { beats: [], i: 0, playing: false, audio: null, started: false, words: [], speaking: false, cutUntil: 0 };
+     recorded voice and moves on by itself. When she says skip, she snips. */
+  var G = { beats: [], i: 0, playing: false, audio: null, started: false, words: [], speaking: false };
   var snipAt = -1;
   function maybeStart() {
     if (G.started || !DATA.agent || !DATA.tape || !DATA.fundsDone || !DATA.threadDone || !window.AttyBeats) return;
     G.beats = AttyBeats.beats(DATA); if (!G.beats.length) return;
-    G.started = true; showBeat(0);
+    G.started = true; renderThread(); showBeat(0);
   }
   function miniRow(a, b, c, cls) { var r = el('div', 'mini'); r.appendChild(el('span', null, a)); r.appendChild(typeof b === 'string' ? el('span', 'g', b) : b); r.appendChild(el('span', cls || null, c)); return r; }
   function renderShow(s) {
     var host = $('show'); host.textContent = '';
+    if (!s) return;
     if (s.kind === 'reports') s.rows.forEach(function (x) { host.appendChild(miniRow(x.name, x.date + ', most likely ' + x.fav, x.p, 'num')); });
     if (s.kind === 'hits') s.rows.forEach(function (x) { host.appendChild(miniRow(x.sym, 'could lose', '−' + x.loss, 'down num')); });
     if (s.kind === 'trade') {
@@ -412,26 +520,38 @@
     }
     if (s.kind === 'ledger') s.rows.forEach(function (x) { host.appendChild(miniRow(x.date + ', ' + x.what, x.call, x.status, x.status === 'open' ? 'g' : '')); });
     if (s.kind === 'end') {
-      var r = el('div', 'mini'), a1 = el('a', null, 'Ask about the news'), a2 = el('a', 'g', 'See everything');
+      var r = el('div', 'mini'), a1 = el('a', null, 'Ask about the news'), a2 = el('a', 'g', 'See every quote');
       a1.href = '#news'; a2.href = '#quotes';
       a1.addEventListener('click', function () { setTimeout(function () { $('newsQ').focus({ preventScroll: true }); }, 500); });
       r.appendChild(a1); r.appendChild(el('span')); r.appendChild(a2); host.appendChild(r);
     }
   }
+  function setLine(text, sub) {
+    var line = $('line'); line.textContent = '';
+    G.words = text.split(' ').map(function (w, k) { var s = el('span', 'w', (k ? ' ' : '') + w); line.appendChild(s); return s; });
+    $('sub').textContent = sub || ''; $('sub').style.opacity = 0;
+    G.revealStart = performance.now(); G.revealDur = reduce ? 0 : G.words.length * 165; G.revealDone = false;
+  }
+  /** Atty says something outside the walkthrough (about a bead or a knot); not recorded, so text only. */
+  function say(text, sub, release) {
+    stopAudio(); if (G.playing) setPlaying(false);
+    $('step').textContent = 'Atty';
+    G.custom = true; setLine(text, sub); renderShow(null);
+    light(release, true);
+  }
   function voiceUrl(text) { return DATA.live ? '/api/voice?t=' + encodeURIComponent(text) : 'voice/' + AttyBeats.hash(text) + '.mp3'; }
   function stopAudio() { clearTimeout(G.advance); if (G.audio) { G.audio.pause(); G.audio = null; } }
   function showBeat(i) {
-    stopAudio();
+    stopAudio(); G.custom = false;
+    T.beads.forEach(function (x) { x.node.classList.remove('sel'); });
     G.i = Math.max(0, Math.min(G.beats.length - 1, i));
-    var b = G.beats[G.i], line = $('line');
+    var b = G.beats[G.i];
     $('step').textContent = 'Atty, ' + (G.i + 1) + ' of ' + G.beats.length;
-    line.textContent = '';
-    G.words = b.say.split(' ').map(function (w, k) { var s = el('span', 'w', (k ? ' ' : '') + w); line.appendChild(s); return s; });
-    $('sub').textContent = b.sub || ''; $('sub').style.opacity = 0;
+    setLine(b.say, b.sub);
     renderShow(b.show);
+    light(b.release, b.id === 'fit');
     $('prev').disabled = G.i === 0;
     $('next').textContent = G.i === G.beats.length - 1 ? 'Start over' : 'Next';
-    G.revealStart = performance.now(); G.revealDur = reduce ? 0 : G.words.length * 165; G.revealDone = false;
     if (G.playing) playLine(b);
   }
   function playLine(b) {
@@ -454,15 +574,15 @@
   }
   function setPlaying(on) {
     G.playing = on; $('play').textContent = on ? 'Pause' : 'Listen'; $('play').setAttribute('aria-pressed', String(on));
-    if (on) { $('voiceNote').textContent = ''; playLine(G.beats[G.i]); } else stopAudio();
+    if (on) { $('voiceNote').textContent = ''; if (G.custom) showBeat(G.i); else playLine(G.beats[G.i]); } else stopAudio();
   }
-  $('next').addEventListener('click', function () { if (G.started) showBeat(G.i === G.beats.length - 1 ? 0 : G.i + 1); });
-  $('prev').addEventListener('click', function () { if (G.started) showBeat(G.i - 1); });
+  $('next').addEventListener('click', function () { if (G.started) showBeat(G.custom ? G.i : G.i === G.beats.length - 1 ? 0 : G.i + 1); });
+  $('prev').addEventListener('click', function () { if (G.started) showBeat(G.custom ? G.i : G.i - 1); });
   $('play').addEventListener('click', function () { if (G.started) setPlaying(!G.playing); });
   addEventListener('keydown', function (e) {
     if (!G.started || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
-    if (e.key === 'ArrowRight') showBeat(Math.min(G.beats.length - 1, G.i + 1));
-    if (e.key === 'ArrowLeft') showBeat(G.i - 1);
+    if (e.key === 'ArrowRight') showBeat(Math.min(G.beats.length - 1, G.i + (G.custom ? 0 : 1)));
+    if (e.key === 'ArrowLeft') showBeat(G.i - (G.custom ? 0 : 1));
   });
   (function revealTick(now) {
     if (G.started && G.words.length) {
@@ -471,122 +591,91 @@
       G.speaking = n < G.words.length || !!(G.audio && !G.audio.paused);
       if (n >= G.words.length && !G.revealDone) {
         G.revealDone = true; $('sub').style.opacity = 1;
-        if (G.beats[G.i].snip) { snipAt = now; G.didCut = false; }
+        if (!G.custom && G.beats[G.i].snip) snipAt = now;
       }
     }
     requestAnimationFrame(revealTick);
   })(performance.now());
 
-  /* ------------------------------------------- the particles and the thread
-     Dust streams out from behind Atty in faint rays and leans away from your cursor
-     like grains in wind. Your thread runs from between her open blades to the cursor
-     as a line of beads that shed grains as it moves. Her eyes follow its end. */
-  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var cast = $('cast'), bladeA = $('bladeA'), bladeB = $('bladeB');
-  var cv = $('trail'), ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), W = 0, H = 0;
+  /* ---------------------------------------------------------------- dust
+     Dust streams out from behind Atty in faint rays and leans away from your cursor like
+     grains in wind. Her blades move a little while she talks and close when she snips;
+     her eyes follow whatever she is talking about, or your cursor when you move it. */
+  var cv = $('dust'), ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1), W = 0, H = 0;
   function size() { W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; }
   size(); addEventListener('resize', size);
   var mouse = null;
   addEventListener('pointermove', function (e) { mouse = { x: e.clientX, y: e.clientY, t: performance.now() }; }, { passive: true });
   document.addEventListener('pointerleave', function () { mouse = null; });
-
-  var RAYS = 24, P = [], NP = Math.min(W, H) < 600 ? 520 : 1100, spin = 0;
-  function reach() { return Math.hypot(W, H) * 0.62; }
+  var RAYS = 24, P = [], NP = Math.min(W, H) < 600 ? 420 : 900, spin = 0, grains = [], last = performance.now();
+  function reach() { return Math.hypot(W, H) * 0.42; }
   function seed(p, anywhere) {
     p.ray = Math.random() < 0.7;
     p.a = p.ray ? Math.floor(Math.random() * RAYS) / RAYS * Math.PI * 2 + (Math.random() - 0.5) * 0.07 : Math.random() * Math.PI * 2;
-    p.r = anywhere ? Math.random() * reach() : 30 + Math.random() * 70;
-    p.v = 12 + Math.random() * 40; p.s = Math.random() < 0.07 ? 2.2 : 0.7 + Math.random() * 1.1; p.ox = 0; p.oy = 0;
+    p.r = anywhere ? Math.random() * reach() : 20 + Math.random() * 50;
+    p.v = 10 + Math.random() * 34; p.s = Math.random() < 0.07 ? 2 : 0.7 + Math.random() * 1; p.ox = 0; p.oy = 0;
   }
   for (var i = 0; i < NP; i++) { var p0 = {}; seed(p0, true); P.push(p0); }
-
-  function cutPoint() {
-    var c = $('cut'), m = c.getScreenCTM(), x = +c.getAttribute('cx'), y = +c.getAttribute('cy');
-    return { x: x * m.a + y * m.c + m.e, y: x * m.b + y * m.d + m.f };
-  }
-  var pts = [], N = 40, grains = [], last = performance.now();
-  var looks = [].slice.call(cast.querySelectorAll('.look'));
+  function centre(node) { var b = node.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; }
 
   function frame(now) {
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
-    var box = cast.getBoundingClientRect(), ox = box.left + box.width / 2, oy = box.top + box.height * 0.5, R = reach();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-    var glow = ctx.createRadialGradient(ox, oy, 0, ox, oy, box.height * 0.7);
-    glow.addColorStop(0, 'rgba(255,255,255,0.10)'); glow.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.globalAlpha = 1; ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
-
-    // the dust
-    spin += dt * 0.012; ctx.fillStyle = '#f2f2f2';
-    for (var k = 0; k < P.length; k++) {
-      var p = P[k];
-      p.r += p.v * dt * (1 + p.r / R);
-      if (p.r > R) seed(p, false);
-      var a = p.a + spin, x = ox + Math.cos(a) * p.r + p.ox, y = oy + Math.sin(a) * p.r + p.oy;
-      if (mouse) {
-        var dx = x - mouse.x, dy = y - mouse.y, d2 = dx * dx + dy * dy;
-        if (d2 < 8100) { var d = Math.sqrt(d2) || 1, f = (1 - d / 90) * 36 * dt; p.ox += dx / d * f; p.oy += dy / d * f; }
+    if (T.atty) {
+      var o = centre(T.atty), R = reach();
+      var glow = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, R * 0.6);
+      glow.addColorStop(0, 'rgba(255,255,255,0.09)'); glow.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.globalAlpha = 1; ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+      spin += dt * 0.012; ctx.fillStyle = '#f2f2f2';
+      for (var k = 0; k < P.length; k++) {
+        var p = P[k];
+        p.r += p.v * dt * (1 + p.r / R);
+        if (p.r > R) seed(p, false);
+        var a = p.a + spin, x = o.x + Math.cos(a) * p.r + p.ox, y = o.y + Math.sin(a) * p.r + p.oy;
+        if (mouse) {
+          var dx = x - mouse.x, dy = y - mouse.y, d2 = dx * dx + dy * dy;
+          if (d2 < 8100) { var d = Math.sqrt(d2) || 1, f = (1 - d / 90) * 36 * dt; p.ox += dx / d * f; p.oy += dy / d * f; }
+        }
+        p.ox *= 0.985; p.oy *= 0.985;
+        if (x < -4 || y < -4 || x > W + 4 || y > H + 4) continue;
+        ctx.globalAlpha = Math.min(1, p.r / 60) * (1 - p.r / R) * (p.ray ? 0.75 : 0.4);
+        ctx.fillRect(x, y, p.s, p.s);
       }
-      p.ox *= 0.985; p.oy *= 0.985;
-      if (x < -4 || y < -4 || x > W + 4 || y > H + 4) continue;
-      ctx.globalAlpha = Math.min(1, p.r / 70) * (1 - p.r / R) * (p.ray ? 0.85 : 0.45);
-      ctx.fillRect(x, y, p.s, p.s);
-    }
 
-    // her blades chatter a little while she talks, and close when she snips
-    var talk = G.speaking ? (0.5 + 0.5 * Math.sin(now / 55)) * (0.6 + 0.4 * Math.sin(now / 190)) : 0, close = 0;
-    if (snipAt > 0) {
-      var st = now - snipAt;
-      close = st < 150 ? st / 150 : st < 520 ? 1 : st < 900 ? 1 - (st - 520) / 380 : 0;
-      if (st >= 130 && !G.didCut) {
-        G.didCut = true; G.cutUntil = now + 1500;
-        (G.lastLine || []).forEach(function (q) { grains.push({ x: q.x, y: q.y, vx: (Math.random() - 0.5) * 30, vy: Math.random() * 20, life: 1.4 }); });
+      // talking and snipping
+      var talk = G.speaking ? (0.5 + 0.5 * Math.sin(now / 55)) * (0.6 + 0.4 * Math.sin(now / 190)) : 0, close = 0;
+      if (snipAt > 0) {
+        var st = now - snipAt;
+        close = st < 150 ? st / 150 : st < 520 ? 1 : st < 900 ? 1 - (st - 520) / 380 : 0;
+        if (st >= 130 && !G.didCut) {
+          G.didCut = true;
+          for (var e = 0; e < 40; e++) grains.push({ x: o.x + (Math.random() - 0.3) * 120, y: o.y - 20 + (Math.random() - 0.5) * 6, vx: (Math.random() - 0.5) * 30, vy: Math.random() * 20, life: 1.4 });
+        }
+        if (st >= 900) { snipAt = -1; G.didCut = false; }
       }
-      if (st >= 900) snipAt = -1;
-    }
-    var ang = talk * 3 - close * 18;
-    bladeA.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ' 0 -30)');
-    bladeB.setAttribute('transform', 'rotate(' + (-ang).toFixed(2) + ' 0 -30)');
+      var ang = talk * 3 - close * 18;
+      T.bladeA.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ' 0 -30)');
+      T.bladeB.setAttribute('transform', 'rotate(' + (-ang).toFixed(2) + ' 0 -30)');
+      for (var g = grains.length - 1; g >= 0; g--) {
+        var gr = grains[g]; gr.life -= dt; if (gr.life <= 0) { grains.splice(g, 1); continue; }
+        gr.vy += 14 * dt; gr.x += gr.vx * dt; gr.y += gr.vy * dt;
+        ctx.globalAlpha = gr.life / 1.4 * 0.8; ctx.fillRect(gr.x, gr.y, 1.4, 1.4);
+      }
+      ctx.globalAlpha = 1;
 
-    // the thread, from between the blades to the cursor (gone for a moment after a snip)
-    var home = cutPoint(), idle = !mouse || now - mouse.t > 1600, cutNow = now < G.cutUntil;
-    var target = idle ? { x: home.x + 120 + Math.sin(now / 900) * 14, y: home.y + 40 + Math.cos(now / 1100) * 10 } : mouse;
-    if (!pts.length || cutNow) { pts.length = 0; for (var n = 0; n < N; n++) pts.push({ x: home.x, y: home.y }); }
-    pts[0].x += (target.x - pts[0].x) * Math.min(1, dt * (idle ? 2 : 14));
-    pts[0].y += (target.y - pts[0].y) * Math.min(1, dt * (idle ? 2 : 14));
-    for (var j = 1; j < N; j++) { var fj = Math.min(1, dt * 16); pts[j].x += (pts[j - 1].x - pts[j].x) * fj; pts[j].y += (pts[j - 1].y - pts[j].y) * fj; }
-    pts[N - 1].x = home.x; pts[N - 1].y = home.y;
-    var span = Math.hypot(pts[0].x - home.x, pts[0].y - home.y), sag = Math.min(90, span * 0.18);
-    var line = pts.map(function (q, k2) { var s = Math.sin(Math.PI * k2 / (N - 1)); return { x: q.x, y: q.y + s * sag + s * Math.sin(now / 700 + k2 * 0.35) * 3 }; });
-    ctx.globalAlpha = 0.22; ctx.strokeStyle = '#f2f2f2'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(line[0].x, line[0].y);
-    for (var j2 = 1; j2 < N; j2++) ctx.lineTo(line[j2].x, line[j2].y);
-    ctx.stroke();
-    ctx.globalAlpha = 0.95; var carry = 0;
-    for (var j3 = 1; j3 < N; j3++) {
-      var ax = line[j3 - 1].x, ay = line[j3 - 1].y, bx = line[j3].x, by = line[j3].y, segL = Math.hypot(bx - ax, by - ay);
-      for (var t = carry; t < segL; t += 6) { var u = t / segL; ctx.fillRect(ax + (bx - ax) * u - 0.8, ay + (by - ay) * u - 0.8, 1.6, 1.6); }
-      carry = segL > 0 ? (carry - segL) % 6 : carry; if (carry < 0) carry += 6;
+      // her eyes: your cursor while you move it, otherwise what she is talking about
+      var target = mouse && now - mouse.t < 1600 ? mouse : T.sel ? centre(T.sel) : null;
+      T.looks.forEach(function (lk) {
+        var m = lk.parentNode.getScreenCTM(); if (!m) return;
+        var dx2 = 0, dy2 = 0;
+        if (target) {
+          var inv = m.inverse(), lx = target.x * inv.a + target.y * inv.c + inv.e, ly = target.x * inv.b + target.y * inv.d + inv.f;
+          dx2 = lx - +lk.dataset.x; dy2 = ly - +lk.dataset.y;
+        }
+        var l = Math.hypot(dx2, dy2) || 1, rr = target ? Math.min(12, l / 12) : 0;
+        lk.setAttribute('transform', 'translate(' + (dx2 / l * rr).toFixed(2) + ' ' + (dy2 / l * rr).toFixed(2) + ')');
+      });
     }
-    if (!idle) for (var e = 0; e < 3; e++) {
-      var src = line[Math.floor(Math.random() * N)];
-      grains.push({ x: src.x, y: src.y, vx: (Math.random() - 0.5) * 22, vy: (Math.random() - 0.5) * 22 - 4, life: 1.4 });
-    }
-    for (var g = grains.length - 1; g >= 0; g--) {
-      var gr = grains[g]; gr.life -= dt; if (gr.life <= 0) { grains.splice(g, 1); continue; }
-      gr.vy += 14 * dt; gr.x += gr.vx * dt; gr.y += gr.vy * dt;
-      ctx.globalAlpha = gr.life / 1.4 * 0.8; ctx.fillRect(gr.x, gr.y, 1.3, 1.3);
-    }
-    if (!cutNow) { ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.arc(line[0].x, line[0].y, 9, 0, Math.PI * 2); ctx.stroke(); }
-    G.lastLine = line;
-    ctx.globalAlpha = 1;
-
-    // her eyes follow the end of the thread, inside the handle loops
-    looks.forEach(function (lk) {
-      var m = lk.parentNode.getScreenCTM(); if (!m) return;
-      var inv = m.inverse(), lx = line[0].x * inv.a + line[0].y * inv.c + inv.e, ly = line[0].x * inv.b + line[0].y * inv.d + inv.f;
-      var ddx = lx - +lk.dataset.x, ddy = ly - +lk.dataset.y, l = Math.hypot(ddx, ddy) || 1, r = Math.min(12, l / 12);
-      lk.setAttribute('transform', 'translate(' + (ddx / l * r).toFixed(2) + ' ' + (ddy / l * r).toFixed(2) + ')');
-    });
     requestAnimationFrame(frame);
   }
   if (!reduce) requestAnimationFrame(frame);

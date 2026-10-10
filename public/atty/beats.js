@@ -132,7 +132,9 @@
 
     // 7. the end
     out.push({ id: 'end', say: "That's this week. Ask me about anything in the news, or see everything below.", show: { kind: 'end' }, numbers: {} });
-    out.forEach(function (b) { b.hash = hash(b.say); });
+    // which release each step is about, so the thread can light that knot
+    var REL = { risk: p && p.release, trade: p && p.release, fit: p && p.release, fine: p && p.release, skip: q ? q.release : 'nfp', peers: 'cpi' };
+    out.forEach(function (b) { b.hash = hash(b.say); b.release = REL[b.id] || null; });
     return out;
   }
 
