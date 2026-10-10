@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import LeafChart from './LeafChart.jsx';
 import SpreadChart from './SpreadChart.jsx';
 import { COLUMNS, DEFAULT_COLUMNS, DETAIL_STATS, num } from '../format.js';
+import { CUSTOM_LABEL } from './ParamBuilder.jsx';
 
 function PairDetail({ row }) {
   const s = row.series;
@@ -168,6 +169,7 @@ export default function ResultsPanel({ scan, strategies }) {
   const keys = Object.keys(data.strategies);
   const current = keys.includes(active) ? active : keys[0];
   const block = data.strategies[current];
+  const label = (k) => strategies[k]?.label || CUSTOM_LABEL;
 
   return (
     <section className="results">
@@ -191,7 +193,7 @@ export default function ResultsPanel({ scan, strategies }) {
             className={k === current ? 'tab on' : 'tab'}
             onClick={() => setActive(k)}
           >
-            {strategies[k].label}
+            {label(k)}
             <span className="count">{data.strategies[k].results.length}</span>
           </button>
         ))}
@@ -200,7 +202,7 @@ export default function ResultsPanel({ scan, strategies }) {
       <div id="tabpanel" role="tabpanel" aria-labelledby={`tab-${current}`}>
         {block.results.length === 0 ? (
           <div className="none">
-            <h2>No pairs fit {strategies[current].label.toLowerCase()}</h2>
+            <h2>No pairs fit {label(current).toLowerCase()}</h2>
             <p>
               Nothing in the universe meets the requirements over this window. Try a longer
               lookback.

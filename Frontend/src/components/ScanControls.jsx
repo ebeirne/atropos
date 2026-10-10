@@ -93,7 +93,7 @@ export default function ScanControls({ days, onDays, onScan, busy, selectedCount
       </fieldset>
 
       <button type="submit" className="primary" disabled={disabled}>
-        {busy ? 'Scanning…' : selectedCount === 0 ? 'Pick a strategy first' : 'Find pairs'}
+        {busy ? 'Scanning…' : selectedCount === 0 ? 'Pick a strategy or a parameter' : 'Find pairs'}
       </button>
     </form>
   );

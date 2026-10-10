@@ -3,6 +3,7 @@ import { scanMulti } from '../api.js';
 import StrategyList from '../components/StrategyList.jsx';
 import ScanControls from '../components/ScanControls.jsx';
 import ResultsPanel from '../components/ResultsPanel.jsx';
+import ParamBuilder, { CUSTOM_KEY, toSpec } from '../components/ParamBuilder.jsx';
 import { logExSpec } from '../ex.js';
 
 export default function Screener({ strategies, query }) {
@@ -10,10 +11,12 @@ export default function Screener({ strategies, query }) {
   const initial = (query.s || '').split(',').filter(Boolean);
   const [selected, setSelected] = useState(() => new Set(initial));
   const [days, setDays] = useState(252); // 1Y, see PERIODS in ScanControls
+  const [params, setParams] = useState({}); // parameter key -> slider value, for the ones ticked
   const [scan, setScan] = useState({ status: 'idle' });
   const resultsRef = useRef(null);
 
   const chosen = strategies ? [...selected].filter((k) => strategies[k]) : [];
+  const custom = toSpec(params);
 
   const toggle = (key) => {
     // Ticking a card (not un-ticking) asks EX what Lego will need for it.
@@ -33,8 +36,14 @@ export default function Screener({ strategies, query }) {
       resultsRef.current?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
     }
     try {
-      // Real prices only, over the backend's built-in universe.
-      const data = await scanMulti({ strategies: chosen, provider: 'yahoo', days });
+      // Real prices only, over the backend's built-in universe. Your own parameters ride along
+      // as one more strategy, with its spec spelled out.
+      const data = await scanMulti({
+        strategies: custom ? [...chosen, CUSTOM_KEY] : chosen,
+        specs: custom ? { [CUSTOM_KEY]: custom } : undefined,
+        provider: 'yahoo',
+        days,
+      });
       setScan({ status: 'done', data });
     } catch (e) {
       setScan({ status: 'error', error: e.message });
@@ -45,7 +54,7 @@ export default function Screener({ strategies, query }) {
     <div className="screener">
       <header className="wrap page-head">
         <h1>Screener</h1>
-        <p>Pick one or more strategies, and Leaf returns the pairs that fit each.</p>
+        <p>Pick one or more strategies, or set your own parameters, and Leaf returns the pairs that fit.</p>
       </header>
 
       {strategies && (
@@ -54,13 +63,17 @@ export default function Screener({ strategies, query }) {
             <h2>Strategies</h2>
             <StrategyList strategies={strategies} selected={new Set(chosen)} onToggle={toggle} />
 
+            <h2>Your own parameters</h2>
+            <p className="source">Skip the strategies and screen on the numbers directly.</p>
+            <ParamBuilder values={params} onChange={setParams} />
+
             <h2>Data</h2>
             <ScanControls
               days={days}
               onDays={setDays}
               onScan={run}
               busy={scan.status === 'loading'}
-              selectedCount={chosen.length}
+              selectedCount={chosen.length + (custom ? 1 : 0)}
             />
           </aside>
 
