@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atty concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Fredoka:wght@400;600;700&family=Lilita+One&family=Nunito:wght@500;800&display=swap">
+<style>
+  /* Three cartoon directions for Atropos on one template: ?t=sticker | dream | hose.
+     Same content (Atty, the thread, her line, three cards); only the look changes. */
+  :root { --pad: 56px; }
+  html[data-t="sticker"] {
+    --bg: #ffd84d; --bg2: #ffd84d; --ink: #141414; --card: #ffffff; --line: #141414; --ow: 4px;
+    --skin: #ffcfa8; --hair: #2b1b17; --dress: #ff4f3a; --shoe: #141414; --cheek: #ff8a9a; --eye: #141414;
+    --thread: #e8322a; --gain: #2fbf71; --loss: #ff4f3a; --accent: #3b82f6; --sc: #3b82f6;
+    --fh: "Bricolage Grotesque", system-ui, sans-serif; --fb: "Bricolage Grotesque", system-ui, sans-serif; --fw: 800;
+    --shadow: 6px 6px 0 #141414; --radius: 18px;
+  }
+  html[data-t="dream"] {
+    --bg: #4b2bd6; --bg2: #ff7aa8; --ink: #ffffff; --card: rgba(255,255,255,.16); --line: transparent; --ow: 0px;
+    --skin: #ffd7c2; --hair: #6b3df0; --dress: #ffcf3f; --shoe: #3a1f8f; --cheek: #ff6f9e; --eye: #2a145c;
+    --thread: url(#rainbow); --gain: #7cf5c5; --loss: #ffd0e3; --accent: #ffe066; --sc: #7cf5c5;
+    --fh: "Fredoka", system-ui, sans-serif; --fb: "Fredoka", system-ui, sans-serif; --fw: 700;
+    --shadow: 0 20px 50px rgba(30, 0, 80, .35); --radius: 28px;
+  }
+  html[data-t="hose"] {
+    --bg: #f4e7cf; --bg2: #f4e7cf; --ink: #2a1a12; --card: #fff6e4; --line: #2a1a12; --ow: 3.5px;
+    --skin: #ffe2c4; --hair: #2a1a12; --dress: #d8402f; --shoe: #2a1a12; --cheek: #f08f80; --eye: #2a1a12;
+    --thread: #d8402f; --gain: #2a9d8f; --loss: #d8402f; --accent: #2a9d8f; --sc: #2a9d8f;
+    --fh: "Lilita One", system-ui, sans-serif; --fb: "Nunito", system-ui, sans-serif; --fw: 800;
+    --shadow: 0 0 0 3px #2a1a12, 7px 7px 0 3px #2a1a12; --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--fb); overflow: hidden; }
+  html[data-t="dream"] body { background: radial-gradient(1200px 700px at 75% 35%, #ffb36b 0%, #ff7aa8 30%, #8a3ff0 62%, #3a1fb8 100%); }
+  html[data-t="hose"] body { background-image: radial-gradient(rgba(42,26,18,.08) 1px, transparent 1.2px); background-size: 7px 7px; }
+  .frame { position: relative; width: 1440px; height: 900px; margin: 0 auto; padding: 36px var(--pad); }
+  nav { display: flex; align-items: center; justify-content: space-between; font-weight: var(--fw); font-size: 22px; }
+  nav .logo { font-family: var(--fh); font-size: 34px; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
+  nav .links { display: flex; gap: 28px; font-size: 19px; }
+  nav .pill { padding: 10px 18px; border-radius: 999px; background: var(--card); box-shadow: var(--shadow); }
+  html[data-t="sticker"] nav .pill { border: var(--ow) solid var(--line); box-shadow: 4px 4px 0 var(--line); }
+  html[data-t="dream"] nav .pill { backdrop-filter: blur(10px); }
+  .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; height: 470px; }
+  .copy h1 { font-family: var(--fh); font-weight: var(--fw); font-size: 64px; line-height: .95; letter-spacing: -.02em; margin: 18px 0 16px; }
+  html[data-t="hose"] .copy h1 { font-weight: 400; font-size: 68px; color: var(--dress); text-shadow: 3px 3px 0 var(--ink); }
+  html[data-t="dream"] .copy h1 { text-shadow: 0 6px 30px rgba(40,0,90,.35); }
+  .copy p { font-size: 21px; line-height: 1.3; max-width: 25ch; margin: 0 0 26px; font-weight: 500; }
+  .btns { display: flex; gap: 16px; }
+  .btn { font: inherit; font-weight: var(--fw); font-size: 21px; padding: 14px 24px; border-radius: 999px; border: var(--ow) solid var(--line); background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+  .btn.main { background: var(--accent); }
+  html[data-t="dream"] .btn.main { color: #2a145c; }
+  html[data-t="hose"] .btn.main { color: #fff6e4; }
+  .stage { position: relative; }
+  .bubble { position: absolute; left: 590px; top: 150px; width: 320px; z-index: 2; padding: 18px 20px; border-radius: 24px; background: #fff; color: #141414; font-size: 23px; line-height: 1.22; font-weight: 600;
+    border: var(--ow) solid var(--line); box-shadow: var(--shadow); }
+  html[data-t="dream"] .bubble { color: #2a145c; }
+  html[data-t="hose"] .bubble { background: var(--card); color: var(--ink); }
+  .bubble b { color: var(--loss); }
+  html[data-t="dream"] .bubble b { color: #e0287a; }
+  .bubble::after { content: ""; position: absolute; right: -14px; bottom: 26px; width: 28px; height: 28px; background: inherit; border-right: var(--ow) solid var(--line); border-bottom: var(--ow) solid var(--line); transform: rotate(-45deg); }
+  html[data-t="dream"] .bubble::after { border: 0; }
+  svg.atty { position: absolute; left: 900px; top: 214px; width: 280px; height: 420px; overflow: visible; z-index: 1; }
+  svg.thread { position: absolute; left: 0; top: 560px; width: 1440px; height: 150px; overflow: visible; }
+  .tag { position: absolute; top: 676px; font-weight: var(--fw); font-size: 18px; padding: 8px 14px; border-radius: 999px; background: var(--card); border: var(--ow) solid var(--line); box-shadow: var(--shadow); white-space: nowrap; }
+  html[data-t="dream"] .tag { backdrop-filter: blur(8px); }
+  .tag i { font-style: normal; opacity: .7; font-weight: 500; }
+  .cards { position: absolute; left: var(--pad); right: var(--pad); bottom: 34px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card { background: var(--card); border: var(--ow) solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 20px; font-size: 18px; }
+  html[data-t="dream"] .card { backdrop-filter: blur(14px); }
+  .card .big { font-family: var(--fh); font-weight: var(--fw); font-size: 34px; display: block; margin-top: 2px; }
+  html[data-t="hose"] .card .big { font-weight: 400; }
+  .card .up { color: var(--gain); } .card .down { color: var(--loss); }
+  html[data-t="sticker"] .card .up { color: #12935a; }
+  html[data-t="hose"] .card .up { color: #1f7a6f; }
+  .grain { position: absolute; inset: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="rainbow" x1="0" x2="1"><stop offset="0" stop-color="#7cf5c5"/><stop offset=".35" stop-color="#ffe066"/><stop offset=".65" stop-color="#ff8fb8"/><stop offset="1" stop-color="#b38cff"/></linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#2a0a6b" flood-opacity=".35"/></filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+</svg>
+<div class="frame">
+  <nav>
+    <span class="logo"><svg width="34" height="34" viewBox="0 0 40 40"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M12 6 L28 30"/><path d="M28 6 L12 30"/><circle cx="10" cy="33" r="5"/><circle cx="30" cy="33" r="5"/></g></svg>Atropos</span>
+    <span class="links"><span>Your thread</span><span>Quotes</span><span>Public funds</span><span>News</span><span class="pill">Link a brokerage</span></span>
+  </nav>
+  <div class="hero">
+    <div class="copy">
+      <h1>Meet Atty.<br>She minds your money’s thread.</h1>
+      <p>She watches the reports that could hurt what you own, prices the protection, and tells you when it isn’t worth it.</p>
+      <div class="btns"><button class="btn main">▶ Hear her</button><button class="btn">See your thread</button></div>
+    </div>
+    </div>
+  <div class="bubble">If inflation runs hot on Oct 14, you could lose about <b>$461</b>.</div>
+  <svg class="atty" id="atty" viewBox="0 0 200 300"></svg>
+  <svg class="thread" id="thread" viewBox="0 0 1440 150"></svg>
+  <span class="tag" style="left: 1120px">Oct 14 · Inflation <i>your call</i></span>
+  <span class="tag" style="left: 1250px; top: 566px">Nov 6 · Jobs <i>skip ✂</i></span>
+  <div class="cards">
+    <div class="card">One trade covers it all<span class="big">$377.55</span>839 contracts on Kalshi, pays $839</div>
+    <div class="card">Does it pay when you lose?<span class="big down">6 of 13</span>your worst inflation days since 2021</div>
+    <div class="card">Jobs protection<span class="big down">Skip it</span>5¢ more than the odds say it’s worth</div>
+  </div>
+</div>
+<script>
+  var t = (location.search.match(/t=(\w+)/) || [])[1] || 'sticker';
+  document.documentElement.dataset.t = t;
+  var css = getComputedStyle(document.documentElement), v = function (n) { return css.getPropertyValue(n).trim(); };
+  var ow = parseFloat(v('--ow')) || 0, line = v('--line') === 'transparent' ? 'none' : v('--line');
+  var S = function (fill, extra) { return 'fill="' + fill + '" stroke="' + line + '" stroke-width="' + ow + '" stroke-linejoin="round" stroke-linecap="round"' + (extra || ''); };
+  var hose = t === 'hose', dream = t === 'dream';
+
+  // Atty, the same pose in every direction, dressed for each one
+  var eyes = hose
+    ? '<ellipse cx="84" cy="98" rx="11" ry="15" ' + S('#fff') + '/><ellipse cx="116" cy="98" rx="11" ry="15" ' + S('#fff') + '/>' +
+      '<path d="M84 92 a6 9 0 1 0 0.01 0 Z" fill="' + v('--eye') + '"/><path d="M116 92 a6 9 0 1 0 0.01 0 Z" fill="' + v('--eye') + '"/>' +
+      '<path d="M84 96 l6 -4 v6 Z M116 96 l6 -4 v6 Z" fill="#fff"/>'
+    : '<ellipse cx="84" cy="100" rx="7.5" ry="10.5" fill="' + v('--eye') + '"/><ellipse cx="116" cy="100" rx="7.5" ry="10.5" fill="' + v('--eye') + '"/>' +
+      '<circle cx="86.5" cy="96" r="3" fill="#fff"/><circle cx="118.5" cy="96" r="3" fill="#fff"/>';
+  var hand = function (x, y) { return '<circle cx="' + x + '" cy="' + y + '" r="' + (hose ? 11 : 8.5) + '" ' + S(hose ? '#fff' : v('--skin')) + '/>'; };
+  var limb = function (d, w) { return (line !== 'none' ? '<path d="' + d + '" fill="none" stroke="' + line + '" stroke-width="' + (w + ow * 2) + '" stroke-linecap="round"/>' : '') + '<path d="' + d + '" fill="none" stroke="' + v('--skin') + '" stroke-width="' + w + '" stroke-linecap="round"/>'; };
+  var atty =
+    '<g' + (dream ? ' filter="url(#soft)"' : '') + '>' +
+    limb(hose ? 'M86 214 C80 240, 92 258, 82 280' : 'M86 214 L84 280', 12) + limb(hose ? 'M114 214 C120 240, 108 258, 118 280' : 'M114 214 L116 280', 12) +
+    '<ellipse cx="76" cy="286" rx="17" ry="9" ' + S(v('--shoe')) + '/><ellipse cx="124" cy="286" rx="17" ry="9" ' + S(v('--shoe')) + '/>' +
+    limb(hose ? 'M74 152 C50 160, 62 186, 48 198' : 'M74 152 Q58 172 52 196', 11) + hand(hose ? 48 : 52, hose ? 200 : 198) +
+    '<path d="M70 142 Q100 128 130 142 L152 222 Q100 238 48 222 Z" ' + S(v('--dress')) + '/>' +
+    (dream ? '<path d="M60 200 Q100 212 140 200" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="5" stroke-linecap="round"/>' : '') +
+    (hose ? '<circle cx="86" cy="176" r="5" fill="#fff"/><circle cx="114" cy="190" r="5" fill="#fff"/><circle cx="96" cy="208" r="5" fill="#fff"/>' : '') +
+    limb(hose ? 'M126 152 C150 150, 146 128, 162 122' : 'M126 152 Q150 150 160 126', 11) +
+    // big scissors in her raised hand
+    '<g transform="translate(168 104) rotate(18)">' +
+      '<path d="M-6 6 L-16 -58 Q-12 -66 -6 -60 L2 2 Z" ' + S('#e9eef5') + '/><path d="M6 6 L16 -58 Q12 -66 6 -60 L-2 2 Z" ' + S('#e9eef5') + '/>' +
+      '<circle cx="-9" cy="16" r="9" ' + S(v('--sc')) + '/><circle cx="9" cy="16" r="9" ' + S(v('--sc')) + '/><circle cx="-9" cy="16" r="3.5" fill="' + v('--bg') + '"/><circle cx="9" cy="16" r="3.5" fill="' + v('--bg') + '"/>' +
+      '<circle cx="0" cy="0" r="3.5" fill="' + (line === 'none' ? '#2a145c' : line) + '"/></g>' +
+    hand(hose ? 162 : 160, hose ? 120 : 124) +
+    '<rect x="92" y="128" width="16" height="16" ' + S(v('--skin')) + '/>' +
+    // head, hair with a bob and bangs, face
+    '<path d="M50 104 C44 40, 156 40, 150 104 L150 128 Q141 134 134 126 L134 92 Q100 76 66 92 L66 126 Q59 134 50 128 Z" ' + S(v('--hair')) + '/>' +
+    '<circle cx="100" cy="98" r="44" ' + S(v('--skin')) + '/>' +
+    '<path d="M56 92 C56 50, 144 50, 144 92 Q122 72 100 82 Q78 70 56 92 Z" ' + S(v('--hair')) + '/>' +
+    (hose ? '<path d="M118 56 q10 -14 22 -6 q-12 2 -14 14 Z" ' + S(v('--dress')) + '/>' : '<circle cx="134" cy="62" r="9" ' + S(v('--dress')) + '/>') +
+    eyes +
+    '<ellipse cx="72" cy="118" rx="9" ry="5.5" fill="' + v('--cheek') + '" opacity=".8"/><ellipse cx="128" cy="118" rx="9" ry="5.5" fill="' + v('--cheek') + '" opacity=".8"/>' +
+    '<path d="M88 116 Q100 132 112 116 Z" ' + S(hose ? '#8a1f15' : '#9b2335') + '/><path d="M94 122 Q100 128 106 122" fill="#ff8a9a"/>' +
+    '</g>';
+  document.getElementById('atty').innerHTML = atty;
+
+  // the thread: past report days as beads, Atty at today, a bow where she says protect, a cut where she says skip
+  var th = '', W = 1440, Y = 60, seed = 7;
+  var rnd = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  var thr = v('--thread');
+  if (dream) th += '<path d="M0 ' + Y + ' L1335 ' + Y + ' M1365 ' + Y + ' L1440 ' + Y + '" stroke="url(#rainbow)" stroke-width="9" stroke-linecap="round" filter="url(#glow)"/>';
+  else {
+    th += '<path d="M0 ' + Y + ' L1335 ' + Y + ' M1365 ' + Y + ' L1440 ' + Y + '" stroke="' + (line === 'none' ? thr : line) + '" stroke-width="' + (hose ? 11 : 13) + '" stroke-linecap="round"/>';
+    th += '<path d="M0 ' + Y + ' L1335 ' + Y + ' M1365 ' + Y + ' L1440 ' + Y + '" stroke="' + thr + '" stroke-width="' + (hose ? 5 : 6) + '" stroke-linecap="round"/>';
+    th += '<path d="M0 ' + Y + ' L1335 ' + Y + '" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-dasharray="6 9" stroke-linecap="round"/>';
+  }
+  for (var i = 0; i < 40; i++) {
+    var x = 40 + i * 21.5 + (rnd() - .5) * 6, loss = rnd() < .45, m = 6 + rnd() * 30, paid = rnd() < .5, y = Y + (loss ? 1 : -1) * (14 + m);
+    th += '<line x1="' + x + '" x2="' + x + '" y1="' + Y + '" y2="' + y + '" stroke="' + (line === 'none' ? 'rgba(255,255,255,.45)' : line) + '" stroke-width="2"/>';
+    th += '<circle cx="' + x + '" cy="' + y + '" r="' + (5 + m / 6).toFixed(1) + '" fill="' + (paid ? (loss ? v('--loss') : v('--gain')) : (dream ? 'rgba(255,255,255,.25)' : v('--card'))) + '" stroke="' + (line === 'none' ? '#fff' : line) + '" stroke-width="' + (dream ? 1.5 : ow * .75) + '"' + (dream ? ' filter="url(#glow)"' : '') + '/>';
+  }
+  // a bow on Oct 14
+  var bx = 1190;
+  th += '<g transform="translate(' + bx + ' ' + Y + ')"><path transform="scale(1.7)" d="M0 0 C-30 -26, -38 18, 0 0 Z M0 0 C30 -26, 38 18, 0 0 Z" fill="' + v('--accent') + '" stroke="' + (line === 'none' ? '#fff' : line) + '" stroke-width="' + (ow || 2) + '" stroke-linejoin="round"/><circle r="7" fill="' + v('--accent') + '" stroke="' + (line === 'none' ? '#fff' : line) + '" stroke-width="' + (ow || 2) + '"/></g>';
+  // frayed ends where she cut on Nov 6
+  th += '<g stroke="' + (line === 'none' ? '#fff' : line) + '" stroke-width="3" stroke-linecap="round"><path d="M1335 ' + Y + ' l8 -9 M1335 ' + Y + ' l9 3 M1365 ' + Y + ' l-8 9 M1365 ' + Y + ' l-9 -3"/></g>';
+  th += '<text x="1338" y="' + (Y - 18) + '" font-size="26">✂</text>';
+  if (dream) for (var s = 0; s < 18; s++) th += '<path transform="translate(' + (rnd() * 1440).toFixed(0) + ' ' + (rnd() * 120 - 40).toFixed(0) + ') scale(' + (0.4 + rnd() * .6).toFixed(2) + ')" d="M0 -10 Q1.5 -1.5 10 0 Q1.5 1.5 0 10 Q-1.5 1.5 -10 0 Q-1.5 -1.5 0 -10 Z" fill="#fff" opacity=".85"/>';
+  document.getElementById('thread').innerHTML = th;
+</script>
+</body>
+</html>

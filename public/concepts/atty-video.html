@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap">
+<style>
+  /* One character in the style of the reference loop: thin navy outlines, flat fills with
+     a darker band on one side, tiny dot eyes, a warm yellow glow behind her that turns
+     pink then purple, pink paint splashes, and sparkles. */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #6a32e0; overflow: hidden; }
+  body { font-family: "Fredoka", system-ui, sans-serif; color: #fff; }
+  svg.bg { position: fixed; inset: 0; width: 100%; height: 100%; }
+  .logo { position: fixed; left: 32px; top: 26px; font-weight: 700; font-size: 28px; letter-spacing: -.01em; text-shadow: 0 2px 0 rgba(42, 29, 107, .35); }
+  .stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  svg.atty { height: min(86vh, 860px); width: auto; max-width: 94vw; overflow: visible; }
+  .bob { animation: bob 1.6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+  @keyframes bob { from { transform: translateY(0) rotate(-1.5deg); } to { transform: translateY(-10px) rotate(1.5deg); } }
+  .arm-up { animation: wave 1.6s ease-in-out infinite alternate; transform-box: view-box; transform-origin: 258px 222px; }
+  @keyframes wave { from { transform: rotate(-4deg); } to { transform: rotate(5deg); } }
+  .blink { animation: blink 4.8s infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+  .bladeA, .bladeB { transform-box: view-box; transform-origin: 318px 128px; animation: snipA 3.2s ease-in-out infinite; }
+  .bladeB { animation-name: snipB; }
+  @keyframes snipA { 0%, 80%, 100% { transform: rotate(0); } 88% { transform: rotate(9deg); } }
+  @keyframes snipB { 0%, 80%, 100% { transform: rotate(0); } 88% { transform: rotate(-9deg); } }
+  .rays { animation: spin 60s linear infinite; transform-box: view-box; transform-origin: 720px 470px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .tw { animation: tw 1.8s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
+  @keyframes tw { from { transform: scale(.4); opacity: .4; } to { transform: scale(1.15); opacity: 1; } }
+  .blob { animation: breathe 3.2s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
+  @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.04); } }
+  @media (prefers-reduced-motion: reduce) { .bob, .arm-up, .blink, .bladeA, .bladeB, .rays, .tw, .blob { animation: none; } }
+</style>
+</head>
+<body>
+<svg class="bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="glow" cx="720" cy="470" r="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff4a8"/><stop offset=".16" stop-color="#ffdf6e"/><stop offset=".34" stop-color="#ffa3a6"/>
+      <stop offset=".52" stop-color="#ef6cc4"/><stop offset=".74" stop-color="#9b45e6"/><stop offset="1" stop-color="#5e2fd9"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#glow)"/>
+  <g class="rays" id="rays" opacity=".13"></g>
+  <g id="splash"></g>
+  <g id="sparkle"></g>
+</svg>
+
+<div class="logo">Atropos</div>
+
+<div class="stage">
+<svg class="atty" viewBox="0 0 420 580" role="img" aria-label="Atty, a cartoon girl with a purple bob, a blue sweater and pink trousers, dancing with a big pair of scissors">
+  <defs>
+    <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d5cf0"/><stop offset="1" stop-color="#a9b8ff"/></linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9c4"/><stop offset="1" stop-color="#ffc0c6"/></linearGradient>
+    <linearGradient id="pants" x1="0" y1="330" x2="0" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff5fae"/><stop offset=".45" stop-color="#ff79c0"/><stop offset=".7" stop-color="#ffb18a"/><stop offset="1" stop-color="#ffe27a"/>
+    </linearGradient>
+    <clipPath id="cTorso"><path d="M150 214 C170 196 244 196 264 214 L276 318 C240 334 172 334 140 318 Z"/></clipPath>
+    <clipPath id="cFace"><ellipse cx="206" cy="128" rx="46" ry="54"/></clipPath>
+    <clipPath id="cHips"><path d="M142 312 C180 328 236 328 274 312 L272 352 C232 364 184 364 144 352 Z"/></clipPath>
+  </defs>
+  <g class="bob" stroke="#1d1a4f" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <!-- legs: one planted, one kicked back mid-step -->
+    <path d="M178 346 L170 470" stroke="#1d1a4f" stroke-width="50" fill="none"/>
+    <path d="M178 346 L170 470" stroke="url(#pants)" stroke-width="43.6" fill="none"/>
+    <path d="M238 346 Q268 404 300 444" stroke="#1d1a4f" stroke-width="50" fill="none"/>
+    <path d="M238 346 Q268 404 300 444" stroke="url(#pants)" stroke-width="43.6" fill="none"/>
+    <path d="M160 400 L156 452 M250 372 Q262 396 278 414" stroke="#fff" stroke-opacity=".55" stroke-width="5" fill="none"/>
+    <!-- sneakers -->
+    <path d="M136 478 C136 462 158 456 182 462 C200 466 206 482 200 494 L140 494 C134 492 134 486 136 478 Z" fill="#ffffff"/>
+    <path d="M138 494 L200 494" stroke-width="6" stroke="#ff6fb4"/>
+    <path d="M136 478 C136 462 158 456 182 462 C200 466 206 482 200 494 L140 494 C134 492 134 486 136 478 Z" fill="none"/>
+    <g transform="translate(306 452) rotate(-32)">
+      <path d="M-30 6 C-30 -10 -8 -16 16 -10 C34 -6 40 10 34 22 L-26 22 C-32 20 -32 14 -30 6 Z" fill="#ffffff"/>
+      <path d="M-28 22 L34 22" stroke-width="6" stroke="#ff6fb4"/>
+      <path d="M-30 6 C-30 -10 -8 -16 16 -10 C34 -6 40 10 34 22 L-26 22 C-32 20 -32 14 -30 6 Z" fill="none"/>
+    </g>
+    <!-- hips -->
+    <path d="M142 312 C180 328 236 328 274 312 L272 352 C232 364 184 364 144 352 Z" fill="url(#pants)"/>
+    <g clip-path="url(#cHips)" stroke="none"><path d="M142 340 C190 356 236 356 276 340 L276 370 L142 370 Z" fill="#e8489e" opacity=".55"/></g>
+    <path d="M142 312 C180 328 236 328 274 312 L272 352 C232 364 184 364 144 352 Z" fill="none"/>
+    <!-- arm swinging low (behind the sweater) -->
+    <path d="M160 226 Q118 262 104 306" stroke="#1d1a4f" stroke-width="34" fill="none"/>
+    <path d="M160 226 Q118 262 104 306" stroke="#6aa6f6" stroke-width="27.6" fill="none"/>
+    <path d="M110 296 L102 312" stroke="#c4dcff" stroke-width="22" fill="none"/>
+    <circle cx="100" cy="318" r="13" fill="url(#skin)"/>
+    <!-- sweater: two-tone like the reference (light across the top, darker band underneath) -->
+    <path d="M150 214 C170 196 244 196 264 214 L276 318 C240 334 172 334 140 318 Z" fill="#6aa6f6"/>
+    <g clip-path="url(#cTorso)" stroke="none">
+      <path d="M130 196 L290 196 L290 238 C250 250 180 252 130 236 Z" fill="#bcd6ff"/>
+      <path d="M130 300 C180 314 240 314 290 296 L290 340 L130 340 Z" fill="#4f8de8"/>
+      <path d="M248 214 L292 214 L292 330 L262 330 Z" fill="#4f8de8" opacity=".7"/>
+    </g>
+    <path d="M150 214 C170 196 244 196 264 214 L276 318 C240 334 172 334 140 318 Z" fill="none"/>
+    <path d="M186 204 Q206 220 228 204" fill="none"/>
+    <path d="M168 250 Q174 262 186 266" stroke="#fff" stroke-opacity=".7" stroke-width="4" fill="none"/>
+    <!-- neck and head -->
+    <path d="M196 176 L196 202 Q206 210 218 202 L218 176 Z" fill="#ffc8c4"/>
+    <path d="M138 160 C120 84 160 40 210 40 C262 40 296 86 278 160 C274 184 282 198 296 204 C270 216 250 206 246 186 C244 160 244 138 238 122 L174 122 C168 140 168 162 166 186 C162 206 142 216 116 204 C132 198 140 184 138 160 Z" fill="url(#hair)"/>
+    <ellipse cx="206" cy="128" rx="46" ry="54" fill="url(#skin)"/>
+    <g clip-path="url(#cFace)" stroke="none"><ellipse cx="196" cy="146" rx="50" ry="54" fill="#ffd9c4" opacity=".0"/><path d="M236 90 C262 120 258 170 226 190 L270 200 L270 80 Z" fill="#ffb7bd" opacity=".55"/></g>
+    <ellipse cx="206" cy="128" rx="46" ry="54" fill="none"/>
+    <path d="M154 130 C148 76 196 50 238 58 C266 64 278 92 270 124 C254 98 226 86 196 94 C180 100 164 112 154 130 Z" fill="url(#hair)"/><path d="M198 94 C210 106 226 110 240 104" fill="none" stroke-width="2.6"/>
+    <path d="M178 70 C196 58 226 58 244 68 C224 68 200 72 182 80 Z" fill="#d4ccff" stroke="none"/><path d="M262 170 C264 182 270 190 280 196" fill="none" stroke="#d4ccff" stroke-width="4"/>
+    <!-- a little daisy clip, like the one in the reference -->
+    <g transform="translate(252 82)">
+      <circle cx="0" cy="-10" r="7" fill="#fff"/><circle cx="9.5" cy="-3" r="7" fill="#fff"/><circle cx="6" cy="8" r="7" fill="#fff"/><circle cx="-6" cy="8" r="7" fill="#fff"/><circle cx="-9.5" cy="-3" r="7" fill="#fff"/>
+      <circle cx="0" cy="0" r="5" fill="#ffd84d"/>
+    </g>
+    <!-- face: dot eye, a wink, small smile, blush -->
+    <ellipse class="blink" cx="190" cy="136" rx="4.6" ry="5.4" fill="#1d1a4f" stroke="none"/>
+    <path d="M218 136 Q226 130 234 136" fill="none" stroke-width="3.4"/>
+    <ellipse cx="180" cy="154" rx="9" ry="5" fill="#ff8fb3" opacity=".6" stroke="none"/>
+    <ellipse cx="236" cy="154" rx="9" ry="5" fill="#ff8fb3" opacity=".6" stroke="none"/>
+    <path d="M200 158 Q208 166 216 158" fill="none" stroke-width="3.2"/>
+    <!-- raised arm with her big scissors (Atropos cuts the thread) -->
+    <g class="arm-up">
+      <path d="M256 224 Q300 206 314 150" stroke="#1d1a4f" stroke-width="34" fill="none"/>
+      <path d="M256 224 Q300 206 314 150" stroke="#6aa6f6" stroke-width="27.6" fill="none"/>
+      <path d="M312 166 L316 150" stroke="#c4dcff" stroke-width="22" fill="none"/>
+      <g class="bladeA">
+        <path d="M316 132 L338 30 C342 22 350 24 349 34 L326 134 Z" fill="#eef2ff"/>
+        <circle cx="304" cy="148" r="12" fill="none" stroke="#1d1a4f" stroke-width="12"/><circle cx="304" cy="148" r="12" fill="none" stroke="#ff5fa8" stroke-width="6"/>
+      </g>
+      <g class="bladeB">
+        <path d="M322 132 L372 40 C378 34 385 38 381 46 L330 138 Z" fill="#eef2ff"/>
+        <circle cx="330" cy="156" r="12" fill="none" stroke="#1d1a4f" stroke-width="12"/><circle cx="330" cy="156" r="12" fill="none" stroke="#ff5fa8" stroke-width="6"/>
+      </g>
+      <circle cx="318" cy="128" r="4" fill="#1d1a4f" stroke="none"/>
+      <circle cx="316" cy="146" r="13" fill="url(#skin)"/>
+    </g>
+  </g>
+</svg>
+</div>
+
+<script>
+  // background: soft rays from the glow, pink paint splashes, dots and sparkles
+  var NS = 'http://www.w3.org/2000/svg', seed = 11;
+  function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  function el(tag, a) { var n = document.createElementNS(NS, tag); for (var k in a) n.setAttribute(k, a[k]); return n; }
+  var rays = document.getElementById('rays');
+  for (var i = 0; i < 18; i++) {
+    var a0 = i / 18 * Math.PI * 2, a1 = a0 + 0.07 + rnd() * 0.05, R = 1300;
+    rays.appendChild(el('path', { d: 'M720 470 L' + (720 + Math.cos(a0) * R) + ' ' + (470 + Math.sin(a0) * R) + ' L' + (720 + Math.cos(a1) * R) + ' ' + (470 + Math.sin(a1) * R) + ' Z', fill: '#fff7c2' }));
+  }
+  function blob(cx, cy, r, n, wob) {
+    var pts = [], ang = Math.atan2(cy - 470, cx - 720), ca = Math.cos(ang), sa = Math.sin(ang);
+    for (var i = 0; i < n; i++) { var a = i / n * Math.PI * 2, rr = r * (1 - wob / 2 + rnd() * wob), ex = Math.cos(a) * rr * 1.45, ey = Math.sin(a) * rr * .8; pts.push([cx + ex * ca - ey * sa, cy + ex * sa + ey * ca]); }
+    var d = '';
+    for (var j = 0; j < n; j++) {
+      var p0 = pts[(j - 1 + n) % n], p1 = pts[j], p2 = pts[(j + 1) % n], p3 = pts[(j + 2) % n];
+      if (!j) d += 'M' + p1[0].toFixed(1) + ' ' + p1[1].toFixed(1);
+      d += ' C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ' ' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) + ' ' + (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ' ' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) + ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+    }
+    return d + ' Z';
+  }
+  var sp = document.getElementById('splash');
+  [[420, 300, 150], [1040, 260, 120], [330, 690, 130], [1110, 660, 150], [180, 140, 70], [1300, 420, 90], [600, 820, 80], [880, 120, 70]].forEach(function (b, k) {
+    var g = el('g', { class: 'blob', style: 'animation-delay:-' + (k * .4) + 's' });
+    g.appendChild(el('path', { d: blob(b[0], b[1], b[2], 14, .32), fill: '#ff7cc6', opacity: .92 }));
+    g.appendChild(el('path', { d: blob(b[0] - b[2] * .12, b[1] - b[2] * .1, b[2] * .5, 12, .3), fill: '#ffa9da', opacity: .85 }));
+    // drips and spots, like paint
+    for (var s = 0; s < 3; s++) g.appendChild(el('circle', { cx: b[0] + (rnd() - .5) * b[2] * 2.2, cy: b[1] + (rnd() - .5) * b[2] * 2.2, r: 6 + rnd() * 14, fill: '#ff6fb8' }));
+    sp.appendChild(g);
+  });
+  var tw = document.getElementById('sparkle');
+  for (var k = 0; k < 26; k++) {
+    var x = rnd() * 1440, y = rnd() * 900, s = .5 + rnd() * 1.1;
+    if (Math.hypot(x - 720, y - 470) < 260) continue;
+    var g2 = el('g', { transform: 'translate(' + x.toFixed(0) + ' ' + y.toFixed(0) + ') scale(' + s.toFixed(2) + ')' });
+    g2.appendChild(el('path', { class: 'tw', style: 'animation-delay:-' + (rnd() * 1.8).toFixed(2) + 's', d: 'M0 -12 Q1.6 -1.6 12 0 Q1.6 1.6 0 12 Q-1.6 1.6 -12 0 Q-1.6 -1.6 0 -12 Z', fill: '#fff' }));
+    tw.appendChild(g2);
+  }
+  for (var q = 0; q < 26; q++) tw.appendChild(el('circle', { cx: (rnd() * 1440).toFixed(0), cy: (rnd() * 900).toFixed(0), r: (5 + rnd() * 16).toFixed(1), fill: '#ff6fbb', opacity: .9 }));
+  for (var d = 0; d < 30; d++) tw.appendChild(el('circle', { cx: (rnd() * 1440).toFixed(0), cy: (rnd() * 900).toFixed(0), r: (1.5 + rnd() * 2.5).toFixed(1), fill: '#fff', opacity: .7 }));
+</script>
+</body>
+</html>
