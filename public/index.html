@@ -403,7 +403,7 @@ function label(id, l) {
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const pct = (x) => Math.round(x * 100) + '%';
 
-getJSON('/api/events', 'tape.json').then((t) => {
+getJSON('api/events', 'tape.json').then((t) => {
   const sigs = ['cpi', 'fomc', 'nfp'].map((id) => t.signals.find((s) => s.id === id)).filter(Boolean).sort((a, b) => (a.date < b.date ? -1 : 1));
   $('reports').innerHTML = sigs.map((s, i) => {
     const top = s.p.indexOf(Math.max(...s.p));
@@ -412,7 +412,7 @@ getJSON('/api/events', 'tape.json').then((t) => {
   watch($('reports').querySelectorAll('.rv'));
 }).catch(() => {});
 
-getJSON('/api/basis/events', 'data/basis/events.json').then((events) => {
+getJSON('api/basis/events', 'data/basis/events.json').then((events) => {
   const by = Object.fromEntries(events.map((e) => [e.id, e]));
   const rows = PICK.map((id) => by[id]).filter(Boolean);
   $('signalGrid').innerHTML = rows.map((e, i) => {
@@ -421,7 +421,7 @@ getJSON('/api/basis/events', 'data/basis/events.json').then((events) => {
   }).join('');
 }).catch(() => {});
 
-getJSON('/api/basis/calibration', 'data/basis/calibration.json').then((c) => {
+getJSON('api/basis/calibration', 'data/basis/calibration.json').then((c) => {
   const at = (p) => c.bins.find((b) => p >= b.lo && p < b.hi);
   const b40 = at(0.4), b98 = at(0.98);
   if (b40) { $('f40').textContent = pct(b40.win_rate); $('qBasis').textContent = `"A contract priced ${Math.round(b40.lo * 100)}–${Math.round(b40.hi * 100)}¢ resolved yes ${pct(b40.win_rate)} of the time."`; }
@@ -429,12 +429,12 @@ getJSON('/api/basis/calibration', 'data/basis/calibration.json').then((c) => {
   $('cBasis').textContent = `${c.n_markets} settled Kalshi markets, price one day before close`;
 }).catch(() => {});
 
-getJSON('/api/thread', 'atty/thread.json').then((th) => {
+getJSON('api/thread', 'atty/thread.json').then((th) => {
   const f = th.history && th.history.fits && th.history.fits['cpi:high'];
   if (f && f.lossDays) $('qAtropos').textContent = `"Inflation protection paid on ${f.paidOnLoss} of the sample portfolio's ${f.lossDays} worst report days."`;
 }).catch(() => {});
 
-getJSON('/api/leaf/scan', 'data/leaf/scan.json').then((s) => {
+getJSON('api/leaf/scan', 'data/leaf/scan.json').then((s) => {
   const h = s.strategies.hedging, p = h.pairs[0];
   if (p) { $('qLeaf').textContent = `"${p.a} and ${p.b}: correlation ${p.corr.toFixed(2).replace('-', '−')}, not cointegrated (p ${p.coint_p.toFixed(2)})."`; $('cLeaf').textContent = `${s.universe.length} tickers, ${s.days} trading days, Engle–Granger`; }
 }).catch(() => {});
