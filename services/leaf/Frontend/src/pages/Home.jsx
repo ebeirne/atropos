@@ -7,15 +7,15 @@ import { DETAIL_STATS, REQ_LABELS, prettyReq } from '../format.js';
 const STEPS = [
   {
     title: 'Choose strategies',
-    text: 'Pick mean reversion, statistical arbitrage, hedging, or any mix. Each one carries its own math and the parameters a pair must meet.',
+    text: 'Pick one or more. Each has its own rules.',
   },
   {
     title: 'Screen the universe',
-    text: 'Leaf tests every pair for correlation and cointegration, then measures half-life, spread width and where the spread sits right now.',
+    text: 'Every pair, three tests.',
   },
   {
     title: 'Read the shortlist',
-    text: 'Pairs come back ranked per strategy, with charts, the numbers behind each one, and a plain-language reading of why they fit.',
+    text: 'Pairs that fit, best first.',
   },
 ];
 

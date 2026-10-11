@@ -1,0 +1,167 @@
+{
+  "judged_at": "2026-10-11T15:07:52.995Z",
+  "pick": {
+    "deskLede": {
+      "choice": "a",
+      "text": "Biggest trusted edge first. Pick one.",
+      "scores": {
+        "a": 0.42,
+        "c": 0.34,
+        "b": 0.24
+      }
+    },
+    "search": {
+      "choice": "c",
+      "text": "Find an event",
+      "scores": {
+        "c": 0.51,
+        "b": 0.37,
+        "a": 0.13
+      }
+    },
+    "heroSub": {
+      "choice": "a",
+      "text": "Odds, calibrated. Risk, in dollars. Size, by Kelly.",
+      "scores": {
+        "a": 0.6,
+        "c": 0.32,
+        "b": 0.08
+      }
+    },
+    "step1": {
+      "choice": "c",
+      "text": "Kalshi and Polymarket, calibrated.",
+      "scores": {
+        "c": 0.53,
+        "a": 0.24,
+        "b": 0.23
+      }
+    },
+    "step2": {
+      "choice": "b",
+      "text": "Your holdings, read-only.",
+      "scores": {
+        "b": 0.72,
+        "c": 0.21,
+        "a": 0.07
+      }
+    },
+    "step3": {
+      "choice": "a",
+      "text": "Size the trade. | Half Kelly, capped.",
+      "scores": {
+        "a": 0.71,
+        "c": 0.18,
+        "b": 0.11
+      }
+    },
+    "tipCal": {
+      "choice": "c",
+      "text": "Price, corrected on 628 settled markets.",
+      "scores": {
+        "c": 0.77,
+        "a": 0.19,
+        "b": 0.03
+      }
+    },
+    "tipPrice": {
+      "choice": "b",
+      "text": "The market's odds, as a price.",
+      "scores": {
+        "b": 0.58,
+        "a": 0.29,
+        "c": 0.13
+      }
+    },
+    "tipTrad": {
+      "choice": "b",
+      "text": "The same odds from the real market.",
+      "scores": {
+        "b": 0.72,
+        "a": 0.15,
+        "c": 0.14
+      }
+    },
+    "tipBasis": {
+      "choice": "b",
+      "text": "The gap between the two.",
+      "scores": {
+        "b": 0.42,
+        "c": 0.35,
+        "a": 0.23
+      }
+    },
+    "compare": {
+      "choice": "c",
+      "text": "YES · market 73¢ · model 59% · +14 overpriced",
+      "scores": {
+        "c": 0.39,
+        "b": 0.31,
+        "a": 0.3
+      }
+    },
+    "why": {
+      "choice": "a",
+      "text": "Half Kelly: 22¢ for a 38% chance.",
+      "scores": {
+        "a": 0.55,
+        "b": 0.24,
+        "c": 0.21
+      }
+    },
+    "noEdge": {
+      "choice": "a",
+      "text": "No edge: 22¢ for a 22% chance.",
+      "scores": {
+        "a": 0.59,
+        "b": 0.3,
+        "c": 0.11
+      }
+    },
+    "src": {
+      "choice": "b",
+      "text": "Calibrated on 628 settled markets. Half Kelly, 10% cap. Not investment advice.",
+      "scores": {
+        "b": 0.42,
+        "a": 0.35,
+        "c": 0.23
+      }
+    },
+    "leafStep1": {
+      "choice": "b",
+      "text": "Pick one or more. Each has its own rules.",
+      "scores": {
+        "b": 0.38,
+        "a": 0.38,
+        "c": 0.24
+      }
+    },
+    "leafStep2": {
+      "choice": "c",
+      "text": "Every pair, three tests.",
+      "scores": {
+        "c": 0.57,
+        "b": 0.27,
+        "a": 0.15
+      }
+    },
+    "leafStep3": {
+      "choice": "c",
+      "text": "Pairs that fit, best first.",
+      "scores": {
+        "c": 0.79,
+        "a": 0.1,
+        "b": 0.1
+      }
+    },
+    "leafEmpty": {
+      "choice": "c",
+      "text": "Pick a strategy to see its pairs.",
+      "scores": {
+        "c": 0.78,
+        "a": 0.19,
+        "b": 0.02
+      }
+    }
+  }
+}
