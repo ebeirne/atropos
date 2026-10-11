@@ -1,0 +1,535 @@
+<title>Atropos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Prediction-market odds, calibrated, trusted and priced against what you own.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400&family=Space+Mono:wght@400&display=swap">
+<style>
+  /* One surface, one scroll. The page follows the flow of a scroll-driven firm site: a hero
+     over the rings, two titles as the camera dives, a dark reveal, then the content, and the
+     grey rings back behind the footer. Type scale and spacing are in rem on a fluid root. */
+  :root {
+    color-scheme: dark;
+    --black: #000; --white: #fff;
+    --light-gray: #E4E2D8; --light-gray2: #DBDBDB; --mid-gray: #9B9B9B; --dark-gray: #151515; --blue-gray: #A7B4BA;
+    --border-edge: rgba(224, 232, 236, .30); --border-corner: #E4E2D8;
+    --display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --grot: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: "Space Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: min(max(12px, .8333333334vw), 28px); line-height: 1.5; background: var(--dark-gray); overscroll-behavior: none; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: transparent; color: var(--light-gray); font-family: var(--mono); font-size: 1rem; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  h1, h2, h3, p, ul, figure, blockquote { margin: 0; }
+  ul { list-style: none; padding: 0; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 1px solid var(--light-gray); outline-offset: 4px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* type */
+  .t-display { font-family: var(--display); font-weight: 300; }
+  .t-grot { font-family: var(--grot); font-weight: 300; }
+  .t-upper { text-transform: uppercase; letter-spacing: .0875rem; }
+  .t-light { color: var(--light-gray); } .t-mid { color: var(--mid-gray); } .t-white { color: var(--white); }
+  .h-section { font-family: var(--display); font-weight: 300; font-size: 4.5rem; line-height: .9; letter-spacing: -.0375rem; color: var(--light-gray); }
+  @media (min-width: 768px) { .h-section { font-size: 6.25rem; } }
+  @media (min-width: 1024px) { .h-section { font-size: 10rem; } }
+
+  /* corner-marked rules */
+  .split { position: absolute; display: block; z-index: 1; pointer-events: none; }
+  .split::before, .split::after { content: ""; width: .5rem; height: .5rem; display: block; position: absolute; transition: opacity .3s; }
+  .split.no-corners::before, .split.no-corners::after { opacity: 0; }
+  .split--top { width: calc(100% - 2rem); top: .03125rem; left: 1rem; border-top: 1px solid var(--border-edge); }
+  .split--top::before { top: -.0625rem; left: -1rem; border-top-left-radius: 75%; border-top: 1px solid var(--border-corner); border-left: 1px solid var(--border-corner); }
+  .split--top::after { top: -.0625rem; right: -1rem; border-top-right-radius: 75%; border-top: 1px solid var(--border-corner); border-right: 1px solid var(--border-corner); }
+  .split--bottom { width: calc(100% - 2rem); left: 1rem; bottom: .03125rem; border-bottom: 1px solid var(--border-edge); }
+  .split--bottom::before { bottom: -.0625rem; left: -1rem; border-bottom-left-radius: 75%; border-bottom: 1px solid var(--border-corner); border-left: 1px solid var(--border-corner); }
+  .split--bottom::after { bottom: -.0625rem; right: -1rem; border-bottom-right-radius: 75%; border-bottom: 1px solid var(--border-corner); border-right: 1px solid var(--border-corner); }
+  .split--left { height: calc(100% - 2rem); top: 1rem; left: .03125rem; border-left: 1px solid var(--border-edge); }
+  .split--right { height: calc(100% - 2rem); top: 1rem; right: .03125rem; border-right: 1px solid var(--border-edge); }
+
+  .link { position: relative; display: inline-block; text-decoration: none; line-height: 1; padding-bottom: .1875rem; margin-bottom: -.1875rem; overflow: hidden; }
+  .link::before { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: .0625rem; background: rgba(228, 226, 216, .3); transform: translateX(-101%); transition: transform .3s cubic-bezier(.65, 0, .35, 1); }
+  .link:hover::before, .link.active::before { transform: none; }
+
+  /* the surface */
+  #webgl { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; display: block; }
+  .veil { position: fixed; inset: 0; z-index: 0; background: var(--dark-gray); opacity: 0; pointer-events: none; }
+  .intro { position: fixed; inset: 0; z-index: 30; background: var(--dark-gray); display: flex; align-items: center; justify-content: center; transition: opacity .8s ease; }
+  .intro.done { opacity: 0; pointer-events: none; }
+  .intro .mark { width: 7rem; opacity: 0; animation: markin 1s .2s both; }
+  @keyframes markin { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+
+  /* header */
+  .header { position: fixed; top: 0; left: 0; width: 100%; padding: 1rem 1rem 4rem; z-index: 10; opacity: 0; visibility: hidden; transition: opacity .8s ease; }
+  .header.show { opacity: 1; visibility: visible; }
+  .header nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: block; width: 9rem; text-decoration: none; }
+  .brand svg { display: block; width: 100%; height: auto; }
+  .nav { display: none; align-items: center; margin: 0; }
+  .nav li { display: inline-block; } .nav li + li { margin-left: 1.5rem; }
+  .nav a { display: block; color: var(--light-gray); font-family: var(--grot); font-weight: 300; font-size: .875rem; letter-spacing: .0875rem; text-transform: uppercase; text-decoration: none; transition: color .3s; }
+  .nav:has(a.active) a { color: var(--mid-gray); } .nav:has(a.active) a:hover, .nav a.active { color: var(--light-gray); }
+  .header-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(180deg, var(--dark-gray) 5%, transparent 100%); opacity: 0; transition: opacity .6s; }
+  .header-bg.on { opacity: 1; }
+  .menu-toggle { appearance: none; background: none; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .3); position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .menu-toggle span { display: block; position: absolute; width: 1rem; height: .0625rem; background: var(--light-gray); transition: transform .3s; }
+  .menu-toggle span:first-child { transform: translateY(-1.5px); } .menu-toggle span:last-child { transform: translateY(1.5px); }
+  .menu-toggle.open span:first-child { transform: rotate(45deg); } .menu-toggle.open span:last-child { transform: rotate(-45deg); }
+  .mobile-menu { position: fixed; inset: 0; z-index: 9; background: var(--dark-gray); display: none; padding: 7rem 1.5rem 2rem; }
+  .mobile-menu.open { display: block; }
+  .mobile-menu a { display: block; font-family: var(--display); font-weight: 300; font-size: 3rem; line-height: 1.1; color: var(--light-gray); text-decoration: none; }
+  @media (min-width: 768px) { .header { padding: 2rem 2rem 4rem; } .nav { display: flex; } .menu-toggle { display: none; } }
+
+  /* hero */
+  .hero { position: fixed; inset: 0; height: 100dvh; display: flex; align-items: flex-end; padding: 0 1rem; overflow: hidden; pointer-events: none; z-index: 2; opacity: 0; visibility: hidden; }
+  .hero.on { opacity: 1; visibility: visible; }
+  .hero-grid { display: grid; width: 100%; margin-bottom: 2.5rem; }
+  .hero h1 { font-family: var(--display); font-weight: 300; color: var(--white); font-size: 4.5rem; line-height: .9; letter-spacing: -.1125rem; margin-bottom: 2.5rem; text-shadow: 0 0 2px rgba(0,0,0,.3); }
+  .hero .tagline { font-family: var(--grot); font-weight: 300; letter-spacing: .0375rem; color: var(--white); font-size: 1.5rem; line-height: 1; max-width: 31.25rem; }
+  .hero .w { display: inline-block; opacity: 0; filter: blur(14px); transform: translateY(.08em); }
+  .hero.on .w { animation: blurin 1.25s cubic-bezier(.2, .7, .2, 1) both; }
+  .hero.on .tagline { animation: blurin 1s 1.6s both; opacity: 0; }
+  @keyframes blurin { from { opacity: 0; filter: blur(14px); transform: translateY(.08em); } to { opacity: 1; filter: none; transform: none; } }
+  .hero-foot-wrap { overflow: hidden; margin-bottom: 1.5rem; }
+  .hero-foot { position: relative; display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; line-height: 2; }
+  .hero-foot p, .hero-foot a { font-family: var(--grot); font-weight: 300; font-size: .875rem; letter-spacing: .0875rem; color: var(--white); text-transform: uppercase; text-decoration: none; display: inline-flex; align-items: center; pointer-events: auto; }
+  .hero-foot a svg { width: .5625rem; height: .875rem; margin-left: .375rem; animation: arrowloop 2s infinite; }
+  @keyframes arrowloop { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(.25rem); opacity: .5; } }
+  @media (min-width: 768px) { .hero { padding: 0 2rem; } .hero h1 { font-size: 9rem; line-height: 8.1rem; } .hero .tagline { font-size: 2rem; } }
+  @media (min-width: 1366px) { .hero-grid { grid-template-columns: 62.5% 6.25% 31.25%; align-items: end; } .hero h1 { margin-bottom: 0; white-space: nowrap; } .hero .tagline { grid-column: 3; max-width: none; margin-bottom: 1rem; } }
+
+  /* the two titles over the rings */
+  .webgl-title { position: fixed; inset: 0; height: 100dvh; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2; visibility: hidden; }
+  .webgl-title h2 { color: var(--white); font-family: var(--display); font-weight: 300; font-size: 4.5rem; line-height: 1; letter-spacing: -.03em; text-shadow: rgba(0, 0, 0, .85) 0 2px 20px, rgba(0, 0, 0, .7) 0 0 80px; text-align: center; padding: 0 1rem; }
+  .webgl-title h2 span { display: inline-block; opacity: 0; transform: translateX(50px); }
+  @media (min-width: 768px) { .webgl-title h2 { font-size: 6.25rem; } }
+  .spacer { height: 150dvh; pointer-events: none; }
+  #home { position: absolute; top: 0; height: 100dvh; width: 1px; }
+
+  /* content */
+  .content { position: relative; z-index: 1; color: var(--white); }
+  .container { width: 100%; margin: 0 auto; padding: 0 1rem; }
+  @media (min-width: 768px) { .container { padding: 0 2rem; } }
+  @media (min-width: 1024px) { .container { max-width: 1366px; } }
+  @media (min-width: 1536px) { .container { max-width: 1622px; } }
+  section { scroll-margin-top: 6rem; }
+
+  #about { padding-top: 6rem; }
+  .about-top { width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; margin-bottom: 10rem; }
+  .about-top .mark { width: 62.5%; max-width: 15rem; margin-bottom: 5rem; }
+  .about-top .mark svg { width: 100%; height: auto; display: block; }
+  .about-top .label { display: block; margin-bottom: 1.5rem; font-family: var(--display); font-weight: 300; font-size: 1.875rem; color: var(--light-gray); letter-spacing: -.0375rem; }
+  .about-top .copy { font-size: 1.125rem; color: var(--mid-gray); line-height: 1.4; max-width: 40.625rem; }
+  .about-top .copy p + p { margin-top: 1em; }
+  .about-blocks { margin-bottom: 13.75rem; }
+  .block { position: relative; max-width: 35.625rem; }
+  .block + .block { margin-top: 10rem; }
+  .block > span { display: block; position: absolute; top: -2.125rem; left: 0; color: var(--mid-gray); }
+  .block h3 { font-family: var(--display); font-weight: 300; font-size: 3.375rem; color: var(--light-gray); line-height: .9; letter-spacing: -.0375rem; margin-bottom: 2rem; }
+  .block p { color: var(--light-gray); font-size: 1.125rem; line-height: 1.4; letter-spacing: .02rem; }
+  @media (min-width: 768px) { .about-top { margin-bottom: 21.875rem; } .about-top .copy { font-size: 1.1875rem; } .block p { font-size: 1.1875rem; } .about-blocks { margin-bottom: 20rem; } }
+  @media (min-width: 1024px) { .block { width: 34.375%; max-width: none; } .block:first-child { margin-left: 6.25%; } .block + .block { margin-left: 62.5%; } .block > span { top: 0; left: -2.8125rem; } .block h3 { font-size: 4rem; } }
+
+  #engines { margin-bottom: 15rem; }
+  .engines-title { font-family: var(--display); }
+  .engine { margin-bottom: 7.5rem; }
+  .engine:last-child { margin-bottom: 0; }
+  .engine h3 { font-family: var(--display); font-weight: 300; font-size: 3.375rem; line-height: .9; color: var(--light-gray); margin-bottom: 2rem; letter-spacing: -.02em; }
+  .engine .claim { font-family: var(--grot); font-weight: 300; font-size: 1.5rem; line-height: 1.2; color: var(--light-gray); margin-bottom: 1.5rem; }
+  .engine blockquote { font-family: var(--grot); font-weight: 300; font-size: 1.125rem; color: var(--mid-gray); margin: 0 0 .5rem; }
+  .engine figcaption { font-size: .875rem; text-transform: uppercase; letter-spacing: .0375rem; color: var(--light-gray); }
+  .engine .who { display: block; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 1rem; }
+  @media (min-width: 768px) { .engine h3 { font-size: 4rem; } .engine blockquote { font-size: 1.1875rem; } }
+  @media (min-width: 1024px) {
+    #engines { display: flex; margin-bottom: 33.75rem; }
+    .engines-left { width: 50%; }
+    .engines-list { width: 34.375%; margin-left: 12.5%; }
+  }
+
+  #week { text-align: center; margin-bottom: 15rem; }
+  #week h2 { margin-bottom: clamp(1.5rem, 5.5vh, 10rem); }
+  .reports { display: flex; flex-wrap: wrap; justify-content: center; margin-bottom: clamp(1.5rem, 5.5vh, 10rem); }
+  .report { width: 43.75%; margin: 0 .75rem 2rem; text-align: center; text-decoration: none; }
+  .report .ph { display: block; width: 100%; max-width: 22vh; margin: 0 auto 1.5rem; aspect-ratio: 1; border-radius: .3125rem; overflow: hidden; background: #222 center / cover no-repeat; filter: grayscale(1) contrast(1.08); transition: filter .6s; }
+  .report:hover .ph { filter: grayscale(.4) contrast(1.02); }
+  .report .name { font-family: var(--grot); font-weight: 400; font-size: 1.25rem; color: var(--light-gray); line-height: 1.1; margin-bottom: .5rem; }
+  .report .role { display: block; font-size: .875rem; color: var(--light-gray2); line-height: 1.3; letter-spacing: .025rem; margin-bottom: .5rem; }
+  .report .role.mid { color: var(--mid-gray); }
+  @media (min-width: 1024px) { .report { width: 18.75%; margin: 0 2.375rem; } .report .name { font-size: 1.75rem; } }
+  .sources { position: relative; width: calc(87.5% + 1.5rem); margin: 0 auto; }
+  @media (min-width: 1024px) { .sources { width: calc(37.5% + min(18.75%, 22vh) + 9.5rem); } }
+  .sources-inner { padding: clamp(1rem, 3vh, 2rem) 0; }
+  .sources .label { margin: 0 0 clamp(1rem, 3vh, 2rem); font-size: .75rem; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; color: var(--mid-gray); }
+  .sources ul { display: grid; grid-template-columns: repeat(2, 1fr); }
+  .sources li { display: flex; flex-direction: column; align-items: center; padding: .375rem 1rem; text-align: center; font-size: .875rem; color: var(--light-gray); }
+  @media (min-width: 768px) { .sources ul { grid-template-columns: repeat(4, 1fr); } .sources li + li { border-left: 1px solid var(--border-edge); } }
+
+  #signals { margin-bottom: 15rem; }
+  #signals h2 { margin-bottom: 7.5rem; }
+  @media (min-width: 1024px) { #signals h2 { text-align: right; margin-bottom: 10rem; } }
+  .frame { position: relative; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); overflow: hidden; }
+  @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+  .cell { box-shadow: 1px 0 0 0 var(--border-edge), 0 1px 0 0 var(--border-edge); }
+  .card { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1; text-decoration: none; color: var(--light-gray); transition: background-color .3s; padding: 2.5rem 1rem 1.5rem; text-align: center; }
+  @media (min-width: 768px) { .card { aspect-ratio: 4 / 3; } }
+  .card:hover { background: rgba(228, 226, 216, .03); }
+  .card .idx { position: absolute; top: .75rem; left: .75rem; color: var(--mid-gray); font-size: .75rem; }
+  .card .arrow { position: absolute; top: .875rem; right: .75rem; width: .75rem; height: .75rem; opacity: .4; transform: rotate(-45deg); transition: opacity .3s, transform .3s; }
+  .card:hover .arrow { opacity: 1; transform: translate(.1875rem, -.1875rem) rotate(-45deg); }
+  @media (min-width: 768px) { .card .idx { top: 1.5rem; left: 1.5rem; font-size: inherit; } .card .arrow { top: 1.75rem; right: 1.5rem; width: 1rem; height: 1rem; } }
+  .card .big { position: relative; font-family: var(--display); font-weight: 300; font-size: 3.375rem; line-height: 1; color: var(--light-gray); transition: transform .4s; }
+  .card:hover .big { transform: scale(1.03); }
+  .card .big sup { position: absolute; top: 0; left: calc(100% + .375rem); transform: translateY(-62%); font-size: 1.375rem; line-height: 1; color: var(--light-gray); }
+  .card .what { margin-top: .75rem; font-size: .75rem; line-height: 1.35; color: var(--light-gray2); max-width: 16rem; }
+  .card .nums { margin-top: .5rem; font-size: .6875rem; letter-spacing: .06em; text-transform: uppercase; color: var(--mid-gray); }
+  .footnote { display: flex; align-items: center; gap: .5rem; margin: 1.5rem 0 0; padding-left: .75rem; color: var(--mid-gray); font-size: .75rem; line-height: 1; letter-spacing: .08em; text-transform: uppercase; }
+  .footnote span { color: var(--light-gray); font-size: 1.25rem; line-height: 1; letter-spacing: 0; }
+  @media (min-width: 768px) { .footnote { padding-left: 1.5rem; } }
+
+  #tools { margin-bottom: 15rem; }
+  #tools h2 { margin-bottom: 7.5rem; }
+  .rows li + li { border-top: 1px solid var(--border-edge); }
+  .row { display: grid; grid-template-columns: 2.5rem 1fr; grid-template-areas: "index name" ". cta"; align-items: baseline; row-gap: .75rem; padding: 2rem 1rem; color: var(--light-gray); text-decoration: none; transition: background-color .3s; }
+  .row:hover { background: rgba(228, 226, 216, .03); }
+  .row .idx { grid-area: index; color: var(--mid-gray); }
+  .row h3 { grid-area: name; font-family: var(--display); font-weight: 300; font-size: 2.25rem; line-height: 1; letter-spacing: -.0375rem; }
+  .row .cta { grid-area: cta; display: inline-flex; align-items: center; gap: .625rem; color: var(--mid-gray); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; transition: color .3s; }
+  .row .cta svg { width: .875rem; height: .875rem; opacity: .4; transform: rotate(-45deg); transition: opacity .3s, transform .3s; }
+  .row:hover .cta { color: var(--light-gray); } .row:hover .cta svg { opacity: 1; transform: translate(.1875rem, -.1875rem) rotate(-45deg); }
+  @media (min-width: 768px) { .row { grid-template-columns: 4rem 1fr auto; grid-template-areas: "index name cta"; column-gap: 2.5rem; padding: 2.75rem 1.5rem; } .row h3 { font-size: 3rem; } .row .cta { justify-self: end; } }
+  @media (min-width: 1024px) { #engines, #week, #signals, #tools { margin-bottom: 21.875rem; } #engines { margin-bottom: 33.75rem; } }
+
+  /* footer */
+  .foot-wrap { height: 100dvh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 1rem; position: relative; z-index: 1; }
+  @media (min-width: 768px) { .foot-wrap { padding: 0 2rem; } }
+  .footer { position: relative; margin-bottom: 2rem; }
+  .footer-outer { position: relative; z-index: 1; }
+  .footer-inner { padding: 1.25rem; display: grid; gap: 2rem; }
+  @media (min-width: 1024px) { .footer-inner { grid-template-columns: 1fr auto 1fr; } }
+  .footer .brand { width: 9rem; margin-bottom: 1.875rem; }
+  .footer .touch { font-family: var(--grot); font-weight: 300; line-height: 1; display: flex; align-items: baseline; }
+  .footer .touch span { color: var(--blue-gray); margin-right: .35em; }
+  .footer .links a { font-family: var(--grot); font-weight: 300; font-size: .875rem; letter-spacing: .0375rem; text-transform: uppercase; color: var(--light-gray); display: inline-block; margin-bottom: .6rem; }
+  .footer .right { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; }
+  @media (min-width: 1024px) { .footer .right { align-items: flex-end; } }
+  .footer .social { display: inline-flex; gap: 1rem; }
+  .footer .social a svg { width: 1.25rem; height: 1.25rem; fill: var(--blue-gray); transition: fill .3s; }
+  .footer .social a:hover svg { fill: var(--white); }
+  .footer .top { font-family: var(--grot); font-weight: 300; font-size: .875rem; letter-spacing: .0875rem; text-transform: uppercase; color: var(--light-gray); display: inline-flex; align-items: center; gap: .375rem; text-decoration: none; cursor: pointer; background: none; border: 0; padding: 0; }
+  .footer-bg { position: absolute; width: 110vw; height: 150%; bottom: -2rem; left: -2rem; z-index: 0; background: linear-gradient(0deg, var(--dark-gray) 5%, transparent 100%); opacity: .5; }
+
+  /* reveals */
+  .rv { opacity: 0; transform: translateY(2rem); transition: opacity 1s cubic-bezier(.2, .7, .2, 1), transform 1s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--i, 0) * 90ms); }
+  .rv.in { opacity: 1; transform: none; }
+  .rv-rtl { opacity: 0; transform: translateX(-3rem); transition: opacity 1.4s cubic-bezier(.2, .7, .2, 1), transform 1.4s cubic-bezier(.2, .7, .2, 1); }
+  .rv-rtl.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .rv, .rv-rtl, .hero .w, .hero .tagline { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; transition: none !important; } }
+</style>
+
+<canvas id="webgl" aria-hidden="true"></canvas>
+<div class="veil" id="veil" aria-hidden="true"></div>
+<div class="intro" id="intro" aria-hidden="true"><div class="mark"><svg viewBox="0 0 120 40" fill="none" stroke="#E4E2D8" stroke-width="1.5"><circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="8"/><circle cx="20" cy="20" r="2"/><path d="M48 20h64" stroke-dasharray="2 4"/></svg></div></div>
+
+<header class="header" id="header">
+  <nav aria-label="Main">
+    <a class="brand" href="#home" data-to="home" aria-label="Back to the top"><svg viewBox="0 0 220 40" fill="none"><circle cx="20" cy="20" r="14" stroke="#E4E2D8" stroke-width="1.4"/><circle cx="20" cy="20" r="8" stroke="#E4E2D8" stroke-width="1.4"/><circle cx="20" cy="20" r="2" fill="#E4E2D8"/><text x="46" y="27" fill="#E4E2D8" font-family="Hanken Grotesk, Helvetica, Arial, sans-serif" font-weight="300" font-size="22" letter-spacing="1">Atropos</text></svg></a>
+    <ul class="nav" role="menubar">
+      <li><a class="link" href="#about" data-to="about">About</a></li>
+      <li><a class="link" href="#engines" data-to="engines">Engines</a></li>
+      <li><a class="link" href="#week" data-to="week">Next prints</a></li>
+      <li><a class="link" href="#signals" data-to="signals">Signals</a></li>
+      <li><a class="link" href="#tools" data-to="tools">Tools</a></li>
+      <li><a class="link" href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></li>
+    </ul>
+    <button class="menu-toggle" id="menuToggle" aria-controls="mobileMenu" aria-expanded="false" aria-label="Menu"><span></span><span></span></button>
+  </nav>
+  <div class="header-bg" id="headerBg"></div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" data-to="home">Home</a><a href="#about" data-to="about">About</a><a href="#engines" data-to="engines">Engines</a><a href="#week" data-to="week">Next prints</a><a href="#signals" data-to="signals">Signals</a><a href="#tools" data-to="tools">Tools</a><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a>
+</div>
+
+<main>
+  <div id="home"></div>
+  <div class="hero" id="hero">
+    <div style="width:100%">
+      <div class="hero-grid">
+        <h1 id="heroTitle">Read the odds.<br>Then your book.</h1>
+        <p class="tagline" id="tagline">A trust layer between prediction markets and your book.</p>
+      </div>
+      <div class="hero-foot-wrap">
+        <div class="hero-foot" id="heroFoot">
+          <div class="split split--top"></div>
+          <p>Atropos ©2026</p>
+          <a href="#about" data-to="about" class="link">Explore <svg viewBox="0 0 9 14" fill="none" stroke="#fff" stroke-width="1.2"><path d="M4.5 0v13M1 9.5l3.5 3.5L8 9.5"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="webgl-title" id="title0"><h2>The odds move...</h2></div>
+  <div class="spacer"></div>
+  <div class="webgl-title" id="title1"><h2>...we tell you what it costs.</h2></div>
+  <div class="spacer"></div>
+  <div id="scrollEnd"></div>
+
+  <div class="content">
+    <div class="container">
+      <section id="about">
+        <div class="about-top">
+          <div class="mark rv"><svg viewBox="0 0 220 40" fill="none"><circle cx="20" cy="20" r="14" stroke="#E4E2D8" stroke-width="1.4"/><circle cx="20" cy="20" r="8" stroke="#E4E2D8" stroke-width="1.4"/><circle cx="20" cy="20" r="2" fill="#E4E2D8"/><text x="46" y="27" fill="#E4E2D8" font-family="Hanken Grotesk, Helvetica, Arial, sans-serif" font-weight="300" font-size="22" letter-spacing="1">Atropos</text></svg></div>
+          <span class="label rv" style="--i:1">Where the name comes from</span>
+          <div class="copy rv" style="--i:2" id="originCopy">
+            <p>Atropos is the Fate who cuts the thread. Prediction markets now trade tens of billions a month and desks read them as signals, but a price is not a probability: on 628 settled Kalshi markets, a contract priced around 40¢ resolved yes only <b id="f40">30%</b> of the time, and a 98¢ sure thing only <b id="f98">84%</b>.</p>
+            <p>We see our work as cutting that thread: a calibrated, trusted probability for each event, what it does to what you own, and the cheapest hedge that would actually have paid.</p>
+          </div>
+        </div>
+        <div class="about-blocks">
+          <div class="block rv-rtl"><span>01.</span><h3>What it does</h3><p>The odds on the next inflation, Fed and jobs reports from Kalshi and Polymarket, what fed-funds futures and Bitcoin options already imply, your holdings read-only from your brokerage, and every CPI and jobs release day since 2021.</p></div>
+          <div class="block rv-rtl"><span>02.</span><h3>How the numbers are made</h3><p>Every number comes from code: an isotonic fit on settled markets, a basis against the traditional proxy, a trust score from liquidity, spread, freshness and holders, a pair screen for cointegration. Jev checks every sentence against its numbers before you read it.</p></div>
+        </div>
+      </section>
+
+      <section id="engines">
+        <div class="engines-left"><div id="enginesPin"><h2 class="h-section engines-title">Three engines</h2></div></div>
+        <div class="engines-list">
+          <figure class="engine rv"><span class="who">Basis · Arman Chaudhury</span><h3>Trust the price</h3><p class="claim">A prediction-market price is only a signal once it is calibrated, compared with the real market, and scored for trust.</p><blockquote id="qBasis">"A contract priced near 40¢ resolved yes 30% of the time."</blockquote><figcaption id="cBasis">628 settled Kalshi markets, price one day before close</figcaption></figure>
+          <figure class="engine rv"><span class="who">Atropos · Ethan Beirne</span><h3>Price the hedge</h3><p class="claim">Odds become dollars at risk for what you own, and protection is only worth buying if it paid on the days you actually lost.</p><blockquote id="qAtropos">"Inflation protection paid on 6 of the sample portfolio's 13 worst report days."</blockquote><figcaption id="cAtropos">CPI release days since 2021, sample portfolio</figcaption></figure>
+          <figure class="engine rv"><span class="who">Leaf · juvowen</span><h3>Pair the hedge</h3><p class="claim">Sometimes the cheapest hedge is not a contract but a pair: two stocks that move against each other without being tied together.</p><blockquote id="qLeaf">"QQQ and VIXY: correlation −0.70, not cointegrated."</blockquote><figcaption id="cLeaf">29 tickers, 252 trading days, Engle–Granger</figcaption></figure>
+        </div>
+      </section>
+
+      <section id="week">
+        <h2 class="h-section rv">Next prints</h2>
+        <div class="reports" id="reports"></div>
+        <div class="sources">
+          <div class="split split--top no-corners"></div>
+          <div class="sources-inner">
+            <h3 class="label rv">Read from</h3>
+            <ul><li class="rv" style="--i:1">Kalshi</li><li class="rv" style="--i:2">Polymarket</li><li class="rv" style="--i:3">Fed funds futures</li><li class="rv" style="--i:4">Deribit options</li></ul>
+          </div>
+          <div class="split split--bottom no-corners"></div>
+        </div>
+      </section>
+
+      <section id="signals">
+        <h2 class="h-section rv-rtl">Select signals</h2>
+        <div class="frame">
+          <div class="split split--top no-corners"></div><div class="split split--left no-corners"></div>
+          <ul class="grid" id="signalGrid"></ul>
+          <div class="split split--right no-corners"></div><div class="split split--bottom no-corners"></div>
+        </div>
+        <p class="footnote"><span>*</span> One trade dominates the tape</p>
+      </section>
+
+      <section id="tools">
+        <h2 class="h-section rv">Tools</h2>
+        <div class="frame">
+          <div class="split split--top"></div>
+          <ul class="rows">
+            <li class="rv"><a class="row" href="../basis/"><span class="idx">01.</span><h3>Trust table</h3><span class="cta">Basis <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
+            <li class="rv" style="--i:1"><a class="row" href="../basis/#/calibration"><span class="idx">02.</span><h3>Calibration curve</h3><span class="cta">628 markets <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
+            <li class="rv" style="--i:2"><a class="row" href="../leaf/#/screener"><span class="idx">03.</span><h3>Pair screener</h3><span class="cta">Leaf <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
+            <li class="rv" style="--i:3"><a class="row" href="../atty/"><span class="idx">04.</span><h3>Atty's walkthrough</h3><span class="cta">Voice <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
+            <li class="rv" style="--i:4"><a class="row" href="../console.html"><span class="idx">05.</span><h3>Console</h3><span class="cta">Your portfolio <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
+          </ul>
+          <div class="split split--bottom"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="foot-wrap" id="footStart">
+    <footer class="footer" id="footer">
+      <div class="split split--top"></div>
+      <div class="footer-outer">
+        <div class="footer-inner">
+          <div>
+            <a class="brand" href="#home" data-to="home" aria-label="Back to the top"><svg viewBox="0 0 220 40" fill="none"><circle cx="20" cy="20" r="14" stroke="#E4E2D8" stroke-width="1.4"/><circle cx="20" cy="20" r="8" stroke="#E4E2D8" stroke-width="1.4"/><circle cx="20" cy="20" r="2" fill="#E4E2D8"/><text x="46" y="27" fill="#E4E2D8" font-family="Hanken Grotesk, Helvetica, Arial, sans-serif" font-weight="300" font-size="22" letter-spacing="1">Atropos</text></svg></a>
+            <p class="touch"><span>Get in touch:</span> <a class="link" href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">github.com/ebeirne/atropos</a></p>
+          </div>
+          <ul class="links">
+            <li><a class="link" href="#about" data-to="about">About</a></li>
+            <li><a class="link" href="#engines" data-to="engines">Engines</a></li>
+            <li><a class="link" href="#week" data-to="week">Next prints</a></li>
+            <li><a class="link" href="#signals" data-to="signals">Signals</a></li>
+            <li><a class="link" href="#tools" data-to="tools">Tools</a></li>
+            <li><a class="link" href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer">Code</a></li>
+          </ul>
+          <div class="right">
+            <div class="social"><a href="https://github.com/ebeirne/atropos" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg></a></div>
+            <button class="top" type="button" id="backTop">Back to top <svg viewBox="0 0 9 14" fill="none" stroke="#E4E2D8" stroke-width="1.2" style="width:.5625rem;height:.875rem"><path d="M4.5 13V1M1 4.5 4.5 1 8 4.5"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="split split--bottom"></div>
+      <div class="footer-bg"></div>
+    </footer>
+  </div>
+</main>
+
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }</script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="module">
+import { createSurface } from './surface.js';
+import { TIMELINE, evalTrack } from './timeline.js';
+
+const $ = (id) => document.getElementById(id);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const coarse = matchMedia('(pointer: coarse)').matches;
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+/* ------------------------------------------------------------------ data */
+function getJSON(live, fallback) {
+  return fetch(live).then((r) => { if (!r.ok) throw 0; return r.json(); }).catch(() => fetch(fallback).then((r) => r.json()));
+}
+const NAME = { cpi: 'Inflation report', fomc: 'Fed decision', nfp: 'Jobs report' };
+const PHOTO = { cpi: '../photos/cpi.jpg', fomc: '../photos/fed.jpg', nfp: '../photos/nfp.jpg' };
+const SHORT = {
+  'fomc-2026-12': 'Fed hikes in December', 'fomc-2026-10': 'Fed hikes in October', 'cpi-2026-09-above-0.4': 'September CPI above 0.4%', 'cpi-2026-09-above-0.5': 'September CPI above 0.5%',
+  'btc-100k-2026': 'Bitcoin above $100K by year end', 'btc-90k-oct-2026': 'Bitcoin reaches $90K in October', 'iran-ceasefire-oct31': 'US–Iran ceasefire holds to Oct 31', 'house-2026-dem': 'Democrats take the House',
+};
+const PICK = ['fomc-2026-12', 'fomc-2026-10', 'cpi-2026-09-above-0.4', 'cpi-2026-09-above-0.5', 'btc-100k-2026', 'btc-90k-oct-2026', 'iran-ceasefire-oct31', 'house-2026-dem'];
+function day(iso) { return new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+function label(id, l) {
+  if (id === 'fomc') return ({ 'Cut 0.50+': 'cut 50bp+', 'Cut 0.25': 'cut 25bp', Hold: 'hold', Hike: 'hike' })[l] || l;
+  const u = id === 'cpi' ? '%' : 'K';
+  let m; if ((m = l.match(/^under\s*(.+)$/i))) return 'under ' + m[1] + u; if ((m = l.match(/^over\s*(.+)$/i))) return 'over ' + m[1] + u;
+  return l.replace(/-/g, '–') + u;
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pct = (x) => Math.round(x * 100) + '%';
+
+getJSON('../api/events', '../tape.json').then((t) => {
+  const sigs = ['cpi', 'fomc', 'nfp'].map((id) => t.signals.find((s) => s.id === id)).filter(Boolean).sort((a, b) => (a.date < b.date ? -1 : 1));
+  $('reports').innerHTML = sigs.map((s, i) => {
+    const top = s.p.indexOf(Math.max(...s.p));
+    return `<a class="report rv" style="--i:${i}" href="../console.html"><span class="ph" style="background-image:url(${PHOTO[s.id]})"></span><p class="name">${NAME[s.id]}</p><span class="role">${day(s.date)}</span><span class="role mid">likely ${esc(label(s.id, s.labels[top]))} · ${pct(s.p[top])}</span></a>`;
+  }).join('');
+  watch($('reports').querySelectorAll('.rv'));
+}).catch(() => {});
+
+getJSON('../api/basis/events', '../data/basis/events.json').then((events) => {
+  const by = Object.fromEntries(events.map((e) => [e.id, e]));
+  const rows = PICK.map((id) => by[id]).filter(Boolean);
+  $('signalGrid').innerHTML = rows.map((e, i) => {
+    const nums = ['raw ' + pct(e.p_raw)].concat(e.p_proxy != null ? ['basis ' + (e.basis >= 0 ? '+' : '−') + Math.abs(e.basis * 100).toFixed(0)] : [], ['trust ' + e.trust_score]).join(' · ');
+    return `<li class="cell"><a class="card" href="../basis/#/events/${e.id}"><span class="idx">${String(i + 1).padStart(2, '0')}.</span><svg class="arrow" viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg><span class="big">${pct(e.p_calibrated)}${e.leakage_flag ? '<sup>*</sup>' : ''}</span><span class="what">${esc(SHORT[e.id] || e.title)}</span><span class="nums">${nums}</span></a></li>`;
+  }).join('');
+}).catch(() => {});
+
+getJSON('../api/basis/calibration', '../data/basis/calibration.json').then((c) => {
+  const at = (p) => c.bins.find((b) => p >= b.lo && p < b.hi);
+  const b40 = at(0.4), b98 = at(0.98);
+  if (b40) { $('f40').textContent = pct(b40.win_rate); $('qBasis').textContent = `"A contract priced ${Math.round(b40.lo * 100)}–${Math.round(b40.hi * 100)}¢ resolved yes ${pct(b40.win_rate)} of the time."`; }
+  if (b98) $('f98').textContent = pct(b98.win_rate);
+  $('cBasis').textContent = `${c.n_markets} settled Kalshi markets, price one day before close`;
+}).catch(() => {});
+
+getJSON('../api/thread', '../atty/thread.json').then((th) => {
+  const f = th.history && th.history.fits && th.history.fits['cpi:high'];
+  if (f && f.lossDays) $('qAtropos').textContent = `"Inflation protection paid on ${f.paidOnLoss} of the sample portfolio's ${f.lossDays} worst report days."`;
+}).catch(() => {});
+
+getJSON('../api/leaf/scan', '../data/leaf/scan.json').then((s) => {
+  const h = s.strategies.hedging, p = h.pairs[0];
+  if (p) { $('qLeaf').textContent = `"${p.a} and ${p.b}: correlation ${p.corr.toFixed(2).replace('-', '−')}, not cointegrated (p ${p.coint_p.toFixed(2)})."`; $('cLeaf').textContent = `${s.universe.length} tickers, ${s.days} trading days, Engle–Granger`; }
+}).catch(() => {});
+
+/* --------------------------------------------------------------- reveals */
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: 0.01 });
+function watch(list) { list.forEach((el) => io.observe(el)); }
+watch(document.querySelectorAll('.rv, .rv-rtl'));
+
+/* ---------------------------------------------------------------- scroll */
+let lenis = null;
+if (!reduce && window.Lenis) { lenis = new window.Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.95 }); }
+function scrollTo(id, dur) {
+  const el = id === 'home' ? document.body : $(id); if (!el) return;
+  const y = id === 'home' ? 0 : el.getBoundingClientRect().top + window.scrollY - 72;
+  if (lenis) lenis.scrollTo(y, { duration: dur || 1.6 }); else window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+}
+document.addEventListener('click', (e) => {
+  const a = e.target.closest && e.target.closest('[data-to]'); if (!a) return;
+  e.preventDefault(); closeMenu(); scrollTo(a.getAttribute('data-to'), a.getAttribute('data-to') === 'about' ? 3 : 1.6);
+});
+$('backTop').addEventListener('click', () => scrollTo('home', 2.4));
+const menu = $('mobileMenu'), toggle = $('menuToggle');
+function closeMenu() { menu.classList.remove('open'); toggle.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); }
+toggle.addEventListener('click', () => { const open = !menu.classList.contains('open'); menu.classList.toggle('open', open); toggle.classList.toggle('open', open); toggle.setAttribute('aria-expanded', String(open)); });
+
+// which section the nav marks
+const navLinks = [...document.querySelectorAll('.nav a[data-to]')];
+const secIO = new IntersectionObserver((es) => { es.forEach((e) => { if (e.isIntersecting) navLinks.forEach((a) => a.classList.toggle('active', a.getAttribute('data-to') === e.target.id)); }); }, { rootMargin: '-40% 0px -50% 0px' });
+['about', 'engines', 'week', 'signals', 'tools'].forEach((id) => secIO.observe($(id)));
+
+// the pinned "Engines" title
+(function pin() {
+  const wrap = $('enginesPin'), list = document.querySelector('.engines-list'), left = document.querySelector('.engines-left');
+  function tick() {
+    if (innerWidth < 1024) { wrap.style.transform = ''; return; }
+    const lr = list.getBoundingClientRect(), top = innerHeight * 0.2, h = wrap.offsetHeight;
+    const start = lr.top - top, end = lr.bottom - top - h;
+    const y = clamp(-start, 0, Math.max(0, end - start));
+    wrap.style.transform = `translateY(${y}px)`;
+  }
+  window.addEventListener('scroll', tick, { passive: true }); window.addEventListener('resize', tick); tick();
+})();
+
+/* --------------------------------------------------- the surface & timing */
+const canvas = $('webgl');
+const hero = $('hero'), heroFoot = $('heroFoot'), veil = $('veil'), header = $('header'), headerBg = $('headerBg');
+const titles = [$('title0'), $('title1')].map((t) => { const h = t.querySelector('h2'); const words = h.textContent.trim().split(/\s+/); h.innerHTML = words.map((w) => `<span>${esc(w)}</span>`).join(' '); return { el: t, words: [...h.querySelectorAll('span')] }; });
+let surface = null, T = 0, introDone = reduce;
+
+function showTitle(t, v) {
+  t.el.style.visibility = v > 0.001 ? 'visible' : 'hidden';
+  t.words.forEach((w, i) => { const k = clamp(v * 1.4 - i * 0.2, 0, 1); w.style.opacity = k; w.style.transform = `translateX(${(1 - k) * 50}px)`; });
+}
+function layout() {
+  const endTop = $('scrollEnd').getBoundingClientRect().top + window.scrollY;      // scroll where the dive ends
+  const footTop = $('footStart').getBoundingClientRect().top + window.scrollY;      // scroll where the footer begins
+  return { endTop, footTop };
+}
+let L = layout(); window.addEventListener('resize', () => { L = layout(); });
+function frame() {
+  requestAnimationFrame(frame);
+  if (!introDone) return;
+  const y = window.scrollY, vh = innerHeight;
+  // 2 -> 10.267 across the dive, 11 -> 13 as the footer rises into view
+  let t = 2 + clamp(y / Math.max(1, L.endTop), 0, 1) * (10.267 - 2);
+  const fin = clamp((vh * 0.6 - ($('footStart').getBoundingClientRect().top)) / (vh * 0.45), 0, 1);
+  if (fin > 0) t = 11 + fin * 2;
+  T = t; if (surface) surface.setTime(t);
+  const heroHide = evalTrack(TIMELINE['ui.heroHide'], t);
+  hero.style.opacity = 1 - heroHide; hero.style.transform = `translateY(${-heroHide * 40}px)`;
+  showTitle(titles[0], evalTrack(TIMELINE['ui.title0'], t)); showTitle(titles[1], evalTrack(TIMELINE['ui.title1'], t));
+  // the dark veil: in over the last half-screen of the dive, out again as the footer rises
+  const endRel = $('scrollEnd').getBoundingClientRect().top;
+  const veilIn = clamp((vh * 0.9 - endRel) / (vh * 0.5), 0, 1);
+  veil.style.opacity = Math.max(0, veilIn - fin);
+  headerBg.classList.toggle('on', veilIn > 0.9 && fin < 0.5);
+}
+requestAnimationFrame(frame);
+
+async function start() {
+  try {
+    surface = await createSurface(canvas, { quality: coarse ? 0.7 : Math.min(1.25, devicePixelRatio || 1) });
+  } catch (e) { console.warn('no webgl', e); canvas.style.display = 'none'; document.body.style.background = '#151515'; }
+  $('intro').classList.add('done');
+  hero.classList.add('on'); header.classList.add('show');
+  window.__atropos = { surface, get T() { return T; } };
+  if (reduce || !surface) { introDone = true; if (surface) surface.setTime(2); return; }
+  // the intro: the first two units of the timeline play on load while the words blur in
+  const t0 = performance.now(), dur = 2400;
+  (function intro(now) {
+    const k = clamp((now - t0) / dur, 0, 1), e = 1 - Math.pow(1 - k, 3);
+    surface.setTime(e * 2);
+    if (k < 1) requestAnimationFrame(intro); else { introDone = true; L = layout(); }
+  })(t0);
+}
+document.fonts ? document.fonts.ready.then(start) : start();
+</script>

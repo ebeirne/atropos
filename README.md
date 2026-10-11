@@ -3,6 +3,7 @@
 **Read the odds. Then your book.**
 
 **Live site: [ebeirne.github.io/atropos](https://ebeirne.github.io/atropos/)** ·
+[One-scroll page](https://ebeirne.github.io/atropos/topo/) ·
 [Trust table](https://ebeirne.github.io/atropos/basis/) ·
 [Pair screener](https://ebeirne.github.io/atropos/leaf/#/screener) ·
 [Atty's walkthrough](https://ebeirne.github.io/atropos/atty/) ·
@@ -21,9 +22,17 @@ Read the price → price the hedge → pair the hedge.
 
 ## The site
 
-The landing page (`public/index.html`) follows one scroll: a hero over a surface of contour
-rings, two titles as the camera dives into the rings, a dark reveal, then the content, and the
-grey rings back behind the footer.
+- **`/`** the landing page: what traders expect this week (live odds with the move since the
+  last check), how it works, and the research behind it.
+- **`/console.html`** the console: your portfolio (or the sample), what each report would do
+  to it, and this week's trade, or none.
+- **`/atty/`** Atty's nine-scene walkthrough with her recorded voice.
+- **`/basis/`** and **`/leaf/`** the engines' own pages.
+- **`/topo/`** a second landing page that joins all three engines in one scroll (kept for
+  another project): a hero over a surface of contour rings, two titles as the camera dives
+  into the rings, a dark reveal, then the content, and the grey rings back behind the footer.
+
+The `/topo/` page, section by section:
 
 - **Hero.** The rings are twenty stacked planes cut by one noise height field at twenty
   thresholds, so only each terrace's rim shows (`public/topo/surface.js`). The cursor stirs a
@@ -41,10 +50,6 @@ grey rings back behind the footer.
 
 Every line on the page was picked by Jev from short candidates (`scripts/jev-landing.js`,
 `data/landing-copy.json`). Every number comes from code or data, never typed in.
-
-Other pages: `/atty/` (Atty's nine-scene walkthrough with her recorded voice), `/console.html`
-(your portfolio and this week's trade), `/basis/` and `/leaf/` (the engines' own pages),
-`/dust.html` (the earlier landing page).
 
 ## Run it
 
@@ -146,7 +151,8 @@ Do not give the public demo SnapTrade keys.
 |---|---|
 | `server.js` | API (`/api/agent`, `/api/events`, `/api/funds`, `/api/thread`, `/api/news`, `/api/voice`, `/api/venues`, `/api/try`), the proxies `/api/basis/*` and `/api/leaf/*`, and static files |
 | `lib/` | odds venues, engine, agent, 13F benchmark, news, Jev, voice, public-demo guards |
-| `public/index.html`, `public/topo/` | the landing page and its surface |
+| `public/index.html`, `public/console.html` | the landing page and the console |
+| `public/topo/` | the one-scroll page that joins the three engines, and its surface |
 | `public/atty/` | Atty's walkthrough; `beats.js` builds her lines from the numbers |
 | `public/console.html` | the console |
 | `public/data/` | the engines' snapshots |
