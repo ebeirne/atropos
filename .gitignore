@@ -42,3 +42,4 @@ services/**/.cache/
 services/**/dist/
 public/basis/
 public/leaf/
+data/trades.json

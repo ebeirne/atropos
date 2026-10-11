@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",
+    "pg": "^8.13.1",
     "snaptrade-typescript-sdk": "^12.2.21"
   }
 }

@@ -26,6 +26,10 @@ Read the price → price the hedge → pair the hedge.
   last check), how it works, and the research behind it.
 - **`/console.html`** the console: your portfolio (or the sample), what each report would do
   to it, and this week's trade, or none.
+- **`/desk.html`** the desk: every Basis event with its calibrated probability, basis and
+  trust, biggest trusted edge first; pick one and Atropos shows the trade and how much to put
+  on it (half Kelly, capped at 10% of capital); save the trade and it is marked to the current
+  price under Positions. Layout chosen with Jev as a second opinion (`data/console-jev.json`).
 - **`/atty/`** Atty's nine-scene walkthrough with her recorded voice.
 - **`/basis/`** and **`/leaf/`** the engines' own pages.
 - **`/topo/`** a second landing page that joins all three engines in one scroll (kept for
@@ -87,6 +91,30 @@ Build the static version of Atty's page (saved data and pre-recorded voice):
 node scripts/snapshot-tape.js
 node scripts/build-atty.js  # dist/atty/
 ```
+
+## Saving trades: Tiger Data / TimescaleDB
+
+Trades and odds marks are stored in TimescaleDB when `DATABASE_URL` is set (a Tiger Cloud
+connection string works as is); without it they go to `data/trades.json` so the demo still
+runs. `lib/trades.js` creates two hypertables on first use: `trades` (one row per saved trade:
+user, event, side, venue, price, contracts, dollars, and the calibrated probability, basis,
+trust and Kelly share at the time) and `marks` (every event's price and calibrated probability
+each time the desk loads, so `/api/marks?event=` can chart them with `time_bucket`).
+
+```
+# Tiger Cloud: paste the service's connection string
+DATABASE_URL=postgres://tsdbadmin:...@....tsdb.cloud.timescale.com:3xxxx/tsdb?sslmode=require
+
+# or a local TimescaleDB for development
+docker run -d --name tsdb -p 5433:5432 -e POSTGRES_PASSWORD=atropos timescale/timescaledb:latest-pg16
+DATABASE_URL=postgres://postgres:atropos@127.0.0.1:5433/postgres
+```
+
+Routes: `GET /api/desk/events?capital=` (events with price, edge and Kelly), `POST /api/trades`
+`{event_id, side, contracts, capital}`, `GET /api/trades`, `GET /api/positions` (open trades
+marked to the current price), `GET /api/marks?event=&days=`. There is no sign-in: the desk
+page keeps an id per browser and sends it as `x-atropos-user`. On the static site the desk
+does the same sums in the browser and keeps trades in the browser.
 
 ## The GitHub Pages site
 
@@ -150,11 +178,11 @@ Do not give the public demo SnapTrade keys.
 | Path | What |
 |---|---|
 | `server.js` | API (`/api/agent`, `/api/events`, `/api/funds`, `/api/thread`, `/api/news`, `/api/voice`, `/api/venues`, `/api/try`), the proxies `/api/basis/*` and `/api/leaf/*`, and static files |
-| `lib/` | odds venues, engine, agent, 13F benchmark, news, Jev, voice, public-demo guards |
+| `lib/` | odds venues, engine, agent, 13F benchmark, news, Jev, voice, public-demo guards, trades (TimescaleDB or file) |
 | `public/index.html`, `public/console.html` | the landing page and the console |
 | `public/topo/` | the one-scroll page that joins the three engines, and its surface |
 | `public/atty/` | Atty's walkthrough; `beats.js` builds her lines from the numbers |
-| `public/console.html` | the console |
+| `public/console.html`, `public/desk.html`, `public/desk/kelly.js` | the console, the desk, and the Kelly sizing shared by server and page |
 | `public/data/` | the engines' snapshots |
 | `services/basis`, `services/leaf` | the two engines (FastAPI + React), vendored |
 | `scripts/` | data builds, the Jev judgments, the site builds |

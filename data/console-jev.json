@@ -1,0 +1,79 @@
+{
+  "judged_at": "2026-10-11T01:22:00.023Z",
+  "pick": {
+    "structure": {
+      "choice": "split",
+      "text": "Two panes side by side: the list on the left stays visible, the chosen event's detail on the right.",
+      "scores": {
+        "split": 0.71,
+        "drill": 0.26,
+        "expand": 0.03
+      }
+    },
+    "row": {
+      "choice": "pbasis",
+      "text": "The calibrated probability, the basis (gap to the traditional market) and the trust score.",
+      "scores": {
+        "pbasis": 0.73,
+        "p": 0.18,
+        "ptrust": 0.08,
+        "all": 0.01
+      }
+    },
+    "sort": {
+      "choice": "edge",
+      "text": "Largest edge first: the biggest gap between the calibrated probability and the price, weighted by trust.",
+      "scores": {
+        "edge": 0.98,
+        "trust": 0.01,
+        "exposure": 0.01,
+        "date": 0
+      }
+    },
+    "controls": {
+      "choice": "one",
+      "text": "One search box that also understands words like \"macro\" or \"trusted\" (no separate filter).",
+      "scores": {
+        "one": 0.58,
+        "chips": 0.25,
+        "both": 0.17
+      }
+    },
+    "money": {
+      "choice": "corner",
+      "text": "Top right of the header, two numbers (the sketch).",
+      "scores": {
+        "corner": 1,
+        "sidebar": 0,
+        "detail": 0
+      }
+    },
+    "detailOrder": {
+      "choice": "prob",
+      "text": "The probability first: calibrated vs price vs the traditional market, then the trade, then the allocation.",
+      "scores": {
+        "prob": 0.81,
+        "kelly": 0.17,
+        "trade": 0.01
+      }
+    },
+    "kelly": {
+      "choice": "dollars",
+      "text": "One dollar figure and one line of why (probability vs price).",
+      "scores": {
+        "dollars": 0.73,
+        "inputs": 0.25,
+        "slider": 0.02
+      }
+    },
+    "nav": {
+      "choice": "links",
+      "text": "Two text links in the header next to the product name.",
+      "scores": {
+        "links": 0.82,
+        "hamburger": 0.1,
+        "tabs": 0.08
+      }
+    }
+  }
+}

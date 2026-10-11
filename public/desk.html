@@ -1,0 +1,241 @@
+<title>Atropos — Desk</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Every event with its calibrated probability, the edge against the price, and how much to put on it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..500&family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="skin.css">
+<style>
+  /* The desk: Basis's events on the left, biggest trusted edge first; one event on the right
+     with the probability, the trade and Atropos's allocation; the trades you save below it.
+     Layout chosen with Jev as a second opinion (data/console-jev.json). */
+  .desk { max-width: 1320px; margin: 0 auto; padding: 88px clamp(16px, 3vw, 32px) 80px; }
+  .money { display: flex; gap: 22px; align-items: baseline; font-family: var(--ff-label); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+  .money b { font: 500 16px/1 var(--ff-num); color: var(--ink); letter-spacing: 0; text-transform: none; margin-left: 8px; font-variant-numeric: tabular-nums; }
+  .money input { width: 7.5em; background: none; border: 0; border-bottom: 1px solid var(--line-2); color: var(--ink); font: 500 16px/1.3 var(--ff-num); margin-left: 8px; text-align: right; outline: none; }
+  .money input:focus { border-color: var(--accent); }
+  .search { display: block; width: 100%; margin: 18px 0 26px; background: none; border: 1px solid var(--line-2); color: var(--ink); font: 400 17px/1.3 var(--ff-body); padding: 14px 18px; outline: none; }
+  .search:focus { border-color: var(--accent); }
+  .panes { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(20px, 4vw, 56px); align-items: start; }
+  .list { border-top: 1px solid var(--line); }
+  .ev { display: grid; grid-template-columns: 1fr auto; gap: 6px 18px; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 16px 10px; color: var(--ink); cursor: pointer; }
+  .ev:hover, .ev.on { background: rgba(243, 241, 234, .05); }
+  .ev .t { font: 400 18px/1.25 var(--ff-body); }
+  .ev .d { font: 400 12px/1.2 var(--ff-label); letter-spacing: .05em; color: var(--ink-2); text-transform: uppercase; margin-top: 4px; }
+  .ev .p { font: 500 26px/1 var(--ff-num); text-align: right; font-variant-numeric: tabular-nums; }
+  .ev .m { grid-column: 2; font: 400 12px/1.2 var(--ff-label); letter-spacing: .05em; color: var(--ink-2); text-align: right; text-transform: uppercase; white-space: nowrap; }
+  .ev .m .up { color: var(--up); } .ev .m .down { color: var(--down); }
+  .star { color: var(--accent); }
+  .empty { padding: 28px 10px; color: var(--ink-2); }
+  .detail { position: sticky; top: 80px; }
+  .detail h2 { font: 400 clamp(26px, 3vw, 40px)/1.05 var(--ff-display); letter-spacing: -.02em; margin: 0 0 6px; }
+  .detail .when { font: 400 12px/1.2 var(--ff-label); letter-spacing: .05em; color: var(--ink-2); text-transform: uppercase; margin-bottom: 22px; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; border: 1px solid var(--line); margin-bottom: 18px; }
+  .facts div { padding: 14px 14px 12px; border-right: 1px solid var(--line); }
+  .facts div:last-child { border-right: 0; }
+  .facts small { display: block; font: 400 11px/1.2 var(--ff-label); letter-spacing: .06em; color: var(--ink-2); text-transform: uppercase; margin-bottom: 8px; }
+  .facts b { font: 500 24px/1 var(--ff-num); font-variant-numeric: tabular-nums; }
+  .trustline { color: var(--ink-2); font-size: 14px; margin-bottom: 26px; }
+  .block { border-top: 1px solid var(--line); padding: 18px 0; }
+  .block .lab { font: 400 11px/1.2 var(--ff-label); letter-spacing: .06em; color: var(--ink-2); text-transform: uppercase; margin-bottom: 10px; }
+  .trade { font-size: 18px; }
+  .alloc { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .alloc b { font: 500 clamp(34px, 4vw, 48px)/1 var(--ff-num); font-variant-numeric: tabular-nums; }
+  .alloc span { color: var(--ink-2); }
+  .why { color: var(--ink-2); margin-top: 10px; font-size: 15px; line-height: 1.5; }
+  .how { background: none; border: 0; color: var(--accent); cursor: pointer; font: inherit; padding: 0; }
+  .inputs { display: none; margin-top: 12px; font: 400 13px/1.7 var(--ff-num); color: var(--ink-2); }
+  .inputs.on { display: block; }
+  .act { display: flex; gap: 12px; align-items: center; margin-top: 18px; flex-wrap: wrap; }
+  .act input { width: 6em; background: none; border: 1px solid var(--line-2); color: var(--ink); font: 500 16px/1.2 var(--ff-num); padding: 10px 12px; text-align: right; outline: none; }
+  .act input:focus { border-color: var(--accent); }
+  .act .note { color: var(--ink-2); font-size: 13px; }
+  .positions { margin-top: 40px; border-top: 1px solid var(--line); }
+  .positions h3 { font: 400 12px/1.2 var(--ff-label); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); margin: 18px 0 8px; display: flex; justify-content: space-between; }
+  .pos { display: grid; grid-template-columns: 1fr auto auto; gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; align-items: baseline; }
+  .pos .t { grid-row: span 2; }
+  .pos .t small { display: block; color: var(--ink-2); font-size: 12px; margin-top: 3px; }
+  .pos .n { font-family: var(--ff-num); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .pos .n small { display: block; color: var(--ink-2); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; font-family: var(--ff-label); }
+  .src { margin-top: 40px; color: var(--ink-2); font-size: 12px; line-height: 1.6; }
+  .src code { font-family: var(--ff-num); }
+  @media (max-width: 900px) { .panes { grid-template-columns: 1fr; } .detail { position: static; } .list.hide { display: none; } .back { display: inline-block; margin-bottom: 14px; } .facts { grid-template-columns: repeat(2, 1fr); } .facts div:nth-child(2) { border-right: 0; } .facts div:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
+  @media (min-width: 901px) { .back { display: none; } }
+</style>
+
+<nav class="nav" aria-label="Main">
+  <a class="brand" href="index.html"><b>Atropos</b><span class="tag">Beta</span></a>
+  <div class="links">
+    <a class="opt" href="#positions">Positions</a><a class="opt" href="leaf/#/screener">Screener</a><a class="opt" href="basis/">Basis</a><a href="console.html">Console</a>
+  </div>
+</nav>
+
+<main class="desk">
+  <div class="money" style="justify-content:flex-end">
+    <label>Capital <input id="capital" type="number" min="100" step="100" value="10000" aria-label="Capital in dollars"></label>
+    <span>Holdings <b id="holdings">$0</b></span>
+    <span id="backend" title="Where trades are saved"></span>
+  </div>
+  <input class="search" id="q" type="search" placeholder="Search events, or type macro, crypto, trusted, soon" aria-label="Search events" autocomplete="off">
+
+  <div class="panes">
+    <section class="list" id="list" aria-label="Events, biggest edge first"><p class="empty">Loading events…</p></section>
+    <section class="detail" id="detail" aria-live="polite"><p class="empty">Pick an event.</p></section>
+  </div>
+
+  <section class="positions" id="positions">
+    <h3><span>Your trades</span><span id="posTotals"></span></h3>
+    <div id="posList"><p class="empty">Nothing saved yet. Save a trade from an event to see it here, marked to the current price.</p></div>
+  </section>
+
+  <p class="src">Probabilities, basis and trust from Basis (isotonic calibration on 628 settled Kalshi markets; basis against fed-funds futures or Deribit options). Allocation: half Kelly on a $1 contract, capped at 10% of capital. Trades are saved to <span id="backendNote">this browser</span>. Not investment advice; nothing here places an order.</p>
+</main>
+
+<script src="desk/kelly.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var pct = function (x) { return x == null ? '—' : Math.round(x * 100) + '%'; };
+  var cents = function (x) { return x == null ? '—' : Math.round(x * 100) + '¢'; };
+  var money = function (x) { return (x < 0 ? '−$' : '$') + Math.abs(x).toLocaleString('en-US', { maximumFractionDigits: 0 }); };
+  var money2 = function (x) { if (Math.abs(x) < 0.005) x = 0; return (x < 0 ? '−$' : '$') + Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+  var pp = function (x) { return x == null ? '—' : (x >= 0 ? '+' : '−') + Math.abs(Math.round(x * 100)); };
+  var day = function (iso) { return new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }); };
+  var VENUE = { kalshi: 'Kalshi', polymarket: 'Polymarket' };
+
+  // an id per browser stands in for a sign-in
+  var user = null;
+  try { user = localStorage.getItem('atropos-user'); if (!user) { user = 'u' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('atropos-user', user); } } catch (_) { user = 'u-anonymous-browser'; }
+
+  var capital = 10000;
+  try { capital = Number(localStorage.getItem('atropos-capital')) || 10000; } catch (_) {}
+  $('capital').value = capital;
+
+  var state = { events: [], current: null, live: false, trades: [] };
+
+  /* -------------------------------------------------------------- data */
+  // the server computes the edge and the allocation; with no server (the static site) the
+  // page does the same sums from the snapshot with the same kelly.js
+  function loadEvents() {
+    return fetch('api/desk/events?capital=' + capital).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (j) { state.live = true; $('backend').textContent = j.backend === 'timescale' ? 'Saved to TimescaleDB' : 'Saved on this machine'; $('backendNote').textContent = j.backend === 'timescale' ? 'TimescaleDB (Tiger Data)' : 'a file on the server'; return j.events; })
+      .catch(function () {
+        state.live = false; $('backend').textContent = 'Static: saved in this browser';
+        return fetch('data/basis/events.json').then(function (r) { return r.json(); }).then(function (events) {
+          return events.map(function (e) {
+            var venues = Object.keys(e.venues || {}).filter(function (k) { return e.venues[k] && e.venues[k].p != null; }).sort(function (a, b) { return (e.venues[b].trust ? e.venues[b].trust.score : 0) - (e.venues[a].trust ? e.venues[a].trust.score : 0); });
+            var venue = venues[0] || null, price = venue ? e.venues[venue].p : null;
+            var edge = price != null && e.p_calibrated != null ? e.p_calibrated - price : null;
+            return { id: e.id, title: e.title, category: e.category, resolution_date: e.resolution_date, settled: !!e.settled, p_raw: e.p_raw, p_calibrated: e.p_calibrated, p_proxy: e.p_proxy, proxy_type: e.proxy_type, basis: e.basis, trust_score: e.trust_score, leakage_flag: !!e.leakage_flag, price: price, venue: venue, edge: edge,
+              score: edge == null ? 0 : Math.abs(edge) * (e.trust_score || 0) / 100, kelly: price != null && !e.settled ? Kelly.kelly({ p: e.p_calibrated, price: price, capital: capital }) : null };
+          });
+        });
+      });
+  }
+  function loadTrades() {
+    if (!state.live) { try { return Promise.resolve(JSON.parse(localStorage.getItem('atropos-trades') || '[]')); } catch (_) { return Promise.resolve([]); } }
+    return fetch('api/positions', { headers: { 'x-atropos-user': user } }).then(function (r) { return r.json(); }).then(function (j) { return j.positions || []; });
+  }
+  function saveTrade(ev, side, contracts) {
+    var cost = side === 'yes' ? ev.price : 1 - ev.price;
+    if (!state.live) {
+      var t = { id: 't' + Date.now(), time: new Date().toISOString(), event_id: ev.id, title: ev.title, side: side, venue: ev.venue, price: cost, contracts: contracts, dollars: Math.round(contracts * cost * 100) / 100, p_calibrated: ev.p_calibrated, trust: ev.trust_score, status: 'open' };
+      var all = []; try { all = JSON.parse(localStorage.getItem('atropos-trades') || '[]'); } catch (_) {}
+      all.unshift(t); try { localStorage.setItem('atropos-trades', JSON.stringify(all)); } catch (_) {}
+      return Promise.resolve(t);
+    }
+    return fetch('api/trades', { method: 'POST', headers: { 'content-type': 'application/json', 'x-atropos-user': user }, body: JSON.stringify({ user: user, event_id: ev.id, side: side, contracts: contracts, capital: capital }) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'could not save'); return j.trade; }); });
+  }
+
+  /* -------------------------------------------------------------- list */
+  function matches(e, q) {
+    if (!q) return true;
+    var words = q.toLowerCase().split(/\s+/).filter(Boolean), hay = (e.title + ' ' + e.category).toLowerCase();
+    return words.every(function (w) {
+      if (w === 'trusted') return (e.trust_score || 0) >= 70;
+      if (w === 'soon' || w === 'month') return (Date.parse(e.resolution_date) - Date.now()) < 31 * 864e5;
+      if (w === 'edge') return Math.abs(e.edge || 0) >= 0.05;
+      if (w === 'open') return !e.settled;
+      return hay.indexOf(w) >= 0;
+    });
+  }
+  function renderList() {
+    var q = $('q').value.trim();
+    var rows = state.events.filter(function (e) { return matches(e, q); }).sort(function (a, b) { return b.score - a.score; });
+    var host = $('list');
+    if (!rows.length) { host.innerHTML = '<p class="empty">No events match.</p>'; return; }
+    host.innerHTML = rows.map(function (e) {
+      var basis = e.p_proxy == null ? 'no proxy' : 'basis <span class="' + (e.basis >= 0 ? 'up' : 'down') + '">' + pp(e.basis) + '</span>';
+      return '<button class="ev' + (state.current === e.id ? ' on' : '') + '" data-id="' + esc(e.id) + '" type="button"><span><span class="t">' + esc(e.title) + '</span><span class="d">' + day(e.resolution_date) + (e.settled ? ' · settled' : '') + '</span></span>' +
+        '<span class="p">' + pct(e.p_calibrated) + (e.leakage_flag ? '<span class="star">*</span>' : '') + '</span><span class="m">' + basis + ' · trust ' + (e.trust_score == null ? '—' : e.trust_score) + '</span></button>';
+    }).join('') + '<p class="empty" style="font-size:12px"><span class="star">*</span> one trade dominates the tape</p>';
+  }
+  $('list').addEventListener('click', function (ev) { var b = ev.target.closest('.ev'); if (!b) return; show(b.getAttribute('data-id')); });
+  $('q').addEventListener('input', renderList);
+
+  /* ------------------------------------------------------------ detail */
+  function show(id) {
+    state.current = id; renderList();
+    var e = state.events.filter(function (x) { return x.id === id; })[0]; if (!e) return;
+    var k = e.kelly, side = k ? k.side : (e.edge > 0 ? 'yes' : 'no'), cost = e.price == null ? null : (side === 'yes' ? e.price : 1 - e.price);
+    var why = '';
+    if (k && k.dollars > 0) why = 'Half Kelly: the market charges ' + cents(k.cost) + ' for something ' + pct(k.pSuccess) + ' likely' + (k.capped ? ', capped at 10% of capital' : '') + '.';
+    else if (k) why = 'No edge after calibration: the market charges ' + cents(k.cost) + ' for something ' + pct(k.pSuccess) + ' likely.';
+    else if (e.settled) why = 'Settled.'; else why = 'No price.';
+    $('detail').innerHTML =
+      '<a class="back" href="#" id="back">← all events</a>' +
+      '<h2>' + esc(e.title) + '</h2><div class="when">' + esc(e.category) + ' · resolves ' + day(e.resolution_date) + (e.settled ? ' · settled' : '') + '</div>' +
+      '<div class="facts"><div><small>Calibrated</small><b>' + pct(e.p_calibrated) + '</b></div><div><small>Price</small><b>' + cents(e.price) + '</b></div><div><small>Real market</small><b>' + (e.p_proxy == null ? '—' : pct(e.p_proxy)) + '</b></div><div><small>Basis</small><b class="' + (e.basis == null ? '' : e.basis >= 0 ? 'up' : 'down') + '">' + (e.p_proxy == null ? '—' : pp(e.basis)) + '</b></div></div>' +
+      '<p class="trustline">Trust ' + (e.trust_score == null ? '—' : e.trust_score) + ' of 100' + (e.leakage_flag ? ' · one trade dominates the tape' : '') + (e.p_proxy == null ? ' · no traditional-market proxy for this event' : ' · real market from ' + (e.proxy_type === 'fedfunds' ? 'fed-funds futures' : e.proxy_type === 'btc_options' ? 'Bitcoin options' : esc(e.proxy_type || 'proxy'))) + '. Raw price ' + pct(e.p_raw) + '.</p>' +
+      '<div class="block"><div class="lab">The trade</div><div class="trade">' + (e.price == null ? 'No venue price.' : side.toUpperCase() + ' on ' + (VENUE[e.venue] || esc(e.venue)) + ' at ' + cents(cost) + ' · pays $1 if right') + '</div></div>' +
+      '<div class="block"><div class="lab">How much</div><div class="alloc"><b>' + (k ? money(k.dollars) : '—') + '</b><span>' + (k && k.dollars > 0 ? Math.round(k.share * 1000) / 10 + '% of capital · ' + k.contracts.toLocaleString('en-US') + ' contracts' : 'nothing') + '</span></div>' +
+      '<p class="why">' + why + (k ? ' <button class="how" id="how" type="button">how →</button>' : '') + '</p>' +
+      (k ? '<div class="inputs" id="inputs">p(success) ' + k.pSuccess.toFixed(3) + ' · cost ' + k.cost.toFixed(3) + ' · net odds b ' + k.b.toFixed(2) + ' · full Kelly f* ' + (k.fullKelly * 100).toFixed(1) + '% · fraction ' + k.fraction + ' · cap 10% · capital ' + money(capital) + '</div>' : '') +
+      (e.price != null && !e.settled ? '<div class="act"><label>Contracts <input id="n" type="number" min="1" max="1000000" value="' + (k && k.contracts ? k.contracts : 10) + '"></label><button class="btn solid" id="save" type="button">Save trade</button><span class="note" id="saveNote"></span></div>' : '') +
+      '</div>';
+    $('back').addEventListener('click', function (ev) { ev.preventDefault(); $('list').classList.remove('hide'); state.current = null; renderList(); $('detail').innerHTML = '<p class="empty">Pick an event.</p>'; });
+    if ($('how')) $('how').addEventListener('click', function () { $('inputs').classList.toggle('on'); });
+    if ($('save')) $('save').addEventListener('click', function () {
+      var n = Math.floor(Number($('n').value)); if (!(n > 0)) return;
+      $('save').disabled = true; $('saveNote').textContent = 'Saving…';
+      saveTrade(e, side, n).then(function (t) { $('saveNote').textContent = 'Saved: ' + n.toLocaleString('en-US') + ' ' + side.toUpperCase() + ' at ' + cents(t.price) + ' = ' + money2(t.dollars) + '.'; return refreshPositions(); })
+        .catch(function (err) { $('saveNote').textContent = String(err.message || err); }).then(function () { $('save').disabled = false; });
+    });
+    if (window.matchMedia('(max-width: 900px)').matches) { $('list').classList.add('hide'); window.scrollTo({ top: 0 }); }
+  }
+
+  /* --------------------------------------------------------- positions */
+  function refreshPositions() {
+    return loadTrades().then(function (list) {
+      state.trades = list;
+      var by = {}; state.events.forEach(function (e) { by[e.id] = e; });
+      var open = list.filter(function (t) { return t.status === 'open'; });
+      var cost = 0, value = 0;
+      var html = open.map(function (t) {
+        var e = by[t.event_id], mark = t.mark != null ? t.mark : (e && e.price != null ? (t.side === 'yes' ? e.price : 1 - e.price) : null);
+        var v = mark == null ? t.dollars : t.contracts * mark, pnl = v - t.dollars; cost += t.dollars; value += v;
+        return '<div class="pos"><span class="t">' + esc(t.title || t.event_id) + '<small>' + t.contracts.toLocaleString('en-US') + ' ' + String(t.side).toUpperCase() + ' at ' + cents(t.price) + ' on ' + (VENUE[t.venue] || esc(t.venue || '')) + ' · ' + new Date(t.time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</small></span>' +
+          '<span class="n"><small>Now</small>' + (mark == null ? '—' : cents(mark)) + '</span><span class="n ' + (pnl > 0 ? 'up' : pnl < 0 ? 'down' : '') + '"><small>P&amp;L</small>' + (mark == null ? '—' : money2(pnl)) + '</span></div>';
+      }).join('');
+      $('posList').innerHTML = html || '<p class="empty">Nothing saved yet. Save a trade from an event to see it here, marked to the current price.</p>';
+      $('posTotals').textContent = open.length ? open.length + ' open · cost ' + money2(cost) + ' · value ' + money2(value) + ' · ' + money2(value - cost) : '';
+      $('holdings').textContent = money(value);
+    });
+  }
+
+  /* ------------------------------------------------------------- start */
+  function start() {
+    loadEvents().then(function (events) { state.events = events; renderList(); return refreshPositions(); })
+      .then(function () { if (!state.current && state.events.length && !window.matchMedia('(max-width: 900px)').matches) show(state.events.slice().sort(function (a, b) { return b.score - a.score; })[0].id); })
+      .catch(function (e) { $('list').innerHTML = '<p class="empty">Could not load events: ' + esc(e.message || e) + '</p>'; });
+  }
+  var capT = null;
+  $('capital').addEventListener('input', function () {
+    capital = Math.max(0, Number(this.value) || 0); try { localStorage.setItem('atropos-capital', String(capital)); } catch (_) {}
+    clearTimeout(capT); capT = setTimeout(function () { var cur = state.current; loadEvents().then(function (events) { state.events = events; renderList(); if (cur) show(cur); }); }, 300);
+  });
+  start();
+})();
+</script>

@@ -236,6 +236,31 @@ function snapshotLeaf(rest) {
   return null;
 }
 
+/* ------------------------------------------------------------------ desk */
+const trades = require('./lib/trades');
+const { kelly } = require('./public/desk/kelly');
+function readBody(req) { return new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => { try { ok(JSON.parse(Buffer.concat(c).toString('utf8') || '{}')); } catch (_) { ok({}); } }); }); }
+// no sign-in: the desk page keeps an id per browser and sends it with each request
+function deskUser(req, body) { const u = String(req.headers['x-atropos-user'] || (body && body.user) || ''); return /^[A-Za-z0-9_-]{8,64}$/.test(u) ? u : null; }
+/** Basis's events, each with the best venue's YES price, the edge against the calibrated probability, and the Kelly allocation. */
+async function deskEvents(capital) {
+  let events = null;
+  try {
+    const r = await fetchWithTimeout((process.env.BASIS_URL || 'http://127.0.0.1:8000') + '/events', { method: 'GET', headers: {} }, 2500);
+    if (r.ok) events = await r.json();
+  } catch (_) { /* snapshot below */ }
+  if (!events) events = snapshotBasis('events') || [];
+  return events.map((e) => {
+    const venues = Object.entries(e.venues || {}).filter(([, v]) => v && v.p != null);
+    const best = venues.sort((a, b) => (b[1].trust ? b[1].trust.score : 0) - (a[1].trust ? a[1].trust.score : 0))[0];
+    const price = best ? best[1].p : null, venue = best ? best[0] : null;
+    const k = price != null && e.p_calibrated != null && !e.settled ? kelly({ p: e.p_calibrated, price, capital }) : null;
+    const edge = price != null && e.p_calibrated != null ? e.p_calibrated - price : null;
+    return { id: e.id, title: e.title, category: e.category, resolution_date: e.resolution_date, settled: !!e.settled, p_raw: e.p_raw, p_calibrated: e.p_calibrated, p_proxy: e.p_proxy, proxy_type: e.proxy_type, basis: e.basis, trust_score: e.trust_score, leakage_flag: !!e.leakage_flag, stale: !!e.stale,
+      price, venue, edge, score: edge == null ? 0 : Math.abs(edge) * (e.trust_score || 0) / 100, kelly: k };
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
   const route = url.pathname;
@@ -297,6 +322,47 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (route === '/api/events') return send(res, 200, await tapeNow());
+
+    // the desk: Basis's events with a price, an edge and a Kelly allocation; saved trades; positions
+    if (route === '/api/desk/events') {
+      const capital = Math.min(1e8, Math.max(0, Number(url.searchParams.get('capital') || 10000)));
+      const events = await deskEvents(capital);
+      trades.mark(events.filter((e) => e.price != null)).catch(() => {});
+      return send(res, 200, { capital, backend: trades.backend(), events });
+    }
+    if (route === '/api/trades' && req.method === 'POST') {
+      const body = await readBody(req);
+      const user = deskUser(req, body);
+      const events = await deskEvents(Number(body.capital) || 10000);
+      const ev = events.find((e) => e.id === body.event_id);
+      if (!user || !ev || ev.price == null) return send(res, 400, { error: 'unknown event or no price' });
+      const side = body.side === 'no' ? 'no' : 'yes', cost = side === 'yes' ? ev.price : 1 - ev.price;
+      const contracts = Math.floor(Number(body.contracts));
+      if (!(contracts > 0 && contracts <= 1e6)) return send(res, 400, { error: 'contracts must be between 1 and 1,000,000' });
+      const saved = await trades.record({ user_id: user, event_id: ev.id, title: ev.title, side, venue: ev.venue, price: cost, contracts, dollars: Math.round(contracts * cost * 100) / 100,
+        p_calibrated: ev.p_calibrated, basis: ev.basis, trust: ev.trust_score, kelly_share: ev.kelly ? ev.kelly.share : null });
+      return send(res, 200, { trade: saved, backend: trades.backend() });
+    }
+    if (route === '/api/trades') {
+      const user = deskUser(req); if (!user) return send(res, 400, { error: 'no user' });
+      return send(res, 200, { trades: await trades.list(user), backend: trades.backend() });
+    }
+    if (route === '/api/positions') {
+      const user = deskUser(req); if (!user) return send(res, 400, { error: 'no user' });
+      const [list, events] = await Promise.all([trades.list(user), deskEvents(0)]);
+      const by = Object.fromEntries(events.map((e) => [e.id, e]));
+      const positions = list.filter((t) => t.status === 'open').map((t) => {
+        const e = by[t.event_id], now = e && e.price != null ? (t.side === 'yes' ? e.price : 1 - e.price) : null;
+        const value = now == null ? null : Math.round(t.contracts * now * 100) / 100;
+        return { ...t, mark: now, value, pnl: value == null ? null : Math.round((value - t.dollars) * 100) / 100, p_now: e ? e.p_calibrated : null, settled: !!(e && e.settled) };
+      });
+      const cost = positions.reduce((s, p) => s + p.dollars, 0), value = positions.reduce((s, p) => s + (p.value == null ? p.dollars : p.value), 0);
+      return send(res, 200, { positions, cost: Math.round(cost * 100) / 100, value: Math.round(value * 100) / 100, backend: trades.backend() });
+    }
+    if (route === '/api/marks') {
+      const id = String(url.searchParams.get('event') || ''); if (!/^[a-z0-9.-]+$/.test(id)) return send(res, 400, { error: 'event' });
+      return send(res, 200, { event: id, marks: await trades.history(id, Number(url.searchParams.get('days') || 30)) });
+    }
 
     if (route === '/api/agent') {
       // the latest round of Atty's agent; ?run=1 asks for a fresh round now
