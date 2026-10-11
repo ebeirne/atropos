@@ -1,0 +1,82 @@
+/* Design tokens and base.
+   Identity: deep spruce for the hero and menu, cool paper for content, one serif for headlines.
+   Series colours (a = green, b = indigo) are shared by the hero animation and every chart. */
+
+:root {
+  --spruce: #0a2a24;
+  --spruce-2: #103a32;
+  --paper: #f5f6f2;
+  --white: #ffffff;
+  --ink: #101c1a;
+  --ink-2: #52666a;
+  --line: #d3dbd6;
+
+  --leaf: #1b7f5c;
+  --a: #1b7f5c;
+  --b: #4a56c9;
+  --lens: rgba(27, 127, 92, 0.16);
+  --warn: #9a6200;
+  --warn-bg: rgba(183, 121, 31, 0.13);
+  --fail: #b42318;
+  --focus: #2b6fff;
+
+  /* on dark surfaces */
+  --on-dark: #eef4f0;
+  --on-dark-2: #a8c0b6;
+  --a-dark: #8fe0bd;
+  --b-dark: #a9b1f5;
+
+  --display: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --body: 'Figtree Variable', system-ui, sans-serif;
+
+  --r: 4px;
+  --wrap: 1180px;
+  --gutter: clamp(20px, 5vw, 56px);
+  --header-h: 68px;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--body);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+.wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+
+.skip {
+  position: absolute; left: 12px; top: -48px; z-index: 100;
+  background: var(--white); color: var(--ink); padding: 10px 14px; border-radius: var(--r);
+}
+.skip:focus { top: 12px; }
+
+/* Buttons used on the site */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 13px 22px; border-radius: var(--r);
+  font-weight: 650; text-decoration: none; cursor: pointer; border: 1px solid transparent;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn.solid { background: var(--white); color: var(--spruce); }
+.btn.solid:hover { background: var(--a-dark); }
+.btn.ghost { border-color: rgba(238, 244, 240, 0.4); color: var(--on-dark); }
+.btn.ghost:hover { border-color: var(--on-dark); }
+.btn.green { background: var(--leaf); color: var(--white); }
+.btn.green:hover { background: #166a4d; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; }
+}
