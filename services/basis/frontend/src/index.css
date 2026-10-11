@@ -1,0 +1,6 @@
+@import "tailwindcss";
+:root { color-scheme: dark; }
+body { @apply bg-[#0b0f14] text-slate-200 antialiased; font-family: ui-sans-serif, system-ui, -apple-system, "Inter", sans-serif; }
+.card { @apply rounded-xl border border-slate-800 bg-[#111722] p-4; }
+.mono { font-variant-numeric: tabular-nums; }
+input[type=range] { accent-color: #f59e0b; }
