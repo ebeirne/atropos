@@ -449,7 +449,7 @@ watch(document.querySelectorAll('.rv, .rv-rtl'));
 
 /* ---------------------------------------------------------------- scroll */
 let lenis = null;
-if (!reduce && window.Lenis) { lenis = new window.Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.95 }); }
+if (!reduce && window.Lenis) { lenis = new window.Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.95 }); (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(performance.now()); }
 function scrollTo(id, dur) {
   const el = id === 'home' ? document.body : $(id); if (!el) return;
   const y = id === 'home' ? 0 : el.getBoundingClientRect().top + window.scrollY - 72;
