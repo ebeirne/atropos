@@ -8,9 +8,12 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
+const liveLeaf = process.argv.includes('--live-leaf');
 const jobs = [
   { name: 'basis', dir: path.join(root, 'services', 'basis', 'frontend'), out: path.join(root, 'public', 'basis'), env: { VITE_API_URL: '../api/basis' } },
-  { name: 'leaf', dir: path.join(root, 'services', 'leaf', 'Frontend'), out: path.join(root, 'public', 'leaf'), env: { VITE_USE_API: 'false' } },
+  { name: 'leaf', dir: path.join(root, 'services', 'leaf', 'Frontend'), out: path.join(root, 'public', 'leaf'), env: {
+    VITE_USE_API: String(liveLeaf), VITE_API_BASE: '../api/leaf',
+  } },
 ];
 for (const j of jobs) {
   const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';

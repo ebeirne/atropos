@@ -66,24 +66,34 @@ node server.js              # http://127.0.0.1:4411
 Without keys it runs on a sample portfolio and saved odds. See `.env.example` for what each key
 turns on.
 
-The engines' own pages are built into `public/basis/` and `public/leaf/`:
+The engines' own pages are built into `public/basis/` and `public/leaf/`. By default, Leaf uses
+its built-in sample so the static GitHub Pages site works without a backend. For live Yahoo Finance
+prices in the local Leaf screener, build it with the API enabled:
 
 ```
-node scripts/build-tools.js
+node scripts/build-tools.js --live-leaf
 ```
 
-They work with no backend (Basis reads the committed snapshot through `/api/basis/*`; Leaf runs
-on its built-in sample). To run them live, start their backends and the server proxies to them:
+Then run these in separate terminals.
 
 ```
-cd services/basis && make setup && make demo          # Basis on :8000 (DEMO_MODE serves its snapshot)
-cd services/leaf/Backend && uv venv && uv pip install -r requirements.txt && .venv/bin/python -m uvicorn app.main:app --port 8001
+npm start
 ```
 
-`BASIS_URL` and `LEAF_URL` in `.env` change the targets. `/api/basis/*` and `/api/leaf/*` fall
-back to `public/data/` when a backend is not running. `public/data/leaf/scan.json` is a real
-Yahoo scan of Leaf's default universe (29 tickers, 252 days); refresh it by running Leaf's
-engine and saving the result there.
+```sh
+cd services/leaf/Backend
+uv venv
+uv pip install -r requirements.txt
+sh run.sh --port 8001
+```
+
+The Screener sends scans to Leaf through Atropos at `/api/leaf/*`; the backend fetches Yahoo prices.
+`LEAF_URL` in `.env` changes the backend target. When Leaf's backend is stopped, the proxy falls
+back to the committed `public/data/leaf/scan.json` snapshot (a real Yahoo scan, not a live refresh).
+The default build without `--live-leaf` keeps Leaf's built-in sample for static hosting.
+
+Basis can also run live separately on `:8000` with `cd services/basis && make setup && make demo`;
+otherwise its API reads the committed snapshot.
 
 Build the static version of Atty's page (saved data and pre-recorded voice):
 

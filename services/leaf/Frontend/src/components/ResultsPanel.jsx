@@ -180,6 +180,9 @@ export default function ResultsPanel({ scan, strategies }) {
       {data.sample && (
         <p className="sample-note">Sample data. Results are examples, not live prices.</p>
       )}
+      {data.snapshot && (
+        <p className="sample-note">Saved Yahoo snapshot from {data.as_of?.slice(0, 10) || 'an earlier scan'}; start Leaf's backend for live prices.</p>
+      )}
 
       <div className="tabs" role="tablist" aria-label="Strategy results">
         {keys.map((k) => (

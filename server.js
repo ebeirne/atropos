@@ -208,11 +208,11 @@ function send(res, code, body, type) {
   res.end(buf);
 }
 
-async function fetchWithTimeout(target, req, ms) {
+async function fetchWithTimeout(target, req, ms, body) {
   const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms);
   try {
     const init = { method: req.method, headers: { accept: 'application/json' }, signal: ac.signal };
-    if (req.method === 'POST') { init.headers['content-type'] = req.headers['content-type'] || 'application/json'; init.body = await new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); }); }
+    if (req.method === 'POST') { init.headers['content-type'] = req.headers['content-type'] || 'application/json'; init.body = body; }
     return await fetch(target, init);
   } finally { clearTimeout(t); }
 }
@@ -226,10 +226,23 @@ function snapshotBasis(rest) {
   const m = rest.match(/^events\/([a-z0-9.-]+)$/); if (m) return readSnap('basis', 'events', m[1] + '.json');
   return null;
 }
-function snapshotLeaf(rest) {
+function snapshotLeaf(rest, request) {
   // Leaf's own routes start with /api; the landing page asks for the short 'scan'
   const scan = readSnap('leaf', 'scan.json'), r = rest.replace(/^api\//, '');
-  if (r === 'scan' || r === 'scan/multi') return scan;
+  if (r === 'scan') return scan;
+  if (r === 'scan/multi' && scan) {
+    const keys = request?.strategies || Object.keys(scan.strategies);
+    if (keys.some((key) => !scan.strategies[key])) return null;
+    const strategies = Object.fromEntries(keys.map((key) => {
+      const saved = scan.strategies[key];
+      return [key, { spec: saved.spec, matched: saved.matched, results: saved.results || saved.pairs || [], explanation: saved.explanation }];
+    }));
+    return {
+      provider: scan.provider, universe_size: scan.universe_size || scan.universe.length,
+      dropped: [], pairs_screened: Math.max(0, ...keys.map((key) => scan.strategies[key].screened || 0)),
+      strategies, snapshot: true, as_of: scan.as_of,
+    };
+  }
   if (r === 'strategies' && scan) return { strategies: Object.fromEntries(Object.entries(scan.strategies).map(([k, v]) => [k, { label: v.spec.name, summary: v.spec.summary, requires: v.spec.needs }])) };
   if (r === 'universe/yahoo' && scan) return { provider: 'yahoo', tickers: scan.universe };
   if (r === 'health') return { ok: true, snapshot: true };
@@ -279,12 +292,15 @@ const server = http.createServer(async (req, res) => {
     if (route.startsWith('/api/basis/') || route.startsWith('/api/leaf/')) {
       const basis = route.startsWith('/api/basis/'), rest = route.slice(basis ? 11 : 10);
       const base = basis ? (process.env.BASIS_URL || 'http://127.0.0.1:8000') : (process.env.LEAF_URL || 'http://127.0.0.1:8001');
+      const requestBody = req.method === 'POST' ? await new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); }) : null;
+      let request;
+      try { request = requestBody && JSON.parse(requestBody.toString('utf8')); } catch (_) { request = null; }
       try {
-        const r = await fetchWithTimeout(base + '/' + rest + (url.search || ''), req, 2500);
+        const r = await fetchWithTimeout(base + '/' + rest + (url.search || ''), req, 2500, requestBody);
         const body = Buffer.from(await r.arrayBuffer());
         return send(res, r.status, body, r.headers.get('content-type') || 'application/json; charset=utf-8');
       } catch (_) { /* not running: fall through to the snapshot */ }
-      const snap = basis ? snapshotBasis(rest) : snapshotLeaf(rest);
+      const snap = basis ? snapshotBasis(rest) : snapshotLeaf(rest, request);
       if (snap) return send(res, 200, snap);
       return send(res, 503, { error: (basis ? 'Basis' : 'Leaf') + ' is not running and no snapshot covers ' + rest });
     }
