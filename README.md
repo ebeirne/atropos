@@ -7,7 +7,8 @@
 [Trust table](https://ebeirne.github.io/atropos/basis/) ·
 [Pair screener](https://ebeirne.github.io/atropos/leaf/#/screener) ·
 [Atty's walkthrough](https://ebeirne.github.io/atropos/atty/) ·
-[Console](https://ebeirne.github.io/atropos/console.html)
+[Desk](https://ebeirne.github.io/atropos/desk.html) ·
+[Demo](https://ebeirne.github.io/atropos/demo.html)
 
 Atropos joins three engines built for a hackathon track on prediction markets as economic
 signals:

@@ -334,7 +334,7 @@
             <li class="rv" style="--i:1"><a class="row" href="../basis/#/calibration"><span class="idx">02.</span><h3>Calibration curve</h3><span class="cta">628 markets <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
             <li class="rv" style="--i:2"><a class="row" href="../leaf/#/screener"><span class="idx">03.</span><h3>Pair screener</h3><span class="cta">Leaf <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
             <li class="rv" style="--i:3"><a class="row" href="../atty/"><span class="idx">04.</span><h3>Atty's walkthrough</h3><span class="cta">Voice <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
-            <li class="rv" style="--i:4"><a class="row" href="../console.html"><span class="idx">05.</span><h3>Console</h3><span class="cta">Your portfolio <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
+            <li class="rv" style="--i:4"><a class="row" href="../desk.html"><span class="idx">05.</span><h3>Desk</h3><span class="cta">Size the trade <svg viewBox="0 0 14 14" fill="none" stroke="#E4E2D8" stroke-width="1.2"><path d="M1 7h12M7 1l6 6-6 6"/></svg></span></a></li>
           </ul>
           <div class="split split--bottom"></div>
         </div>
@@ -407,7 +407,7 @@ getJSON('../api/events', '../tape.json').then((t) => {
   const sigs = ['cpi', 'fomc', 'nfp'].map((id) => t.signals.find((s) => s.id === id)).filter(Boolean).sort((a, b) => (a.date < b.date ? -1 : 1));
   $('reports').innerHTML = sigs.map((s, i) => {
     const top = s.p.indexOf(Math.max(...s.p));
-    return `<a class="report rv" style="--i:${i}" href="../console.html"><span class="ph" style="background-image:url(${PHOTO[s.id]})"></span><p class="name">${NAME[s.id]}</p><span class="role">${day(s.date)}</span><span class="role mid">likely ${esc(label(s.id, s.labels[top]))} · ${pct(s.p[top])}</span></a>`;
+    return `<a class="report rv" style="--i:${i}" href="../desk.html"><span class="ph" style="background-image:url(${PHOTO[s.id]})"></span><p class="name">${NAME[s.id]}</p><span class="role">${day(s.date)}</span><span class="role mid">likely ${esc(label(s.id, s.labels[top]))} · ${pct(s.p[top])}</span></a>`;
   }).join('');
   watch($('reports').querySelectorAll('.rv'));
 }).catch(() => {});

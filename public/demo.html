@@ -1,0 +1,51 @@
+<title>Atropos — Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Atropos in sixteen seconds: corrected odds, the risk in dollars, the trade sized by Kelly, and the pair that hedges it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..500&family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="skin.css">
+<style>
+  /* The demo: the film, the three lines it makes, and the doors into the product. Same sky as the desk. */
+  html, body { background: #000; }
+  #dust { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 5; display: block; pointer-events: none; mix-blend-mode: difference; }
+  .no-dust #dust { display: none; }
+  .demo { position: relative; z-index: 2; max-width: 1180px; margin: 0 auto; padding: 100px clamp(16px, 3vw, 32px) 80px; }
+  .demo h1 { font: 300 clamp(40px, 6vw, 88px)/1 var(--ff-display); letter-spacing: -.02em; margin: 0 0 14px; max-width: 14ch; }
+  .demo .lede { color: var(--ink-2); font-size: 17px; max-width: 56ch; margin: 0 0 36px; }
+  .film { position: relative; border: 1px solid var(--line-2); background: #000; aspect-ratio: 16 / 9; overflow: hidden; }
+  .film video { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .claims { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; border: 1px solid var(--line); margin: 36px 0; }
+  .claims div { padding: 22px 20px 20px; border-right: 1px solid var(--line); }
+  .claims div:last-child { border-right: 0; }
+  .claims small { display: block; font: 400 11px/1.2 var(--ff-label); letter-spacing: .06em; color: var(--ink-2); text-transform: uppercase; margin-bottom: 10px; }
+  .claims b { display: block; font: 300 clamp(22px, 2.2vw, 30px)/1.15 var(--ff-display); letter-spacing: -.01em; }
+  .doors { display: flex; gap: 12px; flex-wrap: wrap; }
+  .meta { margin-top: 40px; color: var(--ink-2); font-size: 12px; line-height: 1.6; }
+  .meta a { color: var(--ink-2); }
+  @media (max-width: 760px) { .claims { grid-template-columns: 1fr; } .claims div { border-right: 0; border-bottom: 1px solid var(--line); } .claims div:last-child { border-bottom: 0; } }
+</style>
+
+<canvas id="dust" data-scene="stars" aria-hidden="true"></canvas>
+
+<nav class="nav" aria-label="Main">
+  <a class="brand" href="index.html"><b>Atropos</b><span class="tag">Beta</span></a>
+  <div class="links">
+    <a class="opt" href="desk.html">Desk</a><a class="opt" href="leaf/#/screener">Research</a><a href="index.html">About</a>
+  </div>
+</nav>
+
+<main class="demo">
+  <h1>A price is not a probability.</h1>
+  <p class="lede">Sixteen seconds: the odds corrected, the risk in dollars, the trade sized by Kelly, and the pair that hedges it.</p>
+  <div class="film"><video id="film" src="demo/brag.mp4" poster="demo/brag.jpg" controls playsinline preload="metadata" aria-label="Atropos demo"></video></div>
+  <div class="claims">
+    <div><small>Basis</small><b>Corrected on 628 settled markets.</b></div>
+    <div><small>Atropos</small><b>Sized by half Kelly. Saved, marked to market.</b></div>
+    <div><small>Leaf</small><b>The pair that hedges it.</b></div>
+  </div>
+  <div class="doors"><a class="btn solid" href="desk.html">Open the desk</a><a class="btn" href="leaf/#/screener">Screen the pairs</a><a class="btn" href="atty/">Hear Atty</a></div>
+  <p class="meta">Every shot is the product running on this week's real odds. Not investment advice; nothing here places an order. Code: <a href="https://github.com/ebeirne/atropos">github.com/ebeirne/atropos</a>.</p>
+</main>
+
+<script src="dust.js"></script>
