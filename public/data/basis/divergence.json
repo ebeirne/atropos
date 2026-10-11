@@ -1,0 +1,455 @@
+[
+ {
+  "id": "btc-90k-oct-2026",
+  "title": "Bitcoin reaches $90,000 in October 2026",
+  "category": "crypto",
+  "resolution_date": "2026-10-31",
+  "settled": false,
+  "p_raw": 0.335,
+  "p_calibrated": 0.3088235294117647,
+  "p_proxy": 0.1468789028331146,
+  "proxy_type": "btc_options",
+  "proxy_detail": "BTC-30OCT26-90000-C iv=32.9% S=83263 T=20d N(d2) risk-neutral terminal",
+  "basis": 0.1881210971668854,
+  "basis_z": null,
+  "trust_score": 68,
+  "leakage_flag": true,
+  "stale": false,
+  "venues": {
+   "polymarket": {
+    "p": 0.335,
+    "spread": 0.020000000000000018,
+    "volume_24h": 6145.585601999999,
+    "last_trade_ts": "2026-10-10T19:21:48+00:00",
+    "stale": false,
+    "top10_holder_share": 0.7382203805920183,
+    "largest_trade_24h": 1206.81,
+    "trust": {
+     "score": 68,
+     "components": {
+      "liquidity": 0.699,
+      "spread": 0.8,
+      "freshness": 0.924,
+      "concentration": 0.262
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": true,
+     "inputs": {
+      "volume_24h": 6145.585601999999,
+      "spread": 0.020000000000000018,
+      "hours_since_trade": 1.4,
+      "top10_holder_share": 0.7382203805920183,
+      "largest_trade_24h": 1206.81,
+      "days_to_resolution": 21
+     }
+    }
+   }
+  },
+  "divergence_score": 1.279,
+  "reason": "Prediction market 34% vs proxy 15% (above by 19pp, z=+0.0); trust 68"
+ },
+ {
+  "id": "btc-100k-2026",
+  "title": "Bitcoin above $100,000 by December 31, 2026",
+  "category": "crypto",
+  "resolution_date": "2026-12-31",
+  "settled": false,
+  "p_raw": 0.3,
+  "p_calibrated": 0.3088235294117647,
+  "p_proxy": 0.13312037848130026,
+  "proxy_type": "btc_options",
+  "proxy_detail": "BTC-25DEC26-100000-C iv=37.4% S=83931 T=76d N(d2) risk-neutral terminal",
+  "basis": 0.16687962151869973,
+  "basis_z": null,
+  "trust_score": 75,
+  "leakage_flag": true,
+  "stale": false,
+  "venues": {
+   "kalshi": {
+    "p": 0.3,
+    "spread": 0.010000000000000064,
+    "volume_24h": 3643.31,
+    "last_trade_ts": "2026-10-10T20:06:23.926693+00:00",
+    "stale": false,
+    "top10_holder_share": null,
+    "largest_trade_24h": 769.29,
+    "trust": {
+     "score": 75,
+     "components": {
+      "liquidity": 0.657,
+      "spread": 0.9,
+      "freshness": 0.964,
+      "concentration": 0.5
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": true,
+     "inputs": {
+      "volume_24h": 3643.31,
+      "spread": 0.010000000000000064,
+      "hours_since_trade": 0.6,
+      "top10_holder_share": null,
+      "largest_trade_24h": 769.29,
+      "days_to_resolution": 82
+     }
+    }
+   }
+  },
+  "divergence_score": 1.252,
+  "reason": "Prediction market 30% vs proxy 13% (above by 17pp, z=+0.0); trust 75"
+ },
+ {
+  "id": "btc-110k-2026",
+  "title": "Bitcoin above $110,000 by December 31, 2026",
+  "category": "crypto",
+  "resolution_date": "2026-12-31",
+  "settled": false,
+  "p_raw": 0.16,
+  "p_calibrated": 0.11363636363636363,
+  "p_proxy": 0.05651352515613693,
+  "proxy_type": "btc_options",
+  "proxy_detail": "BTC-25DEC26-110000-C iv=39.7% S=83931 T=76d N(d2) risk-neutral terminal",
+  "basis": 0.10348647484386307,
+  "basis_z": null,
+  "trust_score": 68,
+  "leakage_flag": true,
+  "stale": false,
+  "venues": {
+   "kalshi": {
+    "p": 0.16,
+    "spread": 0.010000000000000037,
+    "volume_24h": 1597.61,
+    "last_trade_ts": "2026-10-10T14:58:07.587336+00:00",
+    "stale": false,
+    "top10_holder_share": null,
+    "largest_trade_24h": 1000.0,
+    "trust": {
+     "score": 68,
+     "components": {
+      "liquidity": 0.591,
+      "spread": 0.9,
+      "freshness": 0.717,
+      "concentration": 0.5
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": true,
+     "inputs": {
+      "volume_24h": 1597.61,
+      "spread": 0.010000000000000037,
+      "hours_since_trade": 5.8,
+      "top10_holder_share": null,
+      "largest_trade_24h": 1000.0,
+      "days_to_resolution": 82
+     }
+    }
+   }
+  },
+  "divergence_score": 0.704,
+  "reason": "Prediction market 16% vs proxy 6% (above by 10pp, z=+0.0); trust 68"
+ },
+ {
+  "id": "fomc-2026-12",
+  "title": "Fed hikes 25bps at the December 9, 2026 FOMC",
+  "category": "macro",
+  "resolution_date": "2026-12-09",
+  "settled": false,
+  "p_raw": 0.7256617913109237,
+  "p_calibrated": 0.5850474916847811,
+  "p_proxy": 0.8599853515625,
+  "proxy_type": "fedfunds",
+  "proxy_detail": "after=4.140% base=3.925%",
+  "basis": -0.13432356025157632,
+  "basis_z": 0.4727018529691728,
+  "trust_score": 61,
+  "leakage_flag": false,
+  "stale": false,
+  "venues": {
+   "kalshi": {
+    "p": 0.71,
+    "spread": 0.030000000000000027,
+    "volume_24h": 376.13,
+    "last_trade_ts": "2026-10-10T17:57:00.947741+00:00",
+    "stale": false,
+    "top10_holder_share": null,
+    "largest_trade_24h": 129.87,
+    "trust": {
+     "score": 61,
+     "components": {
+      "liquidity": 0.476,
+      "spread": 0.7,
+      "freshness": 0.851,
+      "concentration": 0.5
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": false,
+     "inputs": {
+      "volume_24h": 376.13,
+      "spread": 0.030000000000000027,
+      "hours_since_trade": 2.8,
+      "top10_holder_share": null,
+      "largest_trade_24h": 129.87,
+      "days_to_resolution": 60
+     }
+    }
+   },
+   "polymarket": {
+    "p": 0.745,
+    "spread": 0.010000000000000009,
+    "volume_24h": 304.62333199999995,
+    "last_trade_ts": "2026-10-10T16:36:33+00:00",
+    "stale": false,
+    "top10_holder_share": 0.9764596813340034,
+    "largest_trade_24h": 210.20999999999998,
+    "trust": {
+     "score": 55,
+     "components": {
+      "liquidity": 0.459,
+      "spread": 0.9,
+      "freshness": 0.788,
+      "concentration": 0.024
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": false,
+     "inputs": {
+      "volume_24h": 304.62333199999995,
+      "spread": 0.010000000000000009,
+      "hours_since_trade": 4.1,
+      "top10_holder_share": 0.9764596813340034,
+      "largest_trade_24h": 210.20999999999998,
+      "days_to_resolution": 60
+     }
+    }
+   }
+  },
+  "divergence_score": 0.288,
+  "reason": "Prediction market 73% vs proxy 86% (below by 13pp, z=+0.5); trust 61"
+ },
+ {
+  "id": "fomc-2026-10",
+  "title": "Fed hikes 25bps at the October 28, 2026 FOMC",
+  "category": "macro",
+  "resolution_date": "2026-10-28",
+  "settled": false,
+  "p_raw": 0.1585546037530732,
+  "p_calibrated": 0.11363636363636363,
+  "p_proxy": 0.160003662109375,
+  "proxy_type": "fedfunds",
+  "proxy_detail": "after=3.925% base=3.885%",
+  "basis": -0.0014490583563017967,
+  "basis_z": -0.28313142640647176,
+  "trust_score": 79,
+  "leakage_flag": true,
+  "stale": false,
+  "venues": {
+   "kalshi": {
+    "p": 0.16,
+    "spread": 0.010000000000000037,
+    "volume_24h": 15901.61,
+    "last_trade_ts": "2026-10-10T20:14:49.906825+00:00",
+    "stale": false,
+    "top10_holder_share": null,
+    "largest_trade_24h": 1133.71,
+    "trust": {
+     "score": 79,
+     "components": {
+      "liquidity": 0.776,
+      "spread": 0.9,
+      "freshness": 0.972,
+      "concentration": 0.5
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": true,
+     "inputs": {
+      "volume_24h": 15901.61,
+      "spread": 0.010000000000000037,
+      "hours_since_trade": 0.5,
+      "top10_holder_share": null,
+      "largest_trade_24h": 1133.71,
+      "days_to_resolution": 18
+     }
+    }
+   },
+   "polymarket": {
+    "p": 0.155,
+    "spread": 0.010000000000000009,
+    "volume_24h": 6466.016752000001,
+    "last_trade_ts": "2026-10-10T20:42:01+00:00",
+    "stale": false,
+    "top10_holder_share": 0.8877154833782358,
+    "largest_trade_24h": 612.9392,
+    "trust": {
+     "score": 69,
+     "components": {
+      "liquidity": 0.703,
+      "spread": 0.9,
+      "freshness": 0.998,
+      "concentration": 0.112
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": true,
+     "inputs": {
+      "volume_24h": 6466.016752000001,
+      "spread": 0.010000000000000009,
+      "hours_since_trade": 0.0,
+      "top10_holder_share": 0.8877154833782358,
+      "largest_trade_24h": 612.9392,
+      "days_to_resolution": 18
+     }
+    }
+   }
+  },
+  "divergence_score": 0.224,
+  "reason": "Prediction market 16% vs proxy 16% (below by 0pp, z=-0.3); trust 79"
+ },
+ {
+  "id": "btc-100k-oct-2026",
+  "title": "Bitcoin reaches $100,000 in October 2026",
+  "category": "crypto",
+  "resolution_date": "2026-10-31",
+  "settled": false,
+  "p_raw": 0.0295,
+  "p_calibrated": 0.0,
+  "p_proxy": 0.013541089696197868,
+  "proxy_type": "btc_options",
+  "proxy_detail": "BTC-30OCT26-100000-C iv=36.1% S=83263 T=20d N(d2) risk-neutral terminal",
+  "basis": 0.01595891030380213,
+  "basis_z": null,
+  "trust_score": 65,
+  "leakage_flag": false,
+  "stale": false,
+  "venues": {
+   "polymarket": {
+    "p": 0.0295,
+    "spread": 0.0009999999999999974,
+    "volume_24h": 1531.588608,
+    "last_trade_ts": "2026-10-10T17:33:16+00:00",
+    "stale": false,
+    "top10_holder_share": 0.8251875272016463,
+    "largest_trade_24h": 99.99999599990596,
+    "trust": {
+     "score": 65,
+     "components": {
+      "liquidity": 0.588,
+      "spread": 0.99,
+      "freshness": 0.832,
+      "concentration": 0.175
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": false,
+     "inputs": {
+      "volume_24h": 1531.588608,
+      "spread": 0.0009999999999999974,
+      "hours_since_trade": 3.2,
+      "top10_holder_share": 0.8251875272016463,
+      "largest_trade_24h": 99.99999599990596,
+      "days_to_resolution": 21
+     }
+    }
+   }
+  },
+  "divergence_score": 0.104,
+  "reason": "Prediction market 3% vs proxy 1% (above by 2pp, z=+0.0); trust 65"
+ },
+ {
+  "id": "fomc-2026-09",
+  "title": "Fed hiked 25bps at the September 16, 2026 FOMC (settled: YES)",
+  "category": "macro",
+  "resolution_date": "2026-09-16",
+  "settled": true,
+  "p_raw": 0.88,
+  "p_calibrated": 0.9154929577464789,
+  "p_proxy": 1.0,
+  "proxy_type": "fedfunds",
+  "proxy_detail": "after=3.895% base=3.635% [baseline synthetic: FRED down, pre-meeting contract expired]",
+  "basis": -0.12,
+  "basis_z": -0.17615510343339735,
+  "trust_score": 10,
+  "leakage_flag": false,
+  "stale": false,
+  "venues": {
+   "kalshi": {
+    "p": 0.88,
+    "spread": 1.0,
+    "volume_24h": 0.0,
+    "last_trade_ts": "2026-09-16T17:58:57.123098+00:00",
+    "stale": false,
+    "top10_holder_share": null,
+    "largest_trade_24h": 0.0,
+    "trust": {
+     "score": 10,
+     "components": {
+      "liquidity": 0.0,
+      "spread": 0.0,
+      "freshness": 0.0,
+      "concentration": 0.5
+     },
+     "horizon_multiplier": 1.0,
+     "weights": {
+      "liquidity": 0.35,
+      "spread": 0.25,
+      "freshness": 0.2,
+      "concentration": 0.2
+     },
+     "leakage_flag": false,
+     "inputs": {
+      "volume_24h": 0.0,
+      "spread": 1.0,
+      "hours_since_trade": 578.8,
+      "top10_holder_share": null,
+      "largest_trade_24h": 0,
+      "days_to_resolution": -24
+     }
+    }
+   }
+  },
+  "divergence_score": 0.018,
+  "reason": "Prediction market 88% vs proxy 100% (below by 12pp, z=-0.2); trust 10"
+ }
+]

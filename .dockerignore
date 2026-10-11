@@ -17,3 +17,7 @@ dist
 releases
 scripts
 *.md
+
+**/node_modules
+**/.venv
+services/**/.cache

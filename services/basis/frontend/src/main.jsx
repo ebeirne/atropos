@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
+// Hash routes, so the built app can be served from any folder (the Atropos site, GitHub Pages).
+import { HashRouter, Routes, Route, NavLink } from 'react-router-dom'
 import './index.css'
 import Overview from './pages/Overview.jsx'
 import Event from './pages/Event.jsx'
@@ -37,4 +38,4 @@ function Shell() {
     </div>
   )
 }
-ReactDOM.createRoot(document.getElementById('root')).render(<BrowserRouter><Shell /></BrowserRouter>)
+ReactDOM.createRoot(document.getElementById('root')).render(<HashRouter><Shell /></HashRouter>)

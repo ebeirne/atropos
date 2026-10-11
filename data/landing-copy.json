@@ -1,0 +1,101 @@
+{
+  "judged_at": "2026-10-11T00:09:20.528Z",
+  "pick": {
+    "hero": {
+      "text": "Read the odds. Then your book.",
+      "scores": {
+        "Read the odds. Then your book.": 0.55,
+        "A price is not a probability.": 0.17,
+        "Meet the market at the edge.": 0.14,
+        "The odds, read properly.": 0.11,
+        "See the move before it moves you.": 0.03
+      }
+    },
+    "tagline": {
+      "text": "A trust layer between prediction markets and your book.",
+      "scores": {
+        "A trust layer between prediction markets and your book.": 0.33,
+        "Calibrated odds, your exposure, and the cheapest hedge that actually pays.": 0.26,
+        "Prediction-market odds, calibrated, trusted and priced against what you own.": 0.25,
+        "We turn prediction-market odds into one trade for your portfolio, or none.": 0.16
+      }
+    },
+    "title0": {
+      "text": "The odds move...",
+      "scores": {
+        "The odds move...": 0.52,
+        "The number prints...": 0.29,
+        "A price moves...": 0.17,
+        "Markets whisper...": 0.02
+      }
+    },
+    "title1": {
+      "text": "...we tell you what it costs.",
+      "scores": {
+        "...we tell you what it costs.": 0.56,
+        "...and so does what you own.": 0.32,
+        "...your book moves with it.": 0.1,
+        "...we read it first.": 0.02
+      }
+    },
+    "origin": {
+      "text": "Where the name comes from",
+      "scores": {
+        "Where the name comes from": 1,
+        "Why a price is not a probability": 0,
+        "What the odds are worth": 0
+      }
+    },
+    "block1": {
+      "text": "What it does",
+      "scores": {
+        "What it does": 0.84,
+        "What we built": 0.12,
+        "What it reads": 0.04
+      }
+    },
+    "block2": {
+      "text": "How the numbers are made",
+      "scores": {
+        "How the numbers are made": 0.41,
+        "How it decides": 0.39,
+        "How it does it": 0.2
+      }
+    },
+    "engines": {
+      "text": "Three engines",
+      "scores": {
+        "Three engines": 0.47,
+        "Engines": 0.34,
+        "Principles": 0.17,
+        "The method": 0.02
+      }
+    },
+    "week": {
+      "text": "Next prints",
+      "scores": {
+        "Next prints": 0.78,
+        "The week ahead": 0.14,
+        "This week": 0.08
+      }
+    },
+    "signals": {
+      "text": "Select signals",
+      "scores": {
+        "Select signals": 0.44,
+        "Signals, ranked": 0.33,
+        "What we trust": 0.13,
+        "Live signals": 0.09
+      }
+    },
+    "tools": {
+      "text": "Tools",
+      "scores": {
+        "Tools": 0.47,
+        "Public tools": 0.3,
+        "Instruments": 0.15,
+        "Open tools": 0.08
+      }
+    }
+  }
+}

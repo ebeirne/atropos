@@ -208,6 +208,34 @@ function send(res, code, body, type) {
   res.end(buf);
 }
 
+async function fetchWithTimeout(target, req, ms) {
+  const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms);
+  try {
+    const init = { method: req.method, headers: { accept: 'application/json' }, signal: ac.signal };
+    if (req.method === 'POST') { init.headers['content-type'] = req.headers['content-type'] || 'application/json'; init.body = await new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); }); }
+    return await fetch(target, init);
+  } finally { clearTimeout(t); }
+}
+const SNAP = path.join(PUBLIC, 'data');
+function readSnap(...p) { try { return JSON.parse(fs.readFileSync(path.join(SNAP, ...p), 'utf8')); } catch (_) { return null; } }
+function snapshotBasis(rest) {
+  if (rest === 'events') return readSnap('basis', 'events.json');
+  if (rest === 'calibration') return readSnap('basis', 'calibration.json');
+  if (rest === 'divergence') return readSnap('basis', 'divergence.json');
+  if (rest === 'health') return { ok: true, demo_mode: true, snapshot: true };
+  const m = rest.match(/^events\/([a-z0-9.-]+)$/); if (m) return readSnap('basis', 'events', m[1] + '.json');
+  return null;
+}
+function snapshotLeaf(rest) {
+  // Leaf's own routes start with /api; the landing page asks for the short 'scan'
+  const scan = readSnap('leaf', 'scan.json'), r = rest.replace(/^api\//, '');
+  if (r === 'scan' || r === 'scan/multi') return scan;
+  if (r === 'strategies' && scan) return { strategies: Object.fromEntries(Object.entries(scan.strategies).map(([k, v]) => [k, { label: v.spec.name, summary: v.spec.summary, requires: v.spec.needs }])) };
+  if (r === 'universe/yahoo' && scan) return { provider: 'yahoo', tickers: scan.universe };
+  if (r === 'health') return { ok: true, snapshot: true };
+  return null;
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
   const route = url.pathname;
@@ -220,6 +248,22 @@ const server = http.createServer(async (req, res) => {
         if (!guard.allow(req, kind) || (kind !== 'api' && !guard.allow(req, 'api'))) return send(res, 429, { error: 'Too many requests. Try again in a few minutes.' });
       }
     }
+    // the two engines we joined: Basis (FastAPI on :8000) and Leaf (FastAPI on :8001), reached
+    // through this server so the pages have one origin; when either is not running, the
+    // committed snapshots in public/data answer instead
+    if (route.startsWith('/api/basis/') || route.startsWith('/api/leaf/')) {
+      const basis = route.startsWith('/api/basis/'), rest = route.slice(basis ? 11 : 10);
+      const base = basis ? (process.env.BASIS_URL || 'http://127.0.0.1:8000') : (process.env.LEAF_URL || 'http://127.0.0.1:8001');
+      try {
+        const r = await fetchWithTimeout(base + '/' + rest + (url.search || ''), req, 2500);
+        const body = Buffer.from(await r.arrayBuffer());
+        return send(res, r.status, body, r.headers.get('content-type') || 'application/json; charset=utf-8');
+      } catch (_) { /* not running: fall through to the snapshot */ }
+      const snap = basis ? snapshotBasis(rest) : snapshotLeaf(rest);
+      if (snap) return send(res, 200, snap);
+      return send(res, 503, { error: (basis ? 'Basis' : 'Leaf') + ' is not running and no snapshot covers ' + rest });
+    }
+
     if (route === '/api/status' && guard.PUBLIC) {
       // the public demo: no accounts or brokers, just what the console needs to run on the sample
       return send(res, 200, { live: true, public: true, snaptrade: { configured: false, accounts: [], error: null, brokers: [] },

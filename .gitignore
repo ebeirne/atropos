@@ -33,3 +33,12 @@ data/rules/*.txt
 
 # GitHub Pages build output
 _site/
+
+# the joined engines: their dependencies and their built pages (built by scripts/build-tools.js)
+services/**/node_modules/
+services/**/.venv/
+services/**/__pycache__/
+services/**/.cache/
+services/**/dist/
+public/basis/
+public/leaf/

@@ -24,5 +24,18 @@ let pages = 0;
   }
 })(out);
 
+// With no server, the engines' API paths are plain files: the same JSON the server would send.
+const api = path.join(out, 'api');
+const data = path.join(pub, 'data');
+const put = (rel, body) => { const f = path.join(api, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, typeof body === 'string' ? body : JSON.stringify(body)); };
+for (const [rel, src] of [['basis/calibration', 'basis/calibration.json'], ['basis/divergence', 'basis/divergence.json'], ['leaf/scan', 'leaf/scan.json']]) {
+  put(rel, fs.readFileSync(path.join(data, src), 'utf8'));
+}
+// /api/basis/events is both the list and a folder of events, so the list is the folder's index
+put('basis/events/index.html', fs.readFileSync(path.join(data, 'basis', 'events.json'), 'utf8'));
+for (const f of fs.readdirSync(path.join(data, 'basis', 'events'))) put('basis/events/' + f.replace(/\.json$/, ''), fs.readFileSync(path.join(data, 'basis', 'events', f), 'utf8'));
+put('basis/health', { ok: true, demo_mode: true, snapshot: true });
+put('leaf/health', { ok: true, snapshot: true });
+
 fs.writeFileSync(path.join(out, '.nojekyll'), '');
 console.log('built', out, '·', pages, 'pages given a doctype');
