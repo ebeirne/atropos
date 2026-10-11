@@ -136,6 +136,18 @@ committed snapshots: `public/tape.json`, `public/demo.json`, `public/data/{basis
 `public/atty/*.json` and Atty's recorded lines in `public/atty/voice/`. Refresh them by running
 the server, then `node scripts/build-atty.js`, and push.
 
+## Live with the backend: Vercel
+
+The GitHub repo is connected to a Vercel project (`atropos`); every push to `main` deploys.
+`api/index.js` runs the same server handler as one function behind `/api/*` (`vercel.json`),
+Vercel serves `public/` itself, and the build runs `scripts/build-tools.js`. Differences from
+a long-running server: nothing runs between requests, so the agent does one quick round on the
+first `/api/agent` call; writes under `data/` go to `/tmp` (`lib/tmpfs.js`) and do not last, so
+saved trades need `DATABASE_URL`; the Python engines are not started, so `/api/basis/*` and
+`/api/leaf/*` answer from the snapshots. Production env: `ATROPOS_PUBLIC=1`, `AGENT_EVERY_MIN`,
+`TYPESAFE_API_KEY`, `ELEVENLABS_API_KEY`, `SEC_USER_AGENT`, and `DATABASE_URL` when you have it
+(`vercel env add DATABASE_URL production`). Never SnapTrade keys.
+
 ## Put it online with a server (Fly.io)
 
 `ATROPOS_PUBLIC=1` (set in the Dockerfile) turns on the public demo: sample portfolio only, no
