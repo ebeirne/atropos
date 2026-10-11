@@ -78,6 +78,7 @@ Then run these in separate terminals.
 
 ```
 npm start
+/service/Leaf/Backend/sh run.sh --port 8001
 ```
 
 ```sh
