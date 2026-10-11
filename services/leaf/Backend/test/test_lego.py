@@ -226,6 +226,17 @@ def test_scan_multi_matches_what_the_screener_reads():
     assert body["strategies"]["mean_reversion"]["explanation"]
 
 
+def test_scan_multi_returns_individual_stocks_for_stock_level_specs():
+    spec = {"name": "Lower volatility", "needs": [{"metric": "volatility", "op": "<=", "value": 1.0}]}
+    r = client.post("/api/scan/multi", json={
+        "strategies": ["custom"], "specs": {"custom": spec}, "provider": "synthetic", "days": 252,
+    })
+    assert r.status_code == 200
+    stocks = r.json()["strategies"]["custom"]["stocks"]
+    assert stocks
+    assert {"ticker", "score", "volatility", "avg_volume", "total_return"} <= stocks[0].keys()
+
+
 def test_scan_multi_uses_a_spec_from_ex_instead_of_the_preset():
     spec = {"name": "strong inverse", "needs": [{"metric": "corr", "op": "<=", "value": -0.85}]}
     r = client.post("/api/scan/multi", json={"strategies": ["mean_reversion"], "specs": {"mean_reversion": spec}})

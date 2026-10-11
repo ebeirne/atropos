@@ -29,6 +29,9 @@
 
 /* ---- Your own parameters ---- */
 .params { display: flex; flex-direction: column; border-top: 1px solid var(--ink); }
+.param-divider { padding: 16px 0 8px; border-bottom: 1px solid var(--line); }
+.param-divider:not(:first-child) { border-top: 1px solid var(--ink); margin-top: 8px; }
+.param-divider h3 { font: 500 17px/1.2 var(--display); }
 .param { padding: 14px 0 14px 14px; border-bottom: 1px solid var(--line); border-left: 3px solid transparent; margin-left: -14px; }
 .param.on { border-left-color: var(--leaf); }
 .param-name { font: 500 18px/1.2 var(--display); }
@@ -180,6 +183,18 @@ figcaption { font-size: 13.5px; color: var(--ink-2); margin-bottom: 6px; max-wid
 .reading h3 { font: 500 24px/1.2 var(--display); }
 .reading p { margin-top: 8px; white-space: pre-wrap; }
 .fine { margin-top: 28px; color: var(--ink-2); font-size: 13.5px; }
+.result-heading { margin: 20px 0 4px; font: 500 24px/1.2 var(--display); }
+.stock-section { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); }
+.stock-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+.stock-section-head h3 { font: 500 24px/1.2 var(--display); }
+.stock-section-head > span { color: var(--ink-2); font-size: 13.5px; }
+.stock-head, .stock-row { display: grid; grid-template-columns: minmax(90px, 1fr) repeat(3, minmax(100px, 1fr)) minmax(100px, 1fr); gap: 12px; align-items: center; }
+.stock-head { padding: 12px; color: var(--ink-2); font-size: 13.5px; }
+.stock-head span:not(:first-child), .stock-row > span { text-align: right; }
+.stock-row { border-top: 1px solid var(--line); padding: 12px; }
+.stock-row:last-child { border-bottom: 1px solid var(--line); }
+.stock-row > strong { font: 500 20px/1.2 var(--display); }
+.stock-row .c-score { justify-content: flex-end; }
 
 /* ---- Narrow screens ---- */
 @media (max-width: 960px) {
@@ -194,6 +209,10 @@ figcaption { font-size: 13.5px; color: var(--ink-2); margin-bottom: 6px; max-wid
   .c-score { order: 2; }
   .c-stat { order: 3; flex: 1 1 28%; text-align: left; }
   .lbl { display: block; }
+  .stock-head { display: none; }
+  .stock-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  .stock-row > strong { flex: 1 1 50%; }
+  .stock-row > span { flex: 1 1 28%; text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {
   .reveal { animation: none; }

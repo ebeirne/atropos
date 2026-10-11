@@ -235,7 +235,7 @@ function snapshotLeaf(rest, request) {
     if (keys.some((key) => !scan.strategies[key])) return null;
     const strategies = Object.fromEntries(keys.map((key) => {
       const saved = scan.strategies[key];
-      return [key, { spec: saved.spec, matched: saved.matched, results: saved.results || saved.pairs || [], explanation: saved.explanation }];
+      return [key, { spec: saved.spec, matched: saved.matched, results: saved.results || saved.pairs || [], stocks: saved.stocks || [], explanation: saved.explanation }];
     }));
     return {
       provider: scan.provider, universe_size: scan.universe_size || scan.universe.length,
@@ -296,7 +296,8 @@ const server = http.createServer(async (req, res) => {
       let request;
       try { request = requestBody && JSON.parse(requestBody.toString('utf8')); } catch (_) { request = null; }
       try {
-        const r = await fetchWithTimeout(base + '/' + rest + (url.search || ''), req, 2500, requestBody);
+        const timeout = basis ? 2500 : rest.endsWith('/scan/multi') ? 30_000 : 10_000;
+        const r = await fetchWithTimeout(base + '/' + rest + (url.search || ''), req, timeout, requestBody);
         const body = Buffer.from(await r.arrayBuffer());
         return send(res, r.status, body, r.headers.get('content-type') || 'application/json; charset=utf-8');
       } catch (_) { /* not running: fall through to the snapshot */ }

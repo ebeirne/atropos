@@ -86,6 +86,7 @@ def scan_multi(req: MultiScanRequest):
             "spec": spec.to_dict(),
             "matched": result["matched"],
             "results": result["pairs"],
+            "stocks": result["stocks"],
             "explanation": explain(spec, result),
         }
     return {

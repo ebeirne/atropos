@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import LeafChart from './LeafChart.jsx';
 import SpreadChart from './SpreadChart.jsx';
-import { COLUMNS, DEFAULT_COLUMNS, DETAIL_STATS, num } from '../format.js';
-import { CUSTOM_LABEL } from './ParamBuilder.jsx';
+import { COLUMNS, DEFAULT_COLUMNS, DETAIL_STATS, num, percent } from '../format.js';
+import { CUSTOM_KEY, CUSTOM_LABEL } from './ParamBuilder.jsx';
 
 function PairDetail({ row }) {
   const s = row.series;
@@ -21,7 +21,7 @@ function PairDetail({ row }) {
       <dl className="stats">
         {DETAIL_STATS.map(([label, key, fmt]) => (
           <div key={key}>
-            <dt>{label}</dt>
+            <dt>{typeof label === 'function' ? label(row) : label}</dt>
             <dd>{fmt(row[key])}</dd>
           </div>
         ))}
@@ -134,6 +134,32 @@ function ResultTable({ strategyKey, results }) {
   );
 }
 
+function StockTable({ results }) {
+  const volume = new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 });
+
+  return (
+    <div className="stock-table">
+      <div className="stock-head" aria-hidden="true">
+        <span>Ticker</span><span>Volatility</span><span>Avg. volume</span><span>Total return</span><span>Fit</span>
+      </div>
+      <ul>
+        {results.map((stock) => (
+          <li className="stock-row" key={stock.ticker}>
+            <strong>{stock.ticker}</strong>
+            <span><em className="lbl">Volatility</em>{percent(stock.volatility)}</span>
+            <span><em className="lbl">Avg. volume</em>{stock.avg_volume == null ? '–' : volume.format(stock.avg_volume)}</span>
+            <span><em className="lbl">Total return</em>{percent(stock.total_return)}</span>
+            <span className="c-score">
+              <span className="fit" aria-hidden="true"><span style={{ width: `${Math.min(100, stock.score)}%` }} /></span>
+              <b>{num(stock.score, 0)}</b>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function ResultsPanel({ scan, strategies }) {
   const [active, setActive] = useState(null);
 
@@ -203,6 +229,7 @@ export default function ResultsPanel({ scan, strategies }) {
       </div>
 
       <div id="tabpanel" role="tabpanel" aria-labelledby={`tab-${current}`}>
+        {current === CUSTOM_KEY && <h3 className="result-heading">Pairs</h3>}
         {block.results.length === 0 ? (
           <div className="none">
             <h2>No pairs fit {label(current).toLowerCase()}</h2>
@@ -219,6 +246,23 @@ export default function ResultsPanel({ scan, strategies }) {
               <p>{block.explanation}</p>
             </div>
           </>
+        )}
+        {current === CUSTOM_KEY && (
+          <section className="stock-section" aria-labelledby="stock-results-heading">
+            <div className="stock-section-head">
+              <h3 id="stock-results-heading">Individual stocks</h3>
+              <span>{block.stocks?.length || 0} matches</span>
+            </div>
+            {block.stocks?.length ? (
+              <StockTable results={block.stocks} />
+            ) : (
+              <p className="source">
+                {block.spec?.needs?.some((need) => ['volatility', 'avg_volume', 'total_return'].includes(need.metric))
+                  ? 'No individual stocks match these stock-level filters.'
+                  : 'These settings apply to pairs, not individual stocks. Add a stock-level filter to see individual matches.'}
+              </p>
+            )}
+          </section>
         )}
       </div>
 

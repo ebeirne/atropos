@@ -54,6 +54,6 @@ export const DETAIL_STATS = [
   ['Hedge ratio (returns)', 'return_beta', (v) => num(v, 3)],
   ['Variance cut by hedging', 'hedge_effectiveness', percent],
   ['Spread std (log)', 'spread_std', (v) => num(v, 4)],
-  ['Volatility, first name', 'vol_a', percent],
-  ['Volatility, second name', 'vol_b', percent],
+  [(row) => `Volatility ${row.a}`, 'vol_a', percent],
+  [(row) => `Volatility ${row.b}`, 'vol_b', percent],
 ];
