@@ -28,6 +28,7 @@ const ledger = require('./lib/ledger');
 const guard = require('./lib/guard');
 const AttyBeats = require('./public/atty/beats');
 
+const SERVERLESS = !!process.env.VERCEL;
 const PORT = Number(process.env.PORT || 4411);
 const HOST = process.env.HOST || (guard.PUBLIC ? '0.0.0.0' : '127.0.0.1');
 const PUBLIC = path.join(__dirname, 'public');
@@ -274,7 +275,7 @@ async function deskEvents(capital) {
   });
 }
 
-const server = http.createServer(async (req, res) => {
+const handle = async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
   const route = url.pathname;
   try {
@@ -384,6 +385,8 @@ const server = http.createServer(async (req, res) => {
     if (route === '/api/agent') {
       // the latest round of Atty's agent; ?run=1 asks for a fresh round now
       if (url.searchParams.get('run') === '1' && agentRound && !guard.PUBLIC) await agentRound();
+      // serverless: nothing runs between requests, so the first caller waits for a quick round
+      if (SERVERLESS && !agent.status().result && agentRound) await agentRound();
       return send(res, 200, agent.status());
     }
 
@@ -471,7 +474,8 @@ const server = http.createServer(async (req, res) => {
     console.error(route, e);
     return send(res, 500, { error: e.message });
   }
-});
+};
+const server = http.createServer(handle);
 
 /* ------------------------------------------------------- Atty's agent */
 function engineSignals(events) { return events.map(engine.analyseEvent); }
@@ -513,7 +517,7 @@ async function agentInputs() {
   let buckets = {};
   if (unknown.length && jev.configured()) { try { buckets = (await jev.classify(unknown)).buckets; } catch (_) { buckets = {}; } }
   const withBuckets = positions.map((p) => ({ ...p, bucket: engine.bucketOf(p.symbol) || (buckets[p.symbol] && buckets[p.symbol].bucket) || 'other' }));
-  return { positions: withBuckets, signals: engineSignals(await markets.loadEvents()), portfolioId: pf.source };
+  return { positions: withBuckets, signals: engineSignals(await markets.loadEvents()), portfolioId: pf.source, quick: SERVERLESS };
 }
 let agentRound = null;
 
@@ -532,4 +536,5 @@ if (require.main === module) {
   });
 }
 
-module.exports = { runPipeline };
+function setAgentRound(fn) { agentRound = fn; }
+module.exports = { runPipeline, handle, agentInputs, setAgentRound };

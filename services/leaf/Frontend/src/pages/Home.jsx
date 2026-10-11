@@ -46,13 +46,10 @@ export default function Home({ route, strategies }) {
       <section className="hero">
         <HeroField />
         <div className="wrap hero-inner">
-          <h1>Find the pairs that move together.</h1>
-          <p className="lede">
-            Leaf screens a universe for cointegration, correlation and how fast a spread snaps back,
-            then matches pairs to the strategy you trade.
-          </p>
+          <h1>Two stocks, one spread, a reason to trade it.</h1>
+          <p className="lede">Correlation, cointegration, half-life. Three strategies. The pairs that pass.</p>
           <div className="hero-actions">
-            <a className="btn solid" href="#/screener">Open the screener</a>
+            <a className="btn solid" href="#/screener">Screen the pairs</a>
             <a className="btn ghost" href="#/?to=how">See how it works</a>
           </div>
         </div>

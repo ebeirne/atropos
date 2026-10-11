@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+services/**/node_modules
+services/**/.venv
+services/**/.cache
+services/**/__pycache__
+services/basis/data/snapshot/basis.db
+releases
+dist
+_site
+data/strategy-*
+data/pressure-jev.json
+data/ledger.json
+data/*.log
+data/*.err
+*.pdf

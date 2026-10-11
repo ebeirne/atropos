@@ -6,6 +6,11 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..500&family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="skin.css">
 <style>
+  /* the sky: white stars and the odd shooting star, the same dust.js the console uses */
+  html, body { background: #000; }
+  #dust { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 5; display: block; pointer-events: none; mix-blend-mode: difference; }
+  .no-dust #dust { display: none; }
+  .desk { position: relative; z-index: 2; }
   /* The desk: Basis's events on the left, biggest trusted edge first; one event on the right
      with the probability, the trade and Atropos's allocation; the trades you save below it.
      Layout chosen with Jev as a second opinion (data/console-jev.json). */
@@ -14,6 +19,7 @@
   .money b { font: 500 16px/1 var(--ff-num); color: var(--ink); letter-spacing: 0; text-transform: none; margin-left: 8px; font-variant-numeric: tabular-nums; }
   .money input { width: 7.5em; background: none; border: 0; border-bottom: 1px solid var(--line-2); color: var(--ink); font: 500 16px/1.3 var(--ff-num); margin-left: 8px; text-align: right; outline: none; }
   .money input:focus { border-color: var(--accent); }
+  .lede { margin: 26px 0 0; color: var(--ink-2); font-size: 17px; max-width: 60ch; }
   .search { display: block; width: 100%; margin: 18px 0 26px; background: none; border: 1px solid var(--line-2); color: var(--ink); font: 400 17px/1.3 var(--ff-body); padding: 14px 18px; outline: none; }
   .search:focus { border-color: var(--accent); }
   .panes { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(20px, 4vw, 56px); align-items: start; }
@@ -84,6 +90,8 @@
   @media (min-width: 901px) { .back { display: none; } }
 </style>
 
+<canvas id="dust" data-scene="stars" aria-hidden="true"></canvas>
+
 <nav class="nav" aria-label="Main">
   <a class="brand" href="index.html"><b>Atropos</b><span class="tag">Beta</span></a>
   <div class="links">
@@ -97,7 +105,8 @@
     <span>Holdings <b id="holdings">$0</b></span>
     <span id="backend" title="Where trades are saved"></span>
   </div>
-  <input class="search" id="q" type="search" placeholder="Search events, or type macro, crypto, trusted, soon" aria-label="Search events" autocomplete="off">
+  <p class="lede">Every event, biggest trusted edge first. Pick one to see what it costs and how much to put on it.</p>
+  <input class="search" id="q" type="search" placeholder="Search, or filter: macro · crypto · trusted · soon" aria-label="Search events" autocomplete="off">
 
   <div class="panes">
     <section class="list" id="list" aria-label="Events, biggest edge first"><p class="empty">Loading events…</p></section>
@@ -112,6 +121,7 @@
   <p class="src">Probabilities, basis and trust from Basis (isotonic calibration on 628 settled Kalshi markets; basis against fed-funds futures or Deribit options). Allocation: half Kelly on a $1 contract, capped at 10% of capital. Trades are saved to <span id="backendNote">this browser</span>. Not investment advice; nothing here places an order.</p>
 </main>
 
+<script src="dust.js"></script>
 <script src="desk/kelly.js"></script>
 <script>
 (function () {
@@ -230,14 +240,14 @@
       '<div class="facts-wrap"><details class="facts-help"><summary aria-label="How to read this data" title="How to read this data">?</summary><div class="facts-tooltip"><h3>How to read this data:</h3><dl>' +
       '<div><dt>Calibrated</dt><dd>Our model\'s calculated probability of this event occurring.</dd></div>' +
       '<div><dt>Price</dt><dd>The implied probability currently priced in by the prediction market (the cost of a YES contract).</dd></div>' +
-      '<div><dt>Real market</dt><dd>The implied probability derived from traditional financial instruments, like inflation swaps or bond yields, tied to this same event.</dd></div>' +
-      '<div><dt>Basis</dt><dd>The spread between the prediction market Price and the Real Market. A non-zero basis highlights a pricing dislocation between prediction markets and traditional finance.</dd></div>' +
+      '<div><dt>Traditional market</dt><dd>The implied probability derived from traditional financial instruments, like inflation swaps or bond yields, tied to this same event.</dd></div>' +
+      '<div><dt>Basis</dt><dd>The spread between the prediction market Price and the Traditional Market. A non-zero basis highlights a pricing dislocation between prediction markets and traditional finance.</dd></div>' +
       '</dl></div></details>' +
-      '<div class="facts"><div><small>Calibrated</small><b>' + pct(e.p_calibrated) + '</b></div><div><small>Price</small><b>' + cents(e.price) + '</b></div><div><small>Real market</small><b>' + (e.p_proxy == null ? '—' : pct(e.p_proxy)) + '</b></div><div><small>Basis</small><b class="' + (e.basis == null ? '' : e.basis >= 0 ? 'up' : 'down') + '">' + (e.p_proxy == null ? '—' : pp(e.basis)) + '</b></div></div></div>' +
-      '<p class="trustline">Trust ' + (e.trust_score == null ? '—' : e.trust_score) + ' of 100' + (e.leakage_flag ? ' · one trade dominates the tape' : '') + (e.p_proxy == null ? ' · no traditional-market proxy for this event' : ' · real market from ' + (e.proxy_type === 'fedfunds' ? 'fed-funds futures' : e.proxy_type === 'btc_options' ? 'Bitcoin options' : esc(e.proxy_type || 'proxy'))) + '. Raw price ' + pct(e.p_raw) + '.</p>' +
+      '<div class="facts"><div><small>Calibrated</small><b>' + pct(e.p_calibrated) + '</b></div><div><small>Price</small><b>' + cents(e.price) + '</b></div><div><small>Traditional market</small><b>' + (e.p_proxy == null ? '—' : pct(e.p_proxy)) + '</b></div><div><small>Basis</small><b class="' + (e.basis == null ? '' : e.basis >= 0 ? 'up' : 'down') + '">' + (e.p_proxy == null ? '—' : pp(e.basis)) + '</b></div></div></div>' +
+      '<p class="trustline">Trust ' + (e.trust_score == null ? '—' : e.trust_score) + ' of 100' + (e.leakage_flag ? ' · one trade dominates the tape' : '') + (e.p_proxy == null ? ' · no traditional-market proxy for this event' : ' · traditional market from ' + (e.proxy_type === 'fedfunds' ? 'fed-funds futures' : e.proxy_type === 'btc_options' ? 'Bitcoin options' : esc(e.proxy_type || 'proxy'))) + '. Raw price ' + pct(e.p_raw) + '.</p>' +
       '<div class="block"><div class="lab">How the price compares</div>' + priceReading(e) + '</div>' +
       '<div class="block"><div class="lab">The trade</div><div class="trade">' + (e.price == null ? 'No venue price.' : side.toUpperCase() + ' on ' + (VENUE[e.venue] || esc(e.venue)) + ' at ' + cents(cost) + ' · pays $1 if right') + '</div></div>' +
-      '<div class="block"><div class="lab">How much</div><div class="alloc"><b>' + (k ? money(k.dollars) : '—') + '</b><span>' + (k && k.dollars > 0 ? Math.round(k.share * 1000) / 10 + '% of capital · ' + k.contracts.toLocaleString('en-US') + ' contracts' : 'nothing') + '</span></div>' +
+      '<div class="block"><div class="lab">Put on it</div><div class="alloc"><b>' + (k ? money(k.dollars) : '—') + '</b><span>' + (k && k.dollars > 0 ? Math.round(k.share * 1000) / 10 + '% of capital · ' + k.contracts.toLocaleString('en-US') + ' contracts' : 'nothing') + '</span></div>' +
       '<p class="why">' + why + (k ? ' <button class="how" id="how" type="button">how →</button>' : '') + '</p>' +
       (k ? '<div class="inputs" id="inputs">p(success) ' + k.pSuccess.toFixed(3) + ' · cost ' + k.cost.toFixed(3) + ' · net odds b ' + k.b.toFixed(2) + ' · full Kelly f* ' + (k.fullKelly * 100).toFixed(1) + '% · fraction ' + k.fraction + ' · cap 10% · capital ' + money(capital) + '</div>' : '') +
       (e.price != null && !e.settled ? '<div class="act"><label>Contracts <input id="n" type="number" min="1" max="1000000" value="' + (k && k.contracts ? k.contracts : 10) + '"></label><button class="btn solid" id="save" type="button">Save trade</button><span class="note" id="saveNote"></span></div>' : '') +

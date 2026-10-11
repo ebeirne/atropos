@@ -22,3 +22,12 @@ for (const j of jobs) {
   execSync(`${npm} exec --no -- vite build --base=./ --outDir "${j.out}" --emptyOutDir`, { cwd: j.dir, stdio: 'inherit', shell: true, env: { ...process.env, ...j.env } });
   console.log(j.name, '->', path.relative(root, j.out));
 }
+
+// The research pages take the site's theme in reverse: paper, dark stars, the same fonts.
+// Done to the built page, so Leaf's own source stays as upstream has it.
+const leafPage = path.join(root, 'public', 'leaf', 'index.html');
+let html = fs.readFileSync(leafPage, 'utf8');
+html = html.replace('</head>', '    <link rel="preconnect" href="https://fonts.googleapis.com">\n    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..500&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">\n    <link rel="stylesheet" href="../leaf-theme.css">\n  </head>')
+  .replace('<div id="root"></div>', '<canvas id="dust" data-scene="stars" aria-hidden="true"></canvas>\n    <div id="root"></div>\n    <script src="../dust.js"></script>');
+fs.writeFileSync(leafPage, html);
+console.log('leaf -> themed (public/leaf-theme.css, dust.js)');

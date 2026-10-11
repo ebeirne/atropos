@@ -1,0 +1,119 @@
+{
+  "judged_at": "2026-10-11T14:57:19.134Z",
+  "pick": {
+    "deskTitle": {
+      "text": "Desk",
+      "scores": {
+        "Desk": 0.96,
+        "Edge": 0.02,
+        "Signals": 0.01,
+        "Trades": 0.01
+      }
+    },
+    "deskLede": {
+      "text": "Every event, biggest trusted edge first. Pick one to see what it costs and how much to put on it.",
+      "scores": {
+        "Every event, biggest trusted edge first. Pick one to see what it costs and how much to put on it.": 0.52,
+        "The odds, corrected. The price, compared. The size, worked out.": 0.32,
+        "Calibrated odds against the price. The gap is the edge; trust says whether to believe it.": 0.1,
+        "Which prices are wrong, by how much, and how much to put on it.": 0.06
+      }
+    },
+    "search": {
+      "text": "Search, or filter: macro · crypto · trusted · soon",
+      "scores": {
+        "Search, or filter: macro · crypto · trusted · soon": 0.53,
+        "Find an event: Fed, inflation, Bitcoin, trusted, soon": 0.29,
+        "Search events, or type macro, crypto, trusted, soon": 0.18
+      }
+    },
+    "listHead": {
+      "text": "Events, biggest edge first",
+      "scores": {
+        "Events, biggest edge first": 0.63,
+        "Edge, trusted first": 0.35,
+        "Where the price is wrong": 0.01,
+        "Signals": 0.01
+      }
+    },
+    "realMarket": {
+      "text": "Traditional market",
+      "scores": {
+        "Traditional market": 0.46,
+        "Real market": 0.38,
+        "Futures say": 0.15,
+        "Proxy": 0.02
+      }
+    },
+    "howMuch": {
+      "text": "Put on it",
+      "scores": {
+        "Put on it": 0.83,
+        "Size": 0.11,
+        "How much": 0.04,
+        "Allocation": 0.02
+      }
+    },
+    "saveBtn": {
+      "text": "Save trade",
+      "scores": {
+        "Save trade": 0.85,
+        "Paper trade": 0.11,
+        "Record it": 0.02,
+        "Take it": 0.01
+      }
+    },
+    "positions": {
+      "text": "Your trades",
+      "scores": {
+        "Your trades": 0.38,
+        "Saved": 0.34,
+        "Positions": 0.2,
+        "On the book": 0.09
+      }
+    },
+    "researchName": {
+      "text": "Research",
+      "scores": {
+        "Research": 0.6,
+        "Leaf": 0.39,
+        "Pairs": 0.01,
+        "Screener": 0.01
+      }
+    },
+    "researchHero": {
+      "text": "Two stocks, one spread, a reason to trade it.",
+      "scores": {
+        "Two stocks, one spread, a reason to trade it.": 0.56,
+        "The pairs that move together, and the ones that move apart.": 0.22,
+        "Which stocks hedge each other.": 0.14,
+        "Find the pairs that move together.": 0.08
+      }
+    },
+    "researchLede": {
+      "text": "Correlation, cointegration, half-life. Three strategies. The pairs that pass.",
+      "scores": {
+        "Correlation, cointegration, half-life. Three strategies. The pairs that pass.": 0.63,
+        "Every pair tested for correlation, cointegration and how fast the spread snaps back. Pick a strategy; get the pairs that fit.": 0.21,
+        "Leaf screens a universe for cointegration, correlation and how fast a spread snaps back, then matches pairs to the strategy you trade.": 0.16
+      }
+    },
+    "researchCta": {
+      "text": "Screen the pairs",
+      "scores": {
+        "Screen the pairs": 0.43,
+        "Run a screen": 0.29,
+        "Open the screener": 0.15,
+        "Find pairs": 0.13
+      }
+    },
+    "screenerLede": {
+      "text": "Pick a strategy, or set the numbers yourself. The pairs that pass come back ranked.",
+      "scores": {
+        "Pick a strategy, or set the numbers yourself. The pairs that pass come back ranked.": 0.48,
+        "Pick one or more strategies, or set your own parameters, and Leaf returns the pairs that fit.": 0.43,
+        "Strategies on the left, pairs on the right.": 0.09
+      }
+    }
+  }
+}

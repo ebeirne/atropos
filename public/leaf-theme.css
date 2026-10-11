@@ -1,0 +1,38 @@
+/* The research pages (Leaf) in the Atropos theme, reversed: paper where the site is black,
+   dark stars where the site has white ones, the same serif for headlines and the same sans for
+   the rest. Loaded after Leaf's own styles by scripts/build-tools.js; Leaf's source is untouched. */
+:root {
+  --spruce: #f3f1ea;          /* Leaf's dark hero surface becomes paper */
+  --spruce-2: #ebe8df;
+  --paper: #f3f1ea;
+  --white: #faf8f2;
+  --ink: #171717;
+  --ink-2: #4a4a46;
+  --line: #d8d4c8;
+  --leaf: #1d3b72;            /* the site's navy on paper */
+  --a: #1d3b72;
+  --b: #8db0e6;
+  --lens: rgba(29, 59, 114, 0.12);
+  --focus: #1d3b72;
+  --on-dark: #171717;         /* text on the (now light) hero and menu */
+  --on-dark-2: #4a4a46;
+  --a-dark: #1d3b72;
+  --b-dark: #5b7fb8;
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --body: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+html, body { background: var(--paper); }
+body { position: relative; }
+/* the sky: white stars drawn by dust.js, inverted over the paper */
+#dust { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; mix-blend-mode: difference; opacity: .85; }
+#root { position: relative; z-index: 1; }
+.site-header.dark { color: var(--ink); }
+.hero { background: transparent; }
+.hero::after { background: linear-gradient(180deg, transparent 0%, transparent 68%, var(--paper) 100%); opacity: .6; }
+.hero h1, .hero .lede { color: var(--ink); }
+.hero .lede { color: var(--ink-2); }
+.facts, .block.alt, .card { background: color-mix(in srgb, var(--white) 70%, transparent); }
+.card-art { background: #171717; }
+.closing { background: #171717; color: #f3f1ea; }
+.btn.solid { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn.ghost { color: var(--ink); border-color: var(--ink); }

@@ -54,7 +54,7 @@ export default function Screener({ strategies, query }) {
     <div className="screener">
       <header className="wrap page-head">
         <h1>Screener</h1>
-        <p>Pick one or more strategies, or set your own parameters, and Leaf returns the pairs that fit.</p>
+        <p>Pick a strategy, or set the numbers yourself. The pairs that pass come back ranked.</p>
       </header>
 
       {strategies && (
