@@ -59,7 +59,8 @@
   .pos .n small { display: block; color: var(--ink-2); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; font-family: var(--ff-label); }
   .src { margin-top: 40px; color: var(--ink-2); font-size: 12px; line-height: 1.6; }
   .src code { font-family: var(--ff-num); }
-  @media (max-width: 900px) { .panes { grid-template-columns: 1fr; } .detail { position: static; } .list.hide { display: none; } .back { display: inline-block; margin-bottom: 14px; } .facts { grid-template-columns: repeat(2, 1fr); } .facts div:nth-child(2) { border-right: 0; } .facts div:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
+  .panes > * { min-width: 0; }
+  @media (max-width: 900px) { .panes { grid-template-columns: minmax(0, 1fr); } .detail { position: static; } .money { flex-wrap: wrap; row-gap: 8px; } .detail h2 { overflow-wrap: anywhere; } .list.hide { display: none; } .back { display: inline-block; margin-bottom: 14px; } .facts { grid-template-columns: repeat(2, 1fr); } .facts div:nth-child(2) { border-right: 0; } .facts div:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
   @media (min-width: 901px) { .back { display: none; } }
 </style>
 
