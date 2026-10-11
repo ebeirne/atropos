@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
 <title>Atropos — Desk</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Every event with its calibrated probability, the edge against the price, and how much to put on it.">
@@ -42,7 +45,7 @@
   .star { color: var(--accent); }
   .empty { padding: 28px 10px; color: var(--ink-2); }
   .detail { position: sticky; top: 80px; height: calc(100vh - 96px); height: calc(100svh - 96px); min-height: 0;
-    overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable; }
+    overflow-y: auto; scrollbar-gutter: stable; }   /* no overscroll-contain: when the pane fits, the wheel must still move the page */
   .detail h2 { font: 400 clamp(26px, 3vw, 40px)/1.05 var(--ff-display); letter-spacing: -.02em; margin: 0 0 6px; }
   .detail .when { font: 400 12px/1.2 var(--ff-label); letter-spacing: .05em; color: var(--ink-2); text-transform: uppercase; margin-bottom: 22px; }
   .facts-wrap { position: relative; }
