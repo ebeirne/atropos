@@ -194,8 +194,20 @@ def _seen(store, url):
                              (url, canonical(url))).fetchone() is not None
 
 
-def discover(store, universe, cfg=None, *, get=scrapling_get, now=None, sleep=time.sleep):
-    """New article URLs worth fetching: [{url, title, published, via, tickers}], newest first."""
+def refusing_hosts(store, *, days=7, at_least=2):
+    """Hosts that refused us (blocked) at least `at_least` times in `days`: their links aren't worth the budget."""
+    since = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    rows = store.con.execute("SELECT url FROM fetches WHERE error='blocked' AND fetched_at >= ?", (since,)).fetchall()
+    counts = {}
+    for r in rows:
+        h = (urlsplit(r["url"]).hostname or "").lower()
+        counts[h] = counts.get(h, 0) + 1
+    return {h for h, n in counts.items() if n >= at_least}
+
+
+def discover(store, universe, cfg=None, *, get=scrapling_get, now=None, sleep=time.sleep, registry=None):
+    """New article URLs worth fetching: [{url, title, published, via, tickers}]. When there are more than the
+    cycle's budget, the best-sourced go first (a wire or major outlet before a rewrite site), then the newest."""
     init(store)
     cfg = cfg if cfg is not None else load_config()
     now = now or datetime.now(timezone.utc)
@@ -220,9 +232,11 @@ def discover(store, universe, cfg=None, *, get=scrapling_get, now=None, sleep=ti
             found += [{**i, "via": "GDELT", "tickers": [c.ticker]} for i in items or []]
             sleep(g.get("min_interval_seconds", 10))
 
-    out, keys = {}, set()
+    out, keys, refusing = {}, set(), refusing_hosts(store)
     for item in found:
         if any(h in item["url"] for h in SKIP_HOSTS) or (item["published"] and item["published"] < oldest):
+            continue
+        if (urlsplit(item["url"]).hostname or "").lower() in refusing:
             continue
         key = canonical(item["url"])
         if key in out:
@@ -232,5 +246,6 @@ def discover(store, universe, cfg=None, *, get=scrapling_get, now=None, sleep=ti
             keys.add(key)
             continue
         out[key] = item
-    ranked = sorted(out.values(), key=lambda i: i["published"] or "", reverse=True)
+    weight = (lambda i: registry.lookup(i["url"]).weight) if registry else (lambda i: 0)
+    ranked = sorted(out.values(), key=lambda i: (weight(i), i["published"] or ""), reverse=True)
     return ranked[:cfg.get("max_articles", 60)]

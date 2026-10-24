@@ -116,3 +116,25 @@ def test_bing_click_tracking_links_are_unwrapped():
            '<pubDate>Fri, 23 Oct 2026 04:00:00 GMT</pubDate></item></channel></rss>')
     assert parse_feed(rss)[0]["url"] == "https://www.cnbc.com/2026/10/23/nvidia.html"
     assert unwrap("https://www.reuters.com/x") == "https://www.reuters.com/x"
+
+
+def test_the_budget_goes_to_the_best_sources_and_skips_hosts_that_refuse_us(store, universe, registry):
+    feed = "https://feeds.example.com/mixed.rss"
+    items = [("https://247wallst.com/a", "Northwind rewrite"), ("https://www.cnbc.com/b", "Northwind on CNBC"),
+             ("https://www.nasdaq.com/c", "Northwind on Nasdaq"), ("https://www.reuters.com/d", "Northwind at Reuters")]
+    rss = "<rss><channel>" + "".join(f"<item><title>{t}</title><link>{u}</link><pubDate>Thu, 22 Oct 2026 1{i}:00:00 GMT</pubDate></item>"
+                                     for i, (u, t) in enumerate(items)) + "</channel></rss>"
+    for _ in range(2):
+        store.record_fetch("https://www.nasdaq.com/old", status=403, error="blocked")
+    cfg = {"lookback_days": 3, "max_articles": 2, "feed": [{"name": "Mixed", "url": feed}], "gdelt": {"enabled": False}}
+    found = discover(store, universe, cfg, get=lambda u, h: page(u, rss), now=NOW, registry=registry)
+    assert [f["url"] for f in found] == ["https://www.reuters.com/d", "https://www.cnbc.com/b"]
+
+
+def test_a_newspaper_named_investors_is_not_a_company_ir_site(registry):
+    from intel.sources import Registry
+    r = Registry.__new__(Registry)
+    r.__dict__.update(registry.__dict__)
+    r.sources = {k: v for k, v in registry.sources.items() if k != "investors.com"}
+    assert r.lookup("https://www.investors.com/news/x").tier == "unknown"
+    assert r.lookup("https://investors.northwind.com/news/x").tier == "primary"
