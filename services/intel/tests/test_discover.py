@@ -138,3 +138,10 @@ def test_a_newspaper_named_investors_is_not_a_company_ir_site(registry):
     r.sources = {k: v for k, v in registry.sources.items() if k != "investors.com"}
     assert r.lookup("https://www.investors.com/news/x").tier == "unknown"
     assert r.lookup("https://investors.northwind.com/news/x").tier == "primary"
+
+
+def test_msn_reposts_are_skipped(store, universe):
+    rss = ("<rss><channel><item><title>Northwind on MSN</title><link>https://www.msn.com/en-us/money/x</link>"
+           "<pubDate>Thu, 22 Oct 2026 13:00:00 GMT</pubDate></item></channel></rss>")
+    cfg = {"lookback_days": 3, "feed": [{"name": "F", "url": "https://f.example.com/r"}], "gdelt": {"enabled": False}}
+    assert discover(store, universe, cfg, get=lambda u, h: page(u, rss), now=NOW) == []
