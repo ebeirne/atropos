@@ -4,8 +4,8 @@ The universe is the watchlist plus whatever the portfolio holds. Three channels 
 feeds.toml: broad RSS/Atom feeds (an item is kept only when its title names a followed company), per-ticker
 feeds, and GDELT's article search (one query per company, so one event turns up from many outlets, which is
 what corroboration needs). Feeds are polled conditionally and their validators live in the `feeds` table. An
-article URL we've fetched before is never fetched again, and Google News links are skipped because they
-redirect through a script rather than to the article.
+article URL we've fetched before is never fetched again. Google News and MSN links are skipped: one redirects
+through a script, the other is an app that renders its article in the browser, so neither gives us the text.
 
 Company names match case-insensitively; tickers match only in capitals and only when they're 3+ letters,
 so "IT" and "ON" in a headline don't pull in Gartner and onsemi.
@@ -28,7 +28,7 @@ from intel.store import now_iso
 
 FEEDS_PATH, WATCHLIST_PATH = ROOT / "feeds.toml", ROOT / "watchlist.toml"
 GDELT = "https://api.gdeltproject.org/api/v2/doc/doc"
-SKIP_HOSTS = ("news.google.com",)
+SKIP_HOSTS = ("news.google.com", "msn.com")   # both hand plain clients an empty page: a redirect script, or a JS app
 SUFFIXES = re.compile(r"[,.]?\s+(inc|corp|corporation|co|company|ltd|plc|holdings|group|class [a-c]|common stock|"
                       r"ordinary shares|n\.?v|s\.?a|ag|se)\.?$", re.I)
 SCHEMA = """
