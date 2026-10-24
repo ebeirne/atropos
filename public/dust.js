@@ -13,7 +13,13 @@
 // drift the way it moves, then settle. window.dustPulse() brightens everything
 // for a moment (the console calls it when a run lands).
 //
+// With data-video, the face at rest is a filmed loop (hero/face.mp4) shown at its
+// own fine grain, and the dust is sampled from the film's first frame (the poster)
+// so the two line up grain for grain. The first bit of scroll hands the film over
+// to the dust, which then blows away exactly as the drawn face does.
+//
 //   <canvas id="dust" data-track="hero">   the section whose scroll dissolves the face
+//   <canvas id="dust" data-video="hero/face.mp4" data-poster="hero/face.jpg">   the filmed face
 //
 //   <canvas id="dust" data-scene="stars">   the sky alone (the console)
 //   ?cell=4x7   cell size in CSS px (default 4x7, 3x5 on phones)
@@ -61,7 +67,10 @@
     [0.890, 0.795], [0.865, 0.860], [0.785, 0.840], [0.705, 0.800], [0.648, 0.740], [0.622, 0.640],
     [0.600, 0.540], [0.570, 0.460], [0.520, 0.380], [0.460, 0.310], [0.420, 0.270],
   ];
-  var NOSE_X = 0.303, HORIZON = 0.80, STAR_Y = 0.548, BEACON_DX = 0.085;
+  var NOSE_X = 0.303, HORIZON = 0.80, STAR_Y = 0.548, BEACON_DX = 0.085, FRAME_SCALE = 1;
+  // the filmed face's landmarks in its own unit frame, measured on its first frame; its face is smaller in
+  // the frame than the drawing's, so the frame is drawn 1.32x larger to keep the face the same size
+  var FILM = { NOSE_X: 0.191, HORIZON: 0.781, STAR_Y: 0.603, BEACON_DX: 0.066, SCALE: 1.32 };
 
   function tracePath(ctx, M, P) {
     var n = P.length;
@@ -177,32 +186,58 @@
     return out;
   }
 
+  /** The face from the film's first frame: dust lands where the frame is lit, loosest behind the face. */
+  function sampleFilmFace(img, n) {
+    var M = 420, c = document.createElement('canvas'); c.width = c.height = M;
+    var x = c.getContext('2d', { willReadFrequently: true });
+    x.drawImage(img, 0, 0, M, M);   // the downscale averages the stipple into a density
+    var lum = x.getImageData(0, 0, M, M).data, top = 0.2, out = [], tries = 0;
+    var front = new Float32Array(M), x0 = Math.floor(0.16 * M);   // left of 0.16 is the light and its figure
+    for (var y = 0; y < M; y++) {
+      front[y] = 1;
+      for (var xx = x0; xx < M; xx++) if (lum[(y * M + xx) * 4] > 60) { front[y] = xx / M; break; }
+    }
+    while (out.length < n && tries < n * 200) {
+      tries++;
+      var u = 0.16 + R() * 0.84, v = top + R() * (FILM.HORIZON - top - 0.004);
+      var px = Math.floor(u * M), py = Math.floor(v * M), d = lum[(py * M + px) * 4] / 255;
+      if (R() > d * 1.6) continue;
+      var loose = smooth(0.05, 0.32, u - front[py]) * 0.85 + (R() - 0.5) * 0.15;
+      out.push([u + (R() - 0.5) / M, v + (R() - 0.5) / M, Math.min(1, Math.max(0, loose)), R(), 0.45 + 0.55 * Math.min(1, d * 1.4)]);
+    }
+    return out;
+  }
+
   /* ------------------------------------------------------- the particles
      Six kinds share one buffer: 0 face, 4 its reflection, 2 horizon,
      3 beacon (pole, core, rays), 5 streaks, 6 stars, 1 ambient dust (last, so its
      count can follow the screen size). Each: x, y, loose|part|depth, seed, bright, kind. */
   var small = innerWidth * innerHeight < 520000 || (window.matchMedia && matchMedia('(pointer: coarse)').matches);
   var NFACE = small ? 20000 : 42000, NDUST = 9000, NSTAR = small ? 130 : 260;
-  var data = [];
-  function push(a, b, c, d, e, k) { data.push(a, b, c, d, e, k); }
   // data-scene="stars": only the sky (stars, faint dust, the odd shooting star), no face, light or horizon
   var scene = canvas.dataset.scene || 'face';
-  var face = scene === 'stars' ? [] : sampleFace(NFACE);
-  face.forEach(function (p) { push(p[0], p[1], p[2], p[3], p[4], 0); });
-  face.forEach(function (p, i) { if (i % 3 === 0) push(p[0], p[1], p[2], p[3], p[4], 4); });
-  var i;
-  if (scene !== 'stars') {
-  for (i = 0; i < 2200; i++) push(R(), 0, R(), R(), 0.5 + 0.5 * R(), 2);
-  for (i = 0; i < 520; i++) push(R(), R(), 0, R(), 0.8 + 0.2 * R(), 3);         // pole
-  for (i = 0; i < 380; i++) push(Math.sqrt(R()), R(), 1, R(), 1, 3);            // core
-  for (i = 0; i < 420; i++) push(R(), R(), 2, R(), 1, 3);                       // horizontal ray
-  for (i = 0; i < 420; i++) push(R(), R(), 3, R(), 1, 3);                       // vertical ray
+  var film = scene === 'face' && canvas.dataset.video ? canvas.dataset.video : null;
+  var face = [], FIXED = 0, verts = null;
+  /** Fill the particle buffer; `img` is the film's poster when the face comes from the film. */
+  function buildParticles(img) {
+    var data = [], i;
+    function push(a, b, c, d, e, k) { data.push(a, b, c, d, e, k); }
+    face = scene === 'stars' ? [] : img ? sampleFilmFace(img, NFACE) : sampleFace(NFACE);
+    face.forEach(function (p) { push(p[0], p[1], p[2], p[3], p[4], 0); });
+    face.forEach(function (p, i) { if (i % 3 === 0) push(p[0], p[1], p[2], p[3], p[4], 4); });
+    if (scene !== 'stars') {
+      for (i = 0; i < 2200; i++) push(R(), 0, R(), R(), 0.5 + 0.5 * R(), 2);
+      for (i = 0; i < 520; i++) push(R(), R(), 0, R(), 0.8 + 0.2 * R(), 3);         // pole
+      for (i = 0; i < 380; i++) push(Math.sqrt(R()), R(), 1, R(), 1, 3);            // core
+      for (i = 0; i < 420; i++) push(R(), R(), 2, R(), 1, 3);                       // horizontal ray
+      for (i = 0; i < 420; i++) push(R(), R(), 3, R(), 1, 3);                       // vertical ray
+    }
+    for (var s = 0; s < 8; s++) for (i = 0; i < 48; i++) push(i / 47, 0, s, R(), 1, 5);
+    for (i = 0; i < NSTAR; i++) push(R(), R(), Math.pow(R(), 1.3), R(), 1, 6);
+    FIXED = data.length / 6;
+    for (i = 0; i < NDUST; i++) { var dep = Math.pow(R(), 1.6); push(R(), R(), dep, R(), 0.5 + 0.5 * R(), 1); }
+    verts = new Float32Array(data);
   }
-  for (var s = 0; s < 8; s++) for (i = 0; i < 48; i++) push(i / 47, 0, s, R(), 1, 5);
-  for (i = 0; i < NSTAR; i++) push(R(), R(), Math.pow(R(), 1.3), R(), 1, 6);
-  var FIXED = data.length / 6;
-  for (i = 0; i < NDUST; i++) { var dep = Math.pow(R(), 1.6); push(R(), R(), dep, R(), 0.5 + 0.5 * R(), 1); }
-  var verts = new Float32Array(data); data = null;
 
   /* ------------------------------------------------------------ shaders */
   var VS_P = [
@@ -215,7 +250,7 @@
     'uniform float uTime, uProg, uScrollY, uVel, uAfter, uScale;',
     'uniform vec3 uMouse;',
     'uniform vec2 uWind;',
-    'uniform float uPulse;',
+    'uniform float uPulse, uHand;',     // uHand: how far the film has handed the face to the dust (1 without a film)
     'out vec3 vC;',
     'float h1(float n) { return fract(sin(n * 127.1) * 43758.5453); }',
     'void main() {',
@@ -233,7 +268,7 @@
     '    pos = home + dir * travel + perp * wob + jit;',
     '    float fade = pow(1.0 - age, 1.25) * smoothstep(0.0, 0.05, age);',
     '    b *= mix(0.8 + 0.2 * sin(uTime * 1.7 + seed * 90.0), fade, L);',
-    '    b *= 1.0 - smoothstep(0.72, 1.0, uProg);',
+    '    b *= (1.0 - smoothstep(0.72, 1.0, uProg)) * uHand;',
     '    if (kind > 3.5) {',
     '      if (pos.y > H) b = 0.0;',
     '      float d = H - pos.y;',
@@ -263,7 +298,7 @@
     '      b *= pow(1.0 - abs(s), 2.2) * 2.2; w = 1.0; }',
     '    else { float s = aA.x * 2.0 - 1.0; pos = uBeacon + vec2(aA.y - 0.5, s * 0.07 * S * tw);',
     '      b *= pow(1.0 - abs(s), 2.2) * 2.2; ori = vec2(0.0, 1.0); w = 1.0; }',
-    '    b *= 1.0 - smoothstep(0.55, 0.92, uProg);',
+    '    b *= (1.0 - smoothstep(0.55, 0.92, uProg)) * uHand;',
     '  } else if (kind > 5.5) {',
     '    float depth = aA.z;',
     '    float y = fract(aA.y - uTime * (0.006 + 0.016 * depth) - uScrollY * (0.08 + 0.5 * depth) / uView.y);',
@@ -307,14 +342,23 @@
     '#version 300 es',
     'void main() { vec2 p = vec2(gl_VertexID == 1 ? 3.0 : -1.0, gl_VertexID == 2 ? 3.0 : -1.0); gl_Position = vec4(p, 0.0, 1.0); }',
   ].join('\n');
-  // the type pass: one glyph per cell, chosen by how much dust is there and which way it moves
+  // the type pass: one glyph per cell, chosen by how much dust is there and which way it moves; the film,
+  // when there is one, is laid over the type at its own grain (lighter wins) and feathered at its edges
   var FS_Q = [
     '#version 300 es',
     'precision highp float;',
-    'uniform sampler2D uGridTex, uAtlas;',
+    'uniform sampler2D uGridTex, uAtlas, uFilm;',
     'uniform vec2 uCellDev, uGrid;',
     'uniform float uCanvasH, uGlyphs, uUnscale, uOri, uTime;',
     'uniform vec3 uInk, uBg;',
+    'uniform vec4 uFilmRect;',          // left, top, size (device px), opacity
+    'float film(vec2 fc) {',
+    '  if (uFilmRect.w < 0.003) return 0.0;',
+    '  vec2 q = (fc - uFilmRect.xy) / uFilmRect.z;',
+    '  if (q.x <= 0.0 || q.y <= 0.0 || q.x >= 1.0 || q.y >= 1.0) return 0.0;',
+    '  float edge = smoothstep(0.0, 0.06, q.x) * smoothstep(0.0, 0.08, 1.0 - q.x) * smoothstep(0.0, 0.04, q.y) * smoothstep(0.0, 0.06, 1.0 - q.y);',
+    '  return texture(uFilm, q).r * edge * uFilmRect.w;',
+    '}',
     'out vec4 o;',
     'float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
     'void main() {',
@@ -335,6 +379,7 @@
     '    float a = texture(uAtlas, vec2((idx + uv.x) / uGlyphs, uv.y)).a;',
     '    col = mix(uBg, uInk, a * clamp(0.22 + 0.16 * b, 0.0, 1.0));',
     '  }',
+    '  col = max(col, uInk * film(fc));',
     '  o = vec4(col, 1.0);',
     '}',
   ].join('\n');
@@ -359,10 +404,50 @@
 
   var vao = gl.createVertexArray(); gl.bindVertexArray(vao);
   var vbo = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
   gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 24, 0);
   gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 24, 16);
   var qvao = gl.createVertexArray();
+  function uploadParticles() { gl.bindBuffer(gl.ARRAY_BUFFER, vbo); gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW); verts = null; }
+
+  /* --------------------------------------------------------------- the film
+     The poster goes up as a texture at once, so the first frame shows the face; the video replaces it
+     frame by frame once it plays. Autoplay can be refused (a background tab, a battery saver), so play is
+     retried at most once a second while the face is on screen; until then, and with reduced motion, the
+     poster stays. */
+  var filmTex = null, filmEl = null, filmFresh = false, filmTry = 0;
+  function setupFilm(img) {
+    filmTex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, filmTex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);   // keep the stipple crisp when enlarged
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    if (reduce) return;
+    var v = document.createElement('video');
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
+    v.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none';
+    v.src = film;
+    function next() { filmFresh = true; v.requestVideoFrameCallback(next); }
+    if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(next);
+    document.body.appendChild(v);
+    filmEl = v;
+  }
+  function filmFrame(show, now) {
+    if (!filmEl) return;
+    if (!show) { if (!filmEl.paused) filmEl.pause(); return; }   // scrolled past: no need to decode
+    if (filmEl.paused && now - filmTry > 1000) {
+      filmTry = now;
+      var p = filmEl.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+    if (filmEl.readyState < 2 || (filmEl.requestVideoFrameCallback && !filmFresh)) return;
+    filmFresh = false;
+    gl.bindTexture(gl.TEXTURE_2D, filmTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, filmEl);
+  }
 
   /* ------------------------------------------------------ grid and glyphs */
   var DENS = ['.', '·', ':', ';', '+', '*', 'x', '%', '#', '@'];
@@ -414,7 +499,7 @@
   var L = { left: 0, top: 0, S: 1, H: 1, bx: 0, by: 0 };
   function layout() {
     var w = G.cssW, h = G.cssH, portrait = w < h * 0.9;
-    var S = portrait ? Math.min(w * 1.45, h * 0.72) : Math.min(h * 1.12, w * 0.78);
+    var S = (portrait ? Math.min(w * 1.45, h * 0.72) : Math.min(h * 1.12, w * 0.78)) * FRAME_SCALE;
     var H = portrait ? h * 0.6 : h * 0.9;
     var noseX = portrait ? w * 0.22 : w * 0.26;
     L.S = S; L.H0 = H; L.left = noseX - NOSE_X * S; L.top0 = H - HORIZON * S;
@@ -459,6 +544,9 @@
     var after = Math.min(1, Math.max(0, (prog - 0.85) / 0.15));
     var lift = Math.min(y, hero ? hero.offsetHeight : 0) * 0.16;
     var H = L.H0 - lift;
+    // the film holds the face at rest; the first bit of scroll fades it as the dust takes its place
+    var filmA = filmTex ? 1 - smooth(0, 0.16, prog) : 0, hand = filmTex ? smooth(0, 0.12, prog) : 1;
+    filmFrame(filmA > 0, now);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, G.cols, G.rows);
@@ -476,6 +564,7 @@
     gl.uniform3f(u.uMouse, mouse.x, mouse.y, mouse.z);
     gl.uniform2f(u.uWind, mouse.wx / 1200 * ws, mouse.wy / 1200 * ws);
     gl.uniform1f(u.uPulse, pulse);
+    gl.uniform1f(u.uHand, hand);
     gl.bindVertexArray(vao);
     gl.drawArrays(gl.POINTS, 0, FIXED + G.dust);
     gl.disable(gl.BLEND);
@@ -485,6 +574,8 @@
     gl.useProgram(Q.p); u = Q.u;
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, gridTex); gl.uniform1i(u.uGridTex, 0);
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, atlasTex); gl.uniform1i(u.uAtlas, 1);
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, filmTex || atlasTex); gl.uniform1i(u.uFilm, 2);
+    gl.uniform4f(u.uFilmRect, L.left * G.dpr, (L.top0 - lift) * G.dpr, L.S * G.dpr, filmA);
     gl.uniform2f(u.uCellDev, G.cw, G.ch); gl.uniform2f(u.uGrid, G.cols, G.rows);
     gl.uniform1f(u.uCanvasH, G.h); gl.uniform1f(u.uGlyphs, GLYPHS.length);
     gl.uniform1f(u.uUnscale, floatGrid ? 1 : 1 / 0.16); gl.uniform1f(u.uOri, floatGrid ? 1 : 0);
@@ -493,7 +584,8 @@
     gl.uniform3f(u.uBg, bgHero[0] + (bgPage[0] - bgHero[0]) * after, bgHero[1] + (bgPage[1] - bgHero[1]) * after, bgHero[2] + (bgPage[2] - bgHero[2]) * after);
     gl.bindVertexArray(qvao);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    window.__dust = { prog: prog, vel: vel, cols: G.cols, rows: G.rows, particles: FIXED + G.dust, face: face.length, float: floatGrid };
+    window.__dust = { prog: prog, vel: vel, cols: G.cols, rows: G.rows, particles: FIXED + G.dust, face: face.length, float: floatGrid,
+      film: filmTex ? { opacity: filmA, playing: !!(filmEl && !filmEl.paused), rect: [L.left, L.top0 - lift, L.S] } : null };
   }
 
   // debug: step frames by hand where rAF is throttled (hidden tabs, previews)
@@ -507,17 +599,33 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () { size(); if (reduce) draw(performance.now()); }, 80);
   });
-  function start() {
+  function start(poster) {
+    if (poster) {   // the filmed face: its frame, its landmarks, its dust
+      NOSE_X = FILM.NOSE_X; HORIZON = FILM.HORIZON; STAR_Y = FILM.STAR_Y; BEACON_DX = FILM.BEACON_DX; FRAME_SCALE = FILM.SCALE;
+      setupFilm(poster);
+    }
+    buildParticles(poster);
+    uploadParticles();
     size();
     if (reduce) { draw(performance.now()); addEventListener('scroll', function () { draw(performance.now()); }, { passive: true }); }
     else requestAnimationFrame(loop);
     document.documentElement.classList.add('dust-on');
   }
-  // glyphs are drawn in Geist Mono, so wait for it (but never for long)
-  var started = false;
-  function go() { if (!started) { started = true; start(); } }
+  // glyphs are drawn in Geist Mono, and the filmed face is sampled from its poster, so wait for both
+  // (but never for long: without the poster the drawn face stands in)
+  var started = false, fontReady = false, poster = film ? undefined : null;
+  function go() { if (!started && fontReady && poster !== undefined) { started = true; start(poster); } }
+  function fontDone() { fontReady = true; go(); }
+  if (film) {
+    var img = new Image();
+    img.decoding = 'async';
+    img.onload = function () { if (poster === undefined) { poster = img; go(); } };
+    img.onerror = function () { if (poster === undefined) { poster = null; go(); } };
+    img.src = canvas.dataset.poster || film.replace(/\.\w+$/, '.jpg');
+    setTimeout(function () { if (poster === undefined) { poster = null; go(); } }, 4000);
+  }
   if (document.fonts && document.fonts.load) {
-    document.fonts.load('500 12px "Geist Mono"').then(go, go);
-    setTimeout(go, 900);
-  } else go();
+    document.fonts.load('500 12px "Geist Mono"').then(fontDone, fontDone);
+    setTimeout(fontDone, 900);
+  } else fontDone();
 })();
