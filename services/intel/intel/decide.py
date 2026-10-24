@@ -103,7 +103,11 @@ def market_context(story, company, claims, docs, policy, *, search, ask=None):
         answer = (ask or llm.ask)(SYSTEM, f"News about {story['ticker']} ({company.name}):\n{_claims_text(claims, docs)}\n\n"
                                   f"Prediction markets found by searching the company name:\n{listing}\n\nFor each market, "
                                   "say whether its current price supports the investment case these claims make, "
-                                  "contradicts it, or is unrelated to it, with one sentence why.", MARKETS_OUT, effort="low")
+                                  "contradicts it, or is unrelated to it, with one sentence why. Only call a market "
+                                  "supporting or contradicting when it prices an outcome these claims actually depend "
+                                  "on (the deal closing, the product shipping, the ruling going one way); a market about "
+                                  "another company, a ranking, a price index or a broad theme is unrelated.",
+                                  MARKETS_OUT, effort="low")
         for j in (answer or {}).get("markets", []):
             for r in judge:
                 if str(r["id"]) == str(j["id"]) and j["bearing"] in BEARINGS:

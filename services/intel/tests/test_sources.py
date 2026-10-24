@@ -65,3 +65,9 @@ def test_claude_counts_as_available_only_with_credentials(monkeypatch, tmp_path)
     assert not llm.has_credentials() and not llm.available()
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
     assert llm.has_credentials()
+
+
+def test_outlets_met_in_live_runs_are_listed(registry):
+    assert registry.lookup("https://247wallst.com/investing/x").tier == "secondary"
+    assert registry.lookup("https://www.aol.com/finance/x").tier == "aggregator"
+    assert registry.lookup("https://www.investors.com/news/x").tier == "trade"

@@ -417,3 +417,115 @@ tier = "community"
 domain = "substack.com"
 name = "Substack"
 tier = "community"
+
+# --- met in the first live runs ---
+
+[[source]]
+domain = "investors.com"
+name = "Investor's Business Daily"
+tier = "trade"
+
+[[source]]
+domain = "tomshardware.com"
+name = "Tom's Hardware"
+tier = "trade"
+
+[[source]]
+domain = "windowscentral.com"
+name = "Windows Central"
+tier = "trade"
+
+[[source]]
+domain = "decrypt.co"
+name = "Decrypt"
+tier = "trade"
+
+[[source]]
+domain = "cointelegraph.com"
+name = "Cointelegraph"
+tier = "trade"
+
+[[source]]
+domain = "semianalysis.com"
+name = "SemiAnalysis"
+tier = "trade"
+
+[[source]]
+domain = "telegraph.co.uk"
+name = "The Telegraph"
+tier = "major"
+
+[[source]]
+domain = "latimes.com"
+name = "Los Angeles Times"
+tier = "major"
+
+[[source]]
+domain = "usatoday.com"
+name = "USA Today"
+tier = "major"
+
+[[source]]
+domain = "247wallst.com"
+name = "24/7 Wall St."
+tier = "secondary"
+
+[[source]]
+domain = "tikr.com"
+name = "TIKR"
+tier = "secondary"
+
+[[source]]
+domain = "bgr.com"
+name = "BGR"
+tier = "secondary"
+
+[[source]]
+domain = "rttnews.com"
+name = "RTTNews"
+tier = "secondary"
+
+[[source]]
+domain = "barchart.com"
+name = "Barchart"
+tier = "secondary"
+
+[[source]]
+domain = "gurufocus.com"
+name = "GuruFocus"
+tier = "secondary"
+
+[[source]]
+domain = "tipranks.com"
+name = "TipRanks"
+tier = "secondary"
+
+[[source]]
+domain = "aol.com"
+name = "AOL"
+tier = "aggregator"
+
+[[source]]
+domain = "nasdaq.com"
+name = "Nasdaq.com"
+tier = "aggregator"
+
+[[source]]
+domain = "marketbeat.com"
+name = "MarketBeat"
+tier = "aggregator"
+
+[[source]]
+domain = "dailypolitical.com"
+name = "Daily Political"
+tier = "community"
+
+[[source]]
+domain = "investorshub.advfn.com"
+name = "InvestorsHub"
+tier = "community"
+
+[[source]]
+domain = "cryptoprowl.com"
+name = "CryptoProwl"
+tier = "community"
