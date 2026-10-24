@@ -84,6 +84,11 @@ Environment (put these in atropos's `.env` or your shell):
 .venv/Scripts/python -m intel serve --every 60   # the API on :8002, a cycle every hour
 ```
 
+On Windows, `scripts\start-agent.cmd` starts both Atropos and the agent in minimized windows and opens the
+agent page (`--quiet` skips the page). The logs go to `datatropos.log` and `services\intel\datagent.log`;
+close the two windows to stop. To start it at login, put a shortcut to `cmd.exe /c "<repo>\scripts\start-agent.cmd" --quiet`
+in your Startup folder (`shell:startup`).
+
 Then open atropos's `agent.html` (`npm start`, then <http://127.0.0.1:4411/agent.html>). It shows:
 
 - **Waiting for you:** each proposal with its thesis, sources and markets, plus Approve / Reject buttons.

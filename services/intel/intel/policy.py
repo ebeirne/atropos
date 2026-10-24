@@ -74,8 +74,9 @@ def load_env(path=ROOT.parent.parent / ".env"):
         return
     for line in p.read_text(encoding="utf-8").splitlines():
         key, sep, value = line.strip().partition("=")
-        if sep and key and not key.startswith("#") and key.strip() not in os.environ:
-            os.environ[key.strip()] = value.split(" #")[0].strip().strip('"').strip("'")
+        value = value.split(" #")[0].strip().strip('"').strip("'")
+        if sep and key and value and not key.startswith("#") and key.strip() not in os.environ:   # KEY= stays unset
+            os.environ[key.strip()] = value
 
 
 def kill_file(data_dir=DATA_DIR):
