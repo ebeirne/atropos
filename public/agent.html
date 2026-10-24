@@ -329,7 +329,7 @@
     fetch('/api/link?broker=FIDELITY&return=agent').then(function (r) { return r.json(); }).then(function (j) {
       if (!j.url) throw new Error(j.error || 'no link');
       window.location.href = j.url;
-    }).catch(function (e) { say('Could not open the Fidelity link: ' + e.message); if (btn) { btn.disabled = false; btn.textContent = 'Link Fidelity'; } });
+    }).catch(function (e) { say('Could not open the Fidelity link: ' + String(e.message).split('\n')[0]); if (btn) { btn.disabled = false; btn.textContent = 'Link Fidelity'; } });
   }
   function loadAccount() {
     return fetch('/api/portfolio').then(function (r) { return r.json(); }).then(function (pf) {
@@ -340,6 +340,13 @@
         var names = (pf.accounts || []).map(function (a) { return (a.broker || '') + ' ' + (a.name || ''); }).join(', ');
         $('acctText').textContent = 'Linked, read-only: ' + names + '. ' + eq.length + ' holdings, ' + usd(value) +
           ' in all. The agent sizes every trade against this and can never place an order in it.';
+        $('acctActions').replaceChildren();
+      } else if (/SnapTrade error: 40[13]/.test(pf.reason || '')) {
+        $('acctText').textContent = 'SnapTrade didn’t accept the keys in .env (a wrong Client ID or Consumer Key). Open .env in ' +
+          'Notepad (C:\\atropos\\.env), fix SNAPTRADE_CLIENT_ID and SNAPTRADE_CONSUMER_KEY, then close the two Atropos windows and run scripts\\start-agent.cmd.';
+        $('acctActions').replaceChildren();
+      } else if (/SnapTrade error/i.test(pf.reason || '')) {
+        $('acctText').textContent = 'Couldn’t reach SnapTrade just now (' + pf.reason.split('\n')[0].slice(0, 120) + '). Reload in a minute.';
         $('acctActions').replaceChildren();
       } else if (/keys not set/i.test(pf.reason || '')) {
         $('acctText').textContent = 'SnapTrade isn’t set up yet: put SNAPTRADE_CLIENT_ID and SNAPTRADE_CONSUMER_KEY in .env (run the setup again to be asked for them), then restart.';
