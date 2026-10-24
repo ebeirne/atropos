@@ -113,9 +113,10 @@ def extract_claims(article, universe, *, doc_id=0, source="", ask=None):
     companies = universe.match(article.title + "\n" + article.text)
     if not companies:
         return [], "none"
+    tried = ask is not None or llm.available()
     answer = (ask or llm.ask)(SYSTEM, _prompt(article, doc_id, source, companies), OUTPUT)
-    if answer is None:
-        return _heuristic(article, companies, universe), "heuristic"
+    if answer is None:   # "heuristic" alone means Claude wasn't there to ask, so the document is read again later
+        return _heuristic(article, companies, universe), "heuristic: no answer" if tried else "heuristic"
     allowed = {c.ticker for c in companies}
     kept = []
     for c in answer.get("claims", []):
@@ -128,13 +129,17 @@ def extract_claims(article, universe, *, doc_id=0, source="", ask=None):
 
 
 def file_new(store, universe, *, ask=None, limit=None):
-    """Extract claims from every stored document not read yet. Returns the new claim rows."""
+    """Extract claims from every stored document not read yet, and once Claude is available, read again the
+    ones the keyword fallback read without it (their neutral claims make way). Returns the new claim rows."""
     init(store)
+    reread = " OR e.extractor = 'heuristic'" if ask is not None or llm.available() else ""
     rows = store.con.execute("SELECT d.id, d.first_seen, d.origin FROM documents d LEFT JOIN extractions e "
-                             "ON e.document_id = d.id WHERE e.document_id IS NULL ORDER BY d.first_seen" +
+                             "ON e.document_id = d.id WHERE e.document_id IS NULL" + reread + " ORDER BY d.first_seen" +
                              (f" LIMIT {int(limit)}" if limit else "")).fetchall()
     new = []
     for row in rows:
+        with store.tx() as con:
+            con.execute("DELETE FROM claims WHERE document_id=? AND extractor='heuristic'", (row["id"],))
         doc = store.get(row["id"])
         article = to_article(doc)
         if article.stub:
