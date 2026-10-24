@@ -1,0 +1,45 @@
+# Runs services/intel's tests whenever the evidence layer or this workflow changes. Python 3.11 is the oldest
+# it supports (tomllib), and Windows is in the matrix because that's where it runs day to day.
+name: Intel tests
+
+on:
+  pull_request:
+    paths:
+      - "services/intel/**"
+      - ".github/workflows/intel.yml"
+  push:
+    branches: [main]
+    paths:
+      - "services/intel/**"
+      - ".github/workflows/intel.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intel-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, python: "3.11" }
+          - { os: ubuntu-latest, python: "3.12" }
+          - { os: windows-latest, python: "3.12" }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: services/intel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: services/intel/requirements*.txt
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pytest -q

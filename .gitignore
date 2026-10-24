@@ -40,6 +40,8 @@ services/**/.venv/
 services/**/__pycache__/
 services/**/.cache/
 services/**/dist/
+services/**/.pytest_cache/
+services/intel/data/
 public/basis/
 public/leaf/
 data/trades.json

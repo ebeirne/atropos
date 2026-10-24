@@ -1,0 +1,241 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atropos — Agent</title>
+<meta name="description" content="Trades the agent wants to make, the evidence behind each, and the switch that stops it.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6'/%3E%3Ctext x='16' y='24' text-anchor='middle' font-family='Georgia,serif' font-size='24' fill='%23f3f1ea'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="skin.css">
+<style>
+  /* The agent's desk: what it wants to trade and why, what's waiting for you at Fidelity, and every story it
+     read, with the reason each one did or didn't become a trade. Everything scraped is shown as text, never HTML. */
+  html, body { background: #000; }
+  body { font-family: var(--ff-body); color: var(--ink); margin: 0; }
+  .app { max-width: 1040px; margin: 0 auto; padding: 88px clamp(16px, 4vw, 40px) 80px; }
+  .nav { position: fixed; inset: 0 0 auto; z-index: 10; display: flex; justify-content: space-between; align-items: center;
+         padding: 16px clamp(16px, 4vw, 40px); background: rgba(0, 0, 0, .72); backdrop-filter: blur(12px);
+         -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .nav a { color: var(--ink); text-decoration: none; font: 500 13px/1 var(--ff-body); margin-left: 18px; }
+  .nav .brand { margin: 0; font-weight: 600; font-size: 15px; }
+  h1 { font: 600 clamp(26px, 3vw, 34px)/1.15 var(--ff-body); letter-spacing: -0.01em; margin: 0 0 6px; }
+  h2 { font: 600 20px/1.2 var(--ff-body); margin: 40px 0 4px; }
+  .sub { font: 400 14px/1.5 var(--ff-body); color: var(--muted); margin: 0 0 16px; }
+  .num { font-family: var(--ff-label); font-variant-numeric: tabular-nums; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 18px 0 8px; }
+  .pill { font: 500 12px/1 var(--ff-label); border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 10px; color: var(--muted); }
+  .pill.on { color: var(--good); border-color: color-mix(in srgb, var(--good) 50%, transparent); }
+  .pill.off { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 50%, transparent); }
+  button { font: 500 13px/1 var(--ff-body); color: var(--ink); background: var(--bg-2); border: 1px solid var(--line-2);
+           border-radius: 8px; padding: 9px 14px; cursor: pointer; }
+  button:hover { border-color: var(--ink-2); }
+  button.go { background: var(--ink); color: #000; border-color: var(--ink); }
+  button.stop { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 60%, transparent); }
+  button:disabled { opacity: .5; cursor: default; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin: 12px 0; }
+  .card h3 { font: 600 17px/1.3 var(--ff-body); margin: 0 0 8px; display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+  .buy { color: var(--up); } .sell { color: var(--down); }
+  .card p { margin: 6px 0; font: 400 14px/1.55 var(--ff-body); color: var(--ink-2); }
+  .label { font: 500 11px/1.4 var(--ff-label); text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  ul.src { list-style: none; padding: 0; margin: 6px 0 0; }
+  ul.src li { font: 400 13px/1.5 var(--ff-body); color: var(--muted); padding: 3px 0; }
+  ul.src a { color: var(--accent); }
+  .empty { color: var(--dim); font: 400 14px/1.5 var(--ff-body); padding: 8px 0; }
+  table { width: 100%; border-collapse: collapse; font: 400 13px/1.4 var(--ff-body); }
+  th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 500 11px/1 var(--ff-label); color: var(--dim); text-transform: uppercase; letter-spacing: .06em; }
+  td.why { color: var(--muted); }
+  tr.story { cursor: pointer; } tr.story:hover td { background: rgba(255, 255, 255, .03); }
+  .msg { font: 400 13px/1.4 var(--ff-body); color: var(--warn); min-height: 1.4em; }
+  @media (max-width: 640px) { th:nth-child(3), td:nth-child(3) { display: none; } }
+</style>
+
+<nav class="nav" aria-label="Main">
+  <a class="brand" href="index.html">Atropos</a>
+  <div><a href="#waiting">Waiting</a><a href="#orders">Orders</a><a href="#stories">Stories</a><a href="console.html">Console</a></div>
+</nav>
+
+<main class="app">
+  <h1>Agent</h1>
+  <p class="sub">Trades it wants to make on corroborated news, waiting for your approval. Nothing is bought or sold until
+    you approve it here and the guard in <span class="num">policy.toml</span> agrees.</p>
+  <div class="bar" id="status"><span class="pill">connecting…</span></div>
+  <div class="bar">
+    <button class="go" id="run">Check the news now</button>
+    <button class="stop" id="kill">Stop all trading</button>
+  </div>
+  <div class="msg" id="msg" role="status"></div>
+
+  <h2 id="waiting">Waiting for you</h2>
+  <p class="sub">Each passed the gate: a primary source, at least two independent major outlets, agreeing claims, and no
+    credible prediction market against it.</p>
+  <div id="proposals"><div class="empty">Loading…</div></div>
+
+  <h2 id="orders">Orders</h2>
+  <p class="sub">Fidelity has no trading API, so approved orders land here as a checklist. Place each one in Fidelity,
+    then mark it, so the guard counts it toward its daily and weekly limits.</p>
+  <div id="orderlist"><div class="empty">Loading…</div></div>
+
+  <h2 id="stories">Stories</h2>
+  <p class="sub">Every event it's following, and why each did or didn't become a trade. Click one for its sources.</p>
+  <div id="storylist"><div class="empty">Loading…</div></div>
+</main>
+
+<script>
+const API = '/api/intel';
+const $ = (id) => document.getElementById(id);
+const usd = (n) => n == null ? '—' : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+// build elements from data: text always goes in as text, so nothing scraped can become markup
+function el(tag, props = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === 'class') e.className = v; else if (k === 'on') Object.entries(v).forEach(([ev, f]) => e.addEventListener(ev, f));
+    else if (k === 'href') { if (/^https?:\/\//.test(v)) e.href = v; } else e.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) if (kid != null) e.append(kid instanceof Node ? kid : String(kid));
+  return e;
+}
+
+async function api(path, method = 'GET', body) {
+  const init = { method, headers: { accept: 'application/json' } };
+  if (method !== 'GET') { init.headers['content-type'] = 'application/json'; init.headers['x-intel-client'] = '1'; init.body = JSON.stringify(body || {}); }
+  const r = await fetch(API + path, init);
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || data.detail || `HTTP ${r.status}`);
+  return data;
+}
+
+function say(text) { $('msg').textContent = text || ''; }
+
+async function loadStatus() {
+  try {
+    const h = await api('/health');
+    const pills = [
+      el('span', { class: 'pill ' + (h.killed ? 'off' : 'on') }, h.killed ? 'trading stopped' : 'trading allowed'),
+      el('span', { class: 'pill' }, `mode: ${h.mode === 'auto' ? 'automatic' : 'you approve each trade'}`),
+      el('span', { class: 'pill' }, `broker: ${h.broker === 'alpaca' ? 'Alpaca' : 'Fidelity, by hand'}`),
+      el('span', { class: 'pill ' + (h.llm ? 'on' : 'off') }, h.llm ? `reading with ${h.model}` : 'no Claude key: collecting only'),
+    ];
+    if (h.running) pills.push(el('span', { class: 'pill' }, 'checking the news…'));
+    $('status').replaceChildren(...pills);
+    $('kill').textContent = h.killed ? 'Resume trading' : 'Stop all trading';
+    $('kill').dataset.killed = h.killed ? '1' : '';
+    $('run').disabled = h.running;
+    return h;
+  } catch (e) {
+    $('status').replaceChildren(el('span', { class: 'pill off' }, 'agent not running'));
+    say(e.message);
+  }
+}
+
+function sources(evidence) {
+  const c = (evidence && evidence.corroboration) || {};
+  return el('ul', { class: 'src' }, (c.origins || []).map((o) =>
+    el('li', {}, el('b', {}, o.name), ` · ${o.tier} · `, ...o.urls.slice(0, 3).flatMap((u, i) => [i ? ', ' : '', el('a', { href: u, target: '_blank', rel: 'noopener noreferrer' }, new URL(u).hostname)]))));
+}
+
+async function loadProposals() {
+  const list = await api('/proposals?status=proposed');
+  if (!list.length) return $('proposals').replaceChildren(el('div', { class: 'empty' }, 'Nothing waiting. The agent proposes a trade only when the evidence clears every check.'));
+  $('proposals').replaceChildren(...list.map((p) => {
+    const markets = ((p.evidence && p.evidence.markets) || []).filter((m) => m.credible);
+    return el('div', { class: 'card' },
+      el('h3', {}, el('span', { class: p.side }, p.side.toUpperCase()), el('span', { class: 'num' }, `${usd(p.notional)} of ${p.ticker}`),
+        el('span', { class: 'pill' }, `conviction ${Math.round(p.conviction * 100)}%`), el('span', { class: 'pill' }, `${p.horizon_months} months`)),
+      el('p', {}, p.thesis),
+      el('div', { class: 'label' }, 'Risks'), el('p', {}, p.risks),
+      el('div', { class: 'label' }, 'What would prove it wrong'), el('p', {}, p.invalidation),
+      el('div', { class: 'label' }, 'Independent sources'), sources(p.evidence),
+      markets.length ? [el('div', { class: 'label' }, 'Prediction markets'), el('ul', { class: 'src' }, markets.map((m) =>
+        el('li', {}, `${m.question}: yes at ${Math.round(m.yes * 100)}% (${m.venue}), ${m.bearing}`)))] : null,
+      el('div', { class: 'row' },
+        el('button', { class: 'go', on: { click: () => decide(p.id, 'approve') } }, 'Approve'),
+        el('button', { on: { click: () => decide(p.id, 'reject') } }, 'Reject')));
+  }));
+}
+
+async function decide(id, what) {
+  try {
+    const r = await api(`/proposals/${id}/${what}`, 'POST');
+    say(what === 'reject' ? 'Rejected.' : r.proposal_status === 'blocked' ? `The guard blocked it: ${(r.reasons || []).join(' ')}`
+      : r.status === 'manual' ? 'Approved. It\'s on the Fidelity checklist below.' : `Sent: ${r.status}.`);
+  } catch (e) { say(e.message); }
+  refresh();
+}
+
+async function loadOrders() {
+  const list = await api('/orders');
+  if (!list.length) return $('orderlist').replaceChildren(el('div', { class: 'empty' }, 'No orders yet.'));
+  $('orderlist').replaceChildren(el('table', {},
+    el('thead', {}, el('tr', {}, ['When', 'Order', 'Status', ''].map((h) => el('th', {}, h)))),
+    el('tbody', {}, list.map((o) => el('tr', {},
+      el('td', { class: 'num' }, o.created_at.slice(0, 16).replace('T', ' ')),
+      el('td', {}, (o.detail && o.detail.instruction) || `${o.side} ${usd(o.notional)} of ${o.ticker}`,
+        o.status === 'rejected' ? el('div', { class: 'why' }, (o.reasons || []).join(' ')) : null),
+      el('td', {}, o.status === 'manual' ? 'place it at Fidelity' : o.status),
+      el('td', {}, o.status === 'manual' ? [
+        el('button', { on: { click: () => mark(o.id, 'filled') } }, 'Placed'), ' ',
+        el('button', { on: { click: () => mark(o.id, 'canceled') } }, 'Won\'t place')] : null))))));
+}
+
+async function mark(id, status) {
+  try { await api(`/orders/${id}`, 'POST', { status }); say(status === 'filled' ? 'Marked as placed.' : 'Marked as not placed.'); }
+  catch (e) { say(e.message); }
+  refresh();
+}
+
+async function loadStories() {
+  const list = await api('/stories');
+  if (!list.length) return $('storylist').replaceChildren(el('div', { class: 'empty' }, 'No stories yet. Run a check, or wait for the next one.'));
+  $('storylist').replaceChildren(el('table', {},
+    el('thead', {}, el('tr', {}, ['Ticker', 'Event', 'First seen', 'Status', 'Why'].map((h) => el('th', {}, h)))),
+    el('tbody', {}, list.map((s) => {
+      const row = el('tr', { class: 'story', on: { click: () => toggle(s.id, row) } },
+        el('td', { class: 'num' }, s.ticker), el('td', {}, s.title), el('td', { class: 'num' }, s.first_seen.slice(0, 10)),
+        el('td', {}, s.status), el('td', { class: 'why' }, (s.gate && s.gate.reason) || ''));
+      return row;
+    }))));
+}
+
+async function toggle(id, row) {
+  const next = row.nextElementSibling;
+  if (next && next.dataset.detail) return next.remove();
+  const s = await api(`/stories/${id}`);
+  const cell = el('td', { colspan: '5' },
+    el('div', { class: 'label' }, 'Claims'),
+    el('ul', { class: 'src' }, s.claims.map((c) => el('li', {}, `${c.direction} · ${c.statement} `, el('i', {}, `“${c.quote}”`)))),
+    el('div', { class: 'label' }, `Sources: ${s.corroboration.independent} independent owner(s)`), sources({ corroboration: s.corroboration }));
+  const detail = el('tr', {}, cell); detail.dataset.detail = '1';
+  row.after(detail);
+}
+
+$('run').addEventListener('click', async () => {
+  try { await api('/cycle', 'POST'); say('Checking the news. This takes a few minutes; the page updates when it\'s done.'); }
+  catch (e) { say(e.message); }
+  watch();
+});
+
+$('kill').addEventListener('click', async () => {
+  const on = !$('kill').dataset.killed;
+  if (on || confirm('Resume trading? Approved proposals will go to the broker again.')) {
+    try { await api('/kill', 'POST', { on }); } catch (e) { say(e.message); }
+    refresh();
+  }
+});
+
+async function watch() {
+  const h = await loadStatus();
+  if (h && h.running) return setTimeout(watch, 5000);
+  refresh();
+}
+
+async function refresh() {
+  if (!(await loadStatus())) return;
+  await Promise.all([loadProposals(), loadOrders(), loadStories()].map((p) => p.catch((e) => say(e.message))));
+}
+refresh();
+</script>

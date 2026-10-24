@@ -282,6 +282,7 @@ const handle = async (req, res) => {
     if (guard.PUBLIC) {
       // linking a brokerage is for your own machine only
       if (route === '/api/link') return send(res, 404, { error: 'Linking a brokerage only works when you run Atropos yourself.' });
+      if (route === '/api/portfolio' || route.startsWith('/api/intel/')) return send(res, 404, { error: 'The trading agent only runs on your own machine.' });
       if (route.startsWith('/api/')) {
         const kind = route === '/api/try' || route === '/api/tickets' ? 'try' : route === '/api/news' ? 'news' : route === '/api/voice' ? 'voice' : 'api';
         if (!guard.allow(req, kind) || (kind !== 'api' && !guard.allow(req, 'api'))) return send(res, 429, { error: 'Too many requests. Try again in a few minutes.' });
@@ -305,6 +306,28 @@ const handle = async (req, res) => {
       const snap = basis ? snapshotBasis(rest) : snapshotLeaf(rest, request);
       if (snap) return send(res, 200, snap);
       return send(res, 503, { error: (basis ? 'Basis' : 'Leaf') + ' is not running and no snapshot covers ' + rest });
+    }
+
+    // the trading agent (services/intel, FastAPI on :8002) and the holdings it sizes against. Only for a page
+    // served from this machine: the Host must be local (no DNS rebinding) and every write must carry the
+    // x-intel-client header, which a page on another site can't send without a preflight we never answer.
+    if (route === '/api/portfolio' || route.startsWith('/api/intel/')) {
+      if (!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(req.headers.host || '')) return send(res, 403, { error: 'local requests only' });
+      if (req.method !== 'GET' && req.headers['x-intel-client'] !== '1') return send(res, 403, { error: 'missing x-intel-client header' });
+    }
+    if (route === '/api/portfolio') return send(res, 200, await portfolio());
+    if (route.startsWith('/api/intel/')) {
+      const requestBody = req.method === 'POST' ? await new Promise((ok) => { const c = []; req.on('data', (d) => c.push(d)); req.on('end', () => ok(Buffer.concat(c))); }) : null;
+      const ac = new AbortController(); const t = setTimeout(() => ac.abort(), 30_000);
+      try {
+        const r = await fetch((process.env.INTEL_URL || 'http://127.0.0.1:8002') + '/' + route.slice(11) + (url.search || ''), {
+          method: req.method, signal: ac.signal, body: requestBody && requestBody.length ? requestBody : undefined,
+          headers: { accept: 'application/json', 'content-type': 'application/json', 'x-intel-client': '1' },
+        });
+        return send(res, r.status, Buffer.from(await r.arrayBuffer()), r.headers.get('content-type') || 'application/json; charset=utf-8');
+      } catch (_) {
+        return send(res, 503, { error: 'The intel service is not running. Start it with: cd services/intel && python -m intel serve --every 60' });
+      } finally { clearTimeout(t); }
     }
 
     if (route === '/api/status' && guard.PUBLIC) {

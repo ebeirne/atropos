@@ -1,0 +1,7 @@
+{
+  "cash": 2500,
+  "positions": [
+    {"symbol": "nwrb", "units": 4, "price": 125},
+    {"symbol": "VTI", "units": 10, "price": 300.5, "value": 3005}
+  ]
+}
