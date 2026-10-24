@@ -353,7 +353,9 @@ const handle = async (req, res) => {
     if (route === '/api/link') {
       const broker = String(url.searchParams.get('broker') || '').toUpperCase();
       if (!/^(ROBINHOOD|FIDELITY)$/.test(broker)) return send(res, 400, { error: 'broker must be ROBINHOOD or FIDELITY' });
-      const redirect = `http://${HOST}:${PORT}/console.html?linked=${broker.toLowerCase()}`;
+      // back to the page that asked (the agent page or the console), never anywhere else
+      const back = url.searchParams.get('return') === 'agent' ? 'agent.html' : 'console.html';
+      const redirect = `http://${HOST}:${PORT}/${back}?linked=${broker.toLowerCase()}`;
       return send(res, 200, { url: await snaptrade.linkUrl(broker, redirect) });
     }
 
