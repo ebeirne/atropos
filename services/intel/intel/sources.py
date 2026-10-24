@@ -59,7 +59,8 @@ class Registry:
             if hit:
                 return hit
         fld = registrable(host)
-        tier = "primary" if host.startswith(IR_PREFIXES) else "unknown"
+        # investor.apple.com is Apple's own IR site; investors.com itself is a newspaper
+        tier = "primary" if host.startswith(IR_PREFIXES) and host != fld else "unknown"
         return Source(fld, fld, tier, fld, self.weights[tier])
 
     def by_domain(self, domain):

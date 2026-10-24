@@ -52,7 +52,7 @@ def cycle(store, registry, policy, *, get=None, ask=None, search=None, transport
     universe = discover.Universe.load(watchlist, holdings=[(t, "") for t in pf.positions])
     report["universe"] = len(universe)
 
-    found = discover.discover(store, universe, feeds_cfg, **fetch_get, now=now)
+    found = discover.discover(store, universe, feeds_cfg, **fetch_get, now=now, registry=registry)
     fetched = ingest.fetch([f["url"] for f in found], store, registry, **fetch_get)
     report["discovered"], report["fetched"] = len(found), sum(1 for f in fetched if f.get("new"))
     new_claims = claims.file_new(store, universe, ask=ask)
