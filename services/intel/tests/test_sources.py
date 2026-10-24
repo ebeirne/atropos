@@ -47,10 +47,21 @@ def test_load_env_reads_dotenv_without_overriding(tmp_path, monkeypatch):
     env = tmp_path / ".env"
     env.write_text('# comment\nINTEL_T1="quoted value"\nINTEL_T2=plain  # trailing note\nINTEL_T3=keep\n\nnot a line\n')
     monkeypatch.setenv("INTEL_T3", "already set")
-    for k in ("INTEL_T1", "INTEL_T2"):
+    for k in ("INTEL_T1", "INTEL_T2", "INTEL_T4"):
         monkeypatch.delenv(k, raising=False)
     load_env(env)
     import os
     assert (os.environ["INTEL_T1"], os.environ["INTEL_T2"], os.environ["INTEL_T3"]) == ("quoted value", "plain", "already set")
+    assert "INTEL_T4" not in os.environ  # an empty KEY= is the same as not set
     for k in ("INTEL_T1", "INTEL_T2"):
         monkeypatch.delenv(k)
+
+
+def test_claude_counts_as_available_only_with_credentials(monkeypatch, tmp_path):
+    from intel import llm
+    for k in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_PROFILE", "ANTHROPIC_FEDERATION_RULE_ID", "INTEL_NO_LLM"):
+        monkeypatch.delenv(k, raising=False)
+    monkeypatch.setattr(llm.Path, "home", lambda: tmp_path)
+    assert not llm.has_credentials() and not llm.available()
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+    assert llm.has_credentials()

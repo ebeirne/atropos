@@ -12,6 +12,7 @@ as data. That's a second line: the guard in front of the broker is the one that 
 import json
 import logging
 import os
+from pathlib import Path
 
 import anthropic
 
@@ -22,8 +23,17 @@ log = logging.getLogger("intel.llm")
 _client, _down = None, False
 
 
+def has_credentials():
+    """Whether the SDK has anything to sign in with. Its client can be built without any, and only fails on
+    the first request, so this looks for them the way it does: an API key or token, workload identity, or an
+    `ant auth login` profile."""
+    env = os.environ
+    return bool(env.get("ANTHROPIC_API_KEY") or env.get("ANTHROPIC_AUTH_TOKEN") or env.get("ANTHROPIC_PROFILE")
+                or env.get("ANTHROPIC_FEDERATION_RULE_ID") or (Path.home() / ".config" / "anthropic").exists())
+
+
 def available():
-    return not _down and not os.environ.get("INTEL_NO_LLM") and _get() is not None
+    return not _down and not os.environ.get("INTEL_NO_LLM") and has_credentials() and _get() is not None
 
 
 def _get():
