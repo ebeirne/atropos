@@ -1,0 +1,42 @@
+import pytest
+
+from intel.sources import Registry
+
+
+def test_listed_domain_matches_its_subdomains(registry):
+    s = registry.lookup("https://uk.reuters.com/business/some-story")
+    assert (s.name, s.tier, s.group) == ("Reuters", "wire", "reuters")
+    assert registry.lookup("www.wsj.com").group == "dowjones"
+
+
+def test_most_specific_listing_wins(registry):
+    assert registry.lookup("https://finance.yahoo.com/news/x").name == "Yahoo Finance"
+    assert registry.lookup("https://sports.yahoo.com/x").name == "Yahoo"
+
+
+def test_unknown_host_falls_back_to_its_registrable_domain(registry):
+    s = registry.lookup("https://news.bayareadaily.co.uk/story")
+    assert (s.domain, s.group, s.tier) == ("bayareadaily.co.uk", "bayareadaily.co.uk", "unknown")
+    assert s.weight == registry.weights["unknown"]
+
+
+def test_investor_relations_hosts_are_primary(registry):
+    s = registry.lookup("https://investor.northwind-robotics.com/news/2026/deal")
+    assert (s.tier, s.group) == ("primary", "northwind-robotics.com")
+
+
+def test_owners_collapse_outlets(registry):
+    assert {registry.lookup(d).group for d in ("wsj.com", "marketwatch.com", "barrons.com", "dowjones.com")} == {"dowjones"}
+    assert registry.lookup("cnbc.com").group == registry.lookup("nbcnews.com").group
+
+
+def test_only_wires_and_release_services_carry_credits(registry):
+    assert registry.creditors
+    assert {s.tier for s in registry.creditors} <= {"wire", "press_release"}
+
+
+def test_unknown_tier_is_rejected(tmp_path):
+    bad = tmp_path / "sources.toml"
+    bad.write_text('[tiers]\nwire = 0.9\n\n[[source]]\ndomain = "example.com"\nname = "Example"\ntier = "rumor"\n')
+    with pytest.raises(ValueError, match="rumor"):
+        Registry(bad)

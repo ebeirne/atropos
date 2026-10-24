@@ -1,0 +1,419 @@
+# Who wrote what, and how much one independent origin counts.
+#
+# domain   matched against the article's host and its parent domains, most specific first
+# tier     one of the keys in [tiers]
+# group    the owner. Outlets in one group are one origin: a WSJ story and a MarketWatch story are both Dow Jones.
+#          Defaults to the domain.
+# credits  regexes that mark a copy of this source's work, searched near the top and bottom of other outlets' text.
+#          Only wires and press-release services need them.
+#
+# Hosts that start with investor. / investors. / ir. and aren't listed here count as primary (a company's own IR site).
+
+[tiers]
+primary = 1.0         # the official record or the party itself: SEC filings, agency releases, company IR
+wire = 0.9            # reports first-hand and syndicates to everyone else
+major = 0.75          # national outlets with their own reporting desks
+trade = 0.6           # specialist press with beat reporters
+press_release = 0.5   # a company's own paid statement: primary for what it says, nothing more
+secondary = 0.35      # mostly rewrites of other outlets
+community = 0.1       # leads, never corroboration on their own
+aggregator = 0.0      # reposts other outlets' work; counts only once resolved to who wrote it
+unknown = 0.2
+
+# --- primary: the record itself ---
+[[source]]
+domain = "sec.gov"
+name = "SEC EDGAR"
+tier = "primary"
+
+[[source]]
+domain = "federalreserve.gov"
+name = "Federal Reserve"
+tier = "primary"
+group = "fed"
+
+[[source]]
+domain = "newyorkfed.org"
+name = "New York Fed"
+tier = "primary"
+group = "fed"
+
+[[source]]
+domain = "bls.gov"
+name = "Bureau of Labor Statistics"
+tier = "primary"
+
+[[source]]
+domain = "bea.gov"
+name = "Bureau of Economic Analysis"
+tier = "primary"
+
+[[source]]
+domain = "census.gov"
+name = "Census Bureau"
+tier = "primary"
+
+[[source]]
+domain = "treasury.gov"
+name = "US Treasury"
+tier = "primary"
+
+[[source]]
+domain = "justice.gov"
+name = "Department of Justice"
+tier = "primary"
+
+[[source]]
+domain = "ftc.gov"
+name = "FTC"
+tier = "primary"
+
+[[source]]
+domain = "fda.gov"
+name = "FDA"
+tier = "primary"
+
+[[source]]
+domain = "cftc.gov"
+name = "CFTC"
+tier = "primary"
+
+[[source]]
+domain = "ecb.europa.eu"
+name = "European Central Bank"
+tier = "primary"
+
+# --- wires ---
+[[source]]
+domain = "reuters.com"
+name = "Reuters"
+tier = "wire"
+group = "reuters"
+credits = ['\(Reuters\)\s*[-–—]', 'Reporting by [^\n]{0,200}; [Ee]diting by', '^\s*By Reuters\b', '^\s*Reuters\s*$']
+
+[[source]]
+domain = "apnews.com"
+name = "Associated Press"
+tier = "wire"
+group = "ap"
+credits = ['\(AP\)\s*[-–—]', '^\s*(By\s+)?(The\s+)?Associated Press\s*$', 'Copyright \d{4} The Associated Press',
+           'Associated Press (writer|reporter)s? [^\n]{0,160} contributed']
+
+[[source]]
+domain = "bloomberg.com"
+name = "Bloomberg"
+tier = "wire"
+group = "bloomberg"
+credits = ['\(Bloomberg\)\s*(--|[-–—])', '^\s*Bloomberg News\s*$', '©\s*\d{4} Bloomberg']
+
+[[source]]
+domain = "afp.com"
+name = "AFP"
+tier = "wire"
+group = "afp"
+credits = ['\(AFP\)\s*[-–—]', 'Agence France-Presse']
+
+[[source]]
+domain = "dowjones.com"
+name = "Dow Jones Newswires"
+tier = "wire"
+group = "dowjones"
+credits = ['Dow Jones Newswires']
+
+# --- press-release distribution ---
+[[source]]
+domain = "businesswire.com"
+name = "Business Wire"
+tier = "press_release"
+credits = ['-+\s*\(BUSINESS WIRE\)\s*-+']
+
+[[source]]
+domain = "prnewswire.com"
+name = "PR Newswire"
+tier = "press_release"
+credits = ['/PRNewswire(-\w+)?/\s*-+']
+
+[[source]]
+domain = "globenewswire.com"
+name = "GlobeNewswire"
+tier = "press_release"
+credits = ['\(GLOBE NEWSWIRE\)\s*-+']
+
+[[source]]
+domain = "accesswire.com"
+name = "ACCESSWIRE"
+tier = "press_release"
+credits = ['/\s*ACCESSWIRE\s*/']
+
+[[source]]
+domain = "newswire.ca"
+name = "Canada Newswire"
+tier = "press_release"
+credits = ['/CNW/\s*-+']
+
+# --- major outlets ---
+[[source]]
+domain = "wsj.com"
+name = "Wall Street Journal"
+tier = "major"
+group = "dowjones"
+
+[[source]]
+domain = "barrons.com"
+name = "Barron's"
+tier = "major"
+group = "dowjones"
+
+[[source]]
+domain = "marketwatch.com"
+name = "MarketWatch"
+tier = "major"
+group = "dowjones"
+
+[[source]]
+domain = "ft.com"
+name = "Financial Times"
+tier = "major"
+
+[[source]]
+domain = "nytimes.com"
+name = "New York Times"
+tier = "major"
+
+[[source]]
+domain = "washingtonpost.com"
+name = "Washington Post"
+tier = "major"
+
+[[source]]
+domain = "cnbc.com"
+name = "CNBC"
+tier = "major"
+group = "nbcuniversal"
+
+[[source]]
+domain = "nbcnews.com"
+name = "NBC News"
+tier = "major"
+group = "nbcuniversal"
+
+[[source]]
+domain = "economist.com"
+name = "The Economist"
+tier = "major"
+
+[[source]]
+domain = "bbc.com"
+name = "BBC"
+tier = "major"
+group = "bbc"
+
+[[source]]
+domain = "bbc.co.uk"
+name = "BBC"
+tier = "major"
+group = "bbc"
+
+[[source]]
+domain = "theguardian.com"
+name = "The Guardian"
+tier = "major"
+
+[[source]]
+domain = "axios.com"
+name = "Axios"
+tier = "major"
+
+[[source]]
+domain = "politico.com"
+name = "Politico"
+tier = "major"
+
+[[source]]
+domain = "semafor.com"
+name = "Semafor"
+tier = "major"
+
+[[source]]
+domain = "cnn.com"
+name = "CNN"
+tier = "major"
+
+[[source]]
+domain = "foxbusiness.com"
+name = "Fox Business"
+tier = "major"
+group = "fox"
+
+[[source]]
+domain = "businessinsider.com"
+name = "Business Insider"
+tier = "major"
+
+# --- trade and specialist press ---
+[[source]]
+domain = "theinformation.com"
+name = "The Information"
+tier = "trade"
+
+[[source]]
+domain = "techcrunch.com"
+name = "TechCrunch"
+tier = "trade"
+
+[[source]]
+domain = "theverge.com"
+name = "The Verge"
+tier = "trade"
+
+[[source]]
+domain = "statnews.com"
+name = "STAT"
+tier = "trade"
+
+[[source]]
+domain = "endpts.com"
+name = "Endpoints News"
+tier = "trade"
+
+[[source]]
+domain = "fiercepharma.com"
+name = "Fierce Pharma"
+tier = "trade"
+
+[[source]]
+domain = "coindesk.com"
+name = "CoinDesk"
+tier = "trade"
+
+[[source]]
+domain = "theblock.co"
+name = "The Block"
+tier = "trade"
+
+[[source]]
+domain = "spglobal.com"
+name = "S&P Global"
+tier = "trade"
+
+# --- secondary: mostly rewrites ---
+[[source]]
+domain = "investing.com"
+name = "Investing.com"
+tier = "secondary"
+
+[[source]]
+domain = "benzinga.com"
+name = "Benzinga"
+tier = "secondary"
+
+[[source]]
+domain = "fool.com"
+name = "Motley Fool"
+tier = "secondary"
+
+[[source]]
+domain = "seekingalpha.com"
+name = "Seeking Alpha"
+tier = "secondary"
+
+[[source]]
+domain = "zacks.com"
+name = "Zacks"
+tier = "secondary"
+
+[[source]]
+domain = "thestreet.com"
+name = "TheStreet"
+tier = "secondary"
+
+[[source]]
+domain = "investorplace.com"
+name = "InvestorPlace"
+tier = "secondary"
+
+# --- aggregators: never an origin by themselves ---
+[[source]]
+domain = "finance.yahoo.com"
+name = "Yahoo Finance"
+tier = "aggregator"
+group = "yahoo"
+
+[[source]]
+domain = "yahoo.com"
+name = "Yahoo"
+tier = "aggregator"
+group = "yahoo"
+
+[[source]]
+domain = "msn.com"
+name = "MSN"
+tier = "aggregator"
+
+[[source]]
+domain = "news.google.com"
+name = "Google News"
+tier = "aggregator"
+
+[[source]]
+domain = "marketscreener.com"
+name = "MarketScreener"
+tier = "aggregator"
+
+[[source]]
+domain = "biztoc.com"
+name = "BizToc"
+tier = "aggregator"
+
+[[source]]
+domain = "finviz.com"
+name = "Finviz"
+tier = "aggregator"
+
+[[source]]
+domain = "newsbreak.com"
+name = "NewsBreak"
+tier = "aggregator"
+
+[[source]]
+domain = "flipboard.com"
+name = "Flipboard"
+tier = "aggregator"
+
+# --- community: leads only ---
+[[source]]
+domain = "news.ycombinator.com"
+name = "Hacker News"
+tier = "community"
+
+[[source]]
+domain = "reddit.com"
+name = "Reddit"
+tier = "community"
+
+[[source]]
+domain = "x.com"
+name = "X"
+tier = "community"
+group = "x"
+
+[[source]]
+domain = "twitter.com"
+name = "X"
+tier = "community"
+group = "x"
+
+[[source]]
+domain = "stocktwits.com"
+name = "Stocktwits"
+tier = "community"
+
+[[source]]
+domain = "medium.com"
+name = "Medium"
+tier = "community"
+
+[[source]]
+domain = "substack.com"
+name = "Substack"
+tier = "community"
