@@ -187,6 +187,25 @@ Do not give the public demo SnapTrade keys.
 - **Every sentence is checked.** Jev (TypeSafe) reads each line against its numbers before you
   see it, and judged the name, the character, the voice and the page copy.
 
+## The trading agent (your own machine only)
+
+`services/intel` is a long-term investing agent. It follows the companies you hold and the ones on your
+watchlist. It reads their news with Scrapling and works out which outlets are independent of each other
+(twelve sites running one Reuters story count once). It checks each story against SEC filings and
+prediction markets, then proposes a trade only when the evidence clears every check. Every proposal waits
+on `agent.html` for you to approve it.
+
+Fidelity has no trading API, so an approved trade becomes a checklist item you place there yourself.
+Alpaca is the option for hands-off trading, on paper money by default. A guard in code enforces the limits
+in `services/intel/policy.toml`, including a kill switch. The public demo never exposes any of this.
+
+```bash
+cd services/intel && uv venv .venv && uv pip install -p .venv -r requirements.txt
+.venv/Scripts/python -m intel serve --every 60     # then open http://127.0.0.1:4411/agent.html
+```
+
+Details, the gate, and every setting are in [services/intel/README.md](services/intel/README.md).
+
 ## Working on it
 
 - The landing page is `public/index.html` + `public/topo/`; Atty's page is `public/atty/`.

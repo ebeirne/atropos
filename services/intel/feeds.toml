@@ -1,0 +1,46 @@
+# Where the agent looks for news. Three kinds:
+#   [[feed]]        broad RSS/Atom feeds; an item is kept only if its title names a followed company
+#   [ticker_feeds]  per-company feeds, filled in with each followed ticker ({ticker}) or name ({name})
+#   [gdelt]         GDELT's article search, one query per followed company: many outlets, real article URLs,
+#                   which is what corroboration needs most
+# Every feed is polled with If-None-Match / If-Modified-Since, so an unchanged feed costs a 304.
+
+lookback_days = 3          # ignore items published longer ago than this
+max_articles = 60          # most new articles fetched per cycle
+
+[[feed]]
+name = "CNBC Business"
+url = "https://www.cnbc.com/id/10001147/device/rss/rss.html"
+
+[[feed]]
+name = "CNBC Top News"
+url = "https://www.cnbc.com/id/100003114/device/rss/rss.html"
+
+[[feed]]
+name = "MarketWatch Top Stories"
+url = "https://feeds.content.dowjones.io/public/rss/mw_topstories"
+
+[[feed]]
+name = "NYT Business"
+url = "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml"
+
+[[feed]]
+name = "BBC Business"
+url = "https://feeds.bbci.co.uk/news/business/rss.xml"
+
+[[feed]]
+name = "PR Newswire"
+url = "https://www.prnewswire.com/rss/news-releases-list.rss"
+
+[[feed]]
+name = "GlobeNewswire public companies"
+url = "https://www.globenewswire.com/RssFeed/orgclass/1/feedTitle/GlobeNewswire%20-%20News%20about%20Public%20Companies"
+
+[ticker_feeds]
+urls = ["https://feeds.finance.yahoo.com/rss/2.0/headline?s={ticker}&region=US&lang=en-US"]
+
+[gdelt]
+enabled = true
+timespan = "3d"
+max_records = 50
+min_interval_seconds = 10  # GDELT asks for one request every 5 seconds per IP, and is strict about it

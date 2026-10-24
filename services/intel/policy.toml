@@ -1,0 +1,30 @@
+# How the agent is allowed to trade. The guard enforces every line; nothing the model writes can loosen it.
+# Edit this file, not the code, to change how aggressive it is.
+
+mode = "approve"        # "approve": every order waits for you. "auto": orders that pass the guard go straight to the broker.
+broker = "proposals"    # "proposals": orders are a checklist you place by hand (Fidelity has no trading API). "alpaca": sent to Alpaca.
+allow_live = false      # Alpaca only. Live trading also needs ALPACA_LIVE=1 in the environment; otherwise it's paper trading.
+
+[gate]
+# What a story needs before the agent may propose a trade on it.
+require_primary = true          # an SEC filing, an official release, or the company's own press release naming the ticker
+min_independent_major = 2       # independent owners at wire or major-outlet tier, beyond the primary source
+major_weight = 0.75             # the tier weight that counts as "major" (see sources.toml)
+max_story_age_days = 7          # act on news while it's news; older stories only feed context
+min_conviction = 0.6            # the model's conviction (0-1) below which nothing is proposed
+market_min_volume = 5000        # a prediction market only counts above this traded volume (USD)
+market_max_spread = 0.08        # ... and with a bid/ask spread at or under this (in probability points)
+block_on_market_contradiction = true
+
+[sizing]
+base_position_pct = 3.0         # % of equity for a new position at full conviction
+max_position_pct = 5.0          # no holding above this % of equity after an order
+min_cash_pct = 10.0             # keep at least this % of equity in cash
+min_order_usd = 50
+max_order_usd = 2500
+
+[limits]
+max_trades_per_day = 3
+max_weekly_turnover_pct = 15.0  # buys + sells in the last 7 days, as % of equity
+max_positions = 25
+blocked_tickers = []            # never trade these, whatever the evidence

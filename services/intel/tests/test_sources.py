@@ -40,3 +40,17 @@ def test_unknown_tier_is_rejected(tmp_path):
     bad.write_text('[tiers]\nwire = 0.9\n\n[[source]]\ndomain = "example.com"\nname = "Example"\ntier = "rumor"\n')
     with pytest.raises(ValueError, match="rumor"):
         Registry(bad)
+
+
+def test_load_env_reads_dotenv_without_overriding(tmp_path, monkeypatch):
+    from intel.policy import load_env
+    env = tmp_path / ".env"
+    env.write_text('# comment\nINTEL_T1="quoted value"\nINTEL_T2=plain  # trailing note\nINTEL_T3=keep\n\nnot a line\n')
+    monkeypatch.setenv("INTEL_T3", "already set")
+    for k in ("INTEL_T1", "INTEL_T2"):
+        monkeypatch.delenv(k, raising=False)
+    load_env(env)
+    import os
+    assert (os.environ["INTEL_T1"], os.environ["INTEL_T2"], os.environ["INTEL_T3"]) == ("quoted value", "plain", "already set")
+    for k in ("INTEL_T1", "INTEL_T2"):
+        monkeypatch.delenv(k)

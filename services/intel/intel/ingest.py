@@ -12,7 +12,7 @@ UA = "Atropos/1.0 (personal research tool; evidence for long-term trades)"
 BLOCKED = {401, 403, 407, 429, 451, 503}
 
 
-def _header(headers, name):
+def header(headers, name):
     return next((v for k, v in (headers or {}).items() if k.lower() == name), None)
 
 
@@ -22,20 +22,20 @@ def ingest(response, store, registry, *, requested_url=None, fetched_at=None):
     credit = detect_credit(article, registry)
     src = origin(article, registry, credit)
     doc_id, new = store.put(article, origin=src, credit=credit, fetched_at=fetched_at, status=response.status,
-                            raw=response.body, etag=_header(response.headers, "etag"),
-                            last_modified=_header(response.headers, "last-modified"), requested_url=requested_url)
+                            raw=response.body, etag=header(response.headers, "etag"),
+                            last_modified=header(response.headers, "last-modified"), requested_url=requested_url)
     return {"id": doc_id, "new": new, "status": response.status, "url": article.url, "title": article.title,
             "published": article.published, "origin": src.name, "tier": src.tier,
             "credit": credit.name if credit else None, "paywalled": article.paywalled, "stub": article.stub,
             "chars": len(article.text)}
 
 
-def _scrapling_get(url, headers):
+def scrapling_get(url, headers, retries=3):
     from scrapling.fetchers import Fetcher
-    return Fetcher.get(url, timeout=20, stealthy_headers=False, follow_redirects=True, headers=headers)
+    return Fetcher.get(url, timeout=20, stealthy_headers=False, follow_redirects=True, headers=headers, retries=retries)
 
 
-def fetch(urls, store, registry, *, get=_scrapling_get):
+def fetch(urls, store, registry, *, get=scrapling_get):
     """Fetch and ingest each URL. `get(url, headers)` returns a Scrapling Response; tests pass their own."""
     out = []
     for url in urls:
@@ -53,8 +53,8 @@ def fetch(urls, store, registry, *, get=_scrapling_get):
             continue
         if response.status == 304 and prev:
             store.record_fetch(url, status=304, document_id=prev["document_id"],
-                               etag=_header(response.headers, "etag") or prev["etag"],
-                               last_modified=_header(response.headers, "last-modified") or prev["last_modified"])
+                               etag=header(response.headers, "etag") or prev["etag"],
+                               last_modified=header(response.headers, "last-modified") or prev["last_modified"])
             out.append({"id": prev["document_id"], "new": False, "status": 304, "url": url})
         elif response.status >= 400:
             error = "blocked" if response.status in BLOCKED else "http error"

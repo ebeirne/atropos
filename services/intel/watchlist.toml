@@ -1,0 +1,32 @@
+# The companies the agent follows. Everything you hold is followed automatically (from your Fidelity holdings
+# via atropos, or Alpaca); this list adds the ones you'd consider buying. Only companies here or in your
+# holdings can become a trade. ETFs are fine to hold but have no company news, so they're never traded on news.
+#
+# ticker   as your broker writes it
+# name     how the press writes it; aliases catch the other spellings ("Alphabet" / "Google")
+
+[[company]]
+ticker = "NVDA"
+name = "Nvidia"
+
+[[company]]
+ticker = "MSFT"
+name = "Microsoft"
+
+[[company]]
+ticker = "AAPL"
+name = "Apple"
+
+[[company]]
+ticker = "AMZN"
+name = "Amazon"
+
+[[company]]
+ticker = "GOOGL"
+name = "Alphabet"
+aliases = ["Google"]
+
+[[company]]
+ticker = "JPM"
+name = "JPMorgan"
+aliases = ["JPMorgan Chase", "JP Morgan"]

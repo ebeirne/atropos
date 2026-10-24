@@ -1,0 +1,39 @@
+{
+  "cik": "1999001",
+  "entityType": "operating",
+  "sic": "3569",
+  "sicDescription": "General Industrial Machinery & Equipment, NEC",
+  "insiderTransactionForOwnerExists": 0,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "Northwind Robotics, Inc.",
+  "tickers": ["NWRB"],
+  "exchanges": ["Nasdaq"],
+  "ein": "881234567",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "1231",
+  "stateOfIncorporation": "DE",
+  "addresses": {
+    "business": {"street1": "400 Innovation Way", "city": "San Jose", "stateOrCountry": "CA", "zipCode": "95134"}
+  },
+  "formerNames": [],
+  "filings": {
+    "recent": {
+      "accessionNumber": ["0001193125-26-412377", "0001193125-26-412290", "0001999001-26-000044", "0001999001-26-000031", "0001999001-25-000008"],
+      "filingDate": ["2026-10-22", "2026-10-22", "2026-09-15", "2026-08-06", "2025-02-12"],
+      "reportDate": ["", "2026-10-21", "2026-09-11", "2026-06-30", "2025-02-12"],
+      "acceptanceDateTime": ["2026-10-22T08:31:47.000Z", "2026-10-22T07:05:33.000Z", "2026-09-15T17:02:41.000Z", "2026-08-06T16:12:09.000Z", "2025-02-12T16:05:12.000Z"],
+      "act": ["33", "34", "", "34", "34"],
+      "form": ["425", "8-K", "4", "10-Q", "8-K"],
+      "fileNumber": ["001-40115", "001-41877", "", "001-41877", "001-41877"],
+      "filmNumber": ["261144120", "261144032", "", "261097815", "25621904"],
+      "items": ["", "1.01,9.01", "", "", "2.02,9.01"],
+      "core_type": ["425", "8-K", "4", "10-Q", "8-K"],
+      "size": [48210, 312877, 6120, 4876302, 205114],
+      "isXBRL": [0, 1, 0, 1, 1],
+      "isInlineXBRL": [0, 1, 0, 1, 1],
+      "primaryDocument": ["d812377d425.htm", "d812290d8k.htm", "xslF345X05/wk-form4_1789506161.xml", "nwrb-20260630.htm", "nwrb-20250212.htm"],
+      "primaryDocDescription": ["425", "8-K", "FORM 4", "10-Q", "8-K"]
+    },
+    "files": []
+  }
+}

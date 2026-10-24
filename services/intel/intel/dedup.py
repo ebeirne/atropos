@@ -3,8 +3,9 @@
 Twelve sites running the same Reuters story are one source. Copies are found three ways: the same canonical
 URL, the same long headline on the same day, or body text that mostly contains the other's (word 5-gram
 containment, so a local paper running the first half of a wire story still matches). Each copy cluster gets
-one origin: a wire credit in any member wins ("(Reuters) -", "--(BUSINESS WIRE)--", an AP byline), then a
-canonical link pointing at another site (a repost naming its original), then the earliest member's own site.
+one origin: a member on a primary source's own site wins (an 8-K repeating the company's release is still the
+record), then a wire credit in any member ("(Reuters) -", "--(BUSINESS WIRE)--", an AP byline), then a canonical
+link pointing at another site (a repost naming its original), then the earliest member's own site.
 Origins under one owner (WSJ, MarketWatch, Barron's) count once, at the best tier among them. Paywall
 teasers are left out: a headline behind a login isn't evidence.
 
@@ -183,11 +184,14 @@ def cluster(articles, registry):
     out = []
     for members in groups.values():
         members.sort(key=lambda m: (m.published or "9999", m.url))
+        sites = [registry.lookup(m.url) for m in members]
+        # an 8-K that reproduces the company's release word for word is still the record itself
+        by_primary = next((s for s in sites if s.tier == "primary"), None)
         by_credit = next((s for s in (detect_credit(m, registry) for m in members) if s), None)
         found = [origin(m, registry) for m in members]
-        by_canonical = next((s for m, s in zip(members, found) if s.group != registry.lookup(m.url).group), None)
+        by_canonical = next((s for s, own in zip(found, sites) if s.group != own.group), None)
         by_site = next((s for s in found if s.tier != "aggregator"), found[0])
-        out.append(Cluster(members, by_credit or by_canonical or by_site))
+        out.append(Cluster(members, by_primary or by_credit or by_canonical or by_site))
     return out
 
 

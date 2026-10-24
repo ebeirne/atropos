@@ -1,0 +1,18 @@
+{
+  "accounts": [
+    {"id": "acct-ind", "broker": "Fidelity", "name": "Individual", "number": "...4821"},
+    {"id": "acct-roth", "broker": "Fidelity", "name": "Roth IRA", "number": "...9930"}
+  ],
+  "positions": [
+    {"account": "Individual", "broker": "Fidelity", "type": "equity", "symbol": "NWRB", "description": "Northwind Robotics Inc",
+     "units": 10, "price": 125.0, "value": 1250.0, "avgCost": 98.4, "openPnl": 266.0},
+    {"account": "Individual", "broker": "Fidelity", "type": "equity", "symbol": "SPY", "description": "SPDR S&P 500 ETF",
+     "units": 20, "price": 668.2, "value": 13364.0, "avgCost": 512.1, "openPnl": 3122.0},
+    {"account": "Roth IRA", "broker": "Fidelity", "type": "equity", "symbol": "NWRB", "description": "Northwind Robotics Inc",
+     "units": 6, "price": 125.0, "value": 750.0, "avgCost": 110.0, "openPnl": 90.0},
+    {"account": "Roth IRA", "broker": "Fidelity", "type": "option", "symbol": "NWRB 261120C00140000", "underlying": "NWRB",
+     "right": "call", "strike": 140, "expiry": "2026-11-20", "units": 2, "price": 3.1, "value": 620.0, "avgCost": 2.5}
+  ],
+  "cash": 5000,
+  "source": "snaptrade"
+}

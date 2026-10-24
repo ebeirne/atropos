@@ -6,7 +6,7 @@ import intel.__main__ as cli
 from intel import ingest as ingest_mod
 from intel.ingest import UA, fetch, ingest
 from intel.store import Store
-from tests.conftest import URLS, response
+from tests.conftest import URLS, FakeWeb, response
 
 
 @pytest.fixture
@@ -14,20 +14,6 @@ def store(tmp_path):
     s = Store(tmp_path / "evidence.db")
     yield s
     s.close()
-
-
-class FakeWeb:
-    """Stands in for Scrapling's Fetcher: serves fixtures by URL and remembers the headers it was sent."""
-
-    def __init__(self, pages):
-        self.pages, self.sent = pages, []
-
-    def __call__(self, url, headers):
-        self.sent.append(dict(headers))
-        page = self.pages[url]
-        if isinstance(page, Exception):
-            raise page
-        return page() if callable(page) else page
 
 
 def test_ingest_files_a_syndicated_copy_under_its_wire(store, registry):
