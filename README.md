@@ -199,12 +199,15 @@ Fidelity has no trading API, so an approved trade becomes a checklist item you p
 Alpaca is the option for hands-off trading, on paper money by default. A guard in code enforces the limits
 in `services/intel/policy.toml`, including a kill switch. The public demo never exposes any of this.
 
-```bash
-cd services/intel && uv venv .venv && uv pip install -p .venv -r requirements.txt
-.venv/Scripts/python -m intel serve --every 60     # then open http://127.0.0.1:4411/agent.html
+On Windows, one line in PowerShell sets it all up (tools, code, keys, start at login) and opens the agent page,
+where you link Fidelity:
+
+```powershell
+irm https://raw.githubusercontent.com/ebeirne/atropos/main/scripts/setup-agent.ps1 | iex
 ```
 
-Details, the gate, and every setting are in [services/intel/README.md](services/intel/README.md).
+The step-by-step guide, for whoever will use it, is [SETUP-AGENT.md](SETUP-AGENT.md). How it works, the gate, and
+every setting are in [services/intel/README.md](services/intel/README.md).
 
 ## Working on it
 

@@ -114,16 +114,18 @@
 
     <section class="block offline" id="offline" aria-label="Start the agent" hidden>
       <h2 class="sec">The agent runs on your own machine</h2>
-      <p class="sub">It reads your holdings and places orders for you, so it never runs on the public site. Start it
-        next to Atropos and open this page from there.</p>
-      <ol>
-        <li>Put your keys in Atropos's <span class="num">.env</span>: <span class="num">ANTHROPIC_API_KEY</span>, and
-          <span class="num">SEC_USER_AGENT</span> with your name and email.</li>
-        <li>Start the agent:<code>cd services/intel
-python -m intel serve --every 60</code></li>
-        <li>Start Atropos (<span class="num">npm start</span>) and open
-          <span class="num">http://127.0.0.1:4411/agent.html</span>.</li>
-      </ol>
+      <p class="sub">It reads your holdings and prepares orders for you, so it never runs on the public site. On a
+        Windows computer, one line in PowerShell sets it up and opens this page from there:</p>
+      <code>irm https://raw.githubusercontent.com/ebeirne/atropos/main/scripts/setup-agent.ps1 | iex</code>
+      <p class="sub" style="margin-top:12px">Already set up? Start it with <span class="num">scripts\start-agent.cmd</span>
+        and open <span class="num">http://127.0.0.1:4411/agent.html</span>. The full guide is
+        <a href="https://github.com/ebeirne/atropos/blob/main/SETUP-AGENT.md" style="color:var(--accent)">SETUP-AGENT.md</a>.</p>
+    </section>
+
+    <section class="block" id="account" aria-label="Your account" hidden>
+      <h2 class="sec">Your account</h2>
+      <p class="sub" id="acctText">Checking…</p>
+      <div class="actions" id="acctActions"></div>
     </section>
 
     <section class="block" id="waiting" aria-label="Waiting for you" hidden>
@@ -184,7 +186,7 @@ python -m intel serve --every 60</code></li>
   function say(text) { $('msg').textContent = text || ''; }
   function show(on) {
     $('offline').hidden = on; $('controls').hidden = !on;
-    ['waiting', 'orders', 'stories'].forEach(function (id) { $(id).hidden = !on; });
+    ['account', 'waiting', 'orders', 'stories'].forEach(function (id) { $(id).hidden = !on; });
   }
 
   function loadStatus() {
@@ -321,13 +323,43 @@ python -m intel serve --every 60</code></li>
     }
   });
 
+  // the account the agent sizes against: Fidelity through SnapTrade, read-only
+  function link() {
+    var btn = $('linkFD'); if (btn) { btn.disabled = true; btn.textContent = 'Opening…'; }
+    fetch('/api/link?broker=FIDELITY&return=agent').then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.url) throw new Error(j.error || 'no link');
+      window.location.href = j.url;
+    }).catch(function (e) { say('Could not open the Fidelity link: ' + e.message); if (btn) { btn.disabled = false; btn.textContent = 'Link Fidelity'; } });
+  }
+  function loadAccount() {
+    return fetch('/api/portfolio').then(function (r) { return r.json(); }).then(function (pf) {
+      var linkBtn = el('button', { class: 'pillbtn go', id: 'linkFD', type: 'button', on: { click: link } }, 'Link Fidelity');
+      if (pf.source === 'snaptrade') {
+        var eq = (pf.positions || []).filter(function (p) { return p.type === 'equity'; });
+        var value = eq.reduce(function (s, p) { return s + (p.value || 0); }, 0) + (pf.cash || 0);
+        var names = (pf.accounts || []).map(function (a) { return (a.broker || '') + ' ' + (a.name || ''); }).join(', ');
+        $('acctText').textContent = 'Linked, read-only: ' + names + '. ' + eq.length + ' holdings, ' + usd(value) +
+          ' in all. The agent sizes every trade against this and can never place an order in it.';
+        $('acctActions').replaceChildren();
+      } else if (/keys not set/i.test(pf.reason || '')) {
+        $('acctText').textContent = 'SnapTrade isn’t set up yet: put SNAPTRADE_CLIENT_ID and SNAPTRADE_CONSUMER_KEY in .env (run the setup again to be asked for them), then restart.';
+        $('acctActions').replaceChildren();
+      } else {
+        $('acctText').textContent = (pf.reason && !/no brokerage/i.test(pf.reason) ? pf.reason + '. ' : 'No account linked yet. ') +
+          'Link Fidelity so the agent can size trades against what you actually hold. The link is read-only: it can see holdings and never trade. Until then nothing is proposed.';
+        $('acctActions').replaceChildren(linkBtn);
+      }
+      if (/[?&]linked=fidelity/.test(location.search)) say(pf.source === 'snaptrade' ? 'Fidelity is linked.' : 'Linked. It can take a minute for the holdings to show; reload then.');
+    }, function () { $('acctText').textContent = 'Couldn’t read the account from Atropos.'; });
+  }
+
   function watch() {
     loadStatus().then(function (h) { if (h && h.running) setTimeout(watch, 5000); else refresh(); });
   }
   function refresh() {
     return loadStatus().then(function (h) {
       if (!h) return;
-      return Promise.all([loadProposals(), loadOrders(), loadStories()].map(function (p) { return p.catch(function (e) { say(e.message); }); }));
+      return Promise.all([loadAccount(), loadProposals(), loadOrders(), loadStories()].map(function (p) { return p.catch(function (e) { say(e.message); }); }));
     });
   }
   refresh();
