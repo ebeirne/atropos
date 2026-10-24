@@ -13,8 +13,8 @@
 // drift the way it moves, then settle. window.dustPulse() brightens everything
 // for a moment (the console calls it when a run lands).
 //
-// With data-video, the face at rest is a filmed loop (hero/face.mp4) shown at its
-// own fine grain, and the dust is sampled from the film's first frame (the poster)
+// With data-video, the face at rest is a filmed loop (hero/face.mp4) set in the
+// same type as the dust, and the dust is sampled from the film's first frame (the poster)
 // so the two line up grain for grain. The first bit of scroll hands the film over
 // to the dust, which then blows away exactly as the drawn face does.
 //
@@ -22,7 +22,7 @@
 //   <canvas id="dust" data-video="hero/face.mp4" data-poster="hero/face.jpg">   the filmed face
 //
 //   <canvas id="dust" data-scene="stars">   the sky alone (the console)
-//   ?cell=4x7   cell size in CSS px (default 4x7, 3x5 on phones)
+//   ?cell=4x7   cell size in CSS px (default 4x7; 3x5 on phones and with the film)
 (function () {
   var canvas = document.getElementById('dust');
   if (!canvas) return;
@@ -70,7 +70,9 @@
   var NOSE_X = 0.303, HORIZON = 0.80, STAR_Y = 0.548, BEACON_DX = 0.085, FRAME_SCALE = 1;
   // the filmed face's landmarks in its own unit frame, measured on its first frame; its face is smaller in
   // the frame than the drawing's, so the frame is drawn 1.32x larger to keep the face the same size
-  var FILM = { NOSE_X: 0.191, HORIZON: 0.781, STAR_Y: 0.603, BEACON_DX: 0.066, SCALE: 1.32 };
+  // GAIN turns the film's light into dust counts (the type reads 9 as full), FLOOR drops its faint haze, and
+  // DUST brightens the face's own dust to match, so the face doesn't dim when the film hands over
+  var FILM = { NOSE_X: 0.191, HORIZON: 0.781, STAR_Y: 0.603, BEACON_DX: 0.066, SCALE: 1.32, GAIN: 16, FLOOR: 0.03, DUST: 1.5 };
 
   function tracePath(ctx, M, P) {
     var n = P.length;
@@ -188,7 +190,7 @@
 
   /** The face from the film's first frame: dust lands where the frame is lit, loosest behind the face. */
   function sampleFilmFace(img, n) {
-    var M = 420, c = document.createElement('canvas'); c.width = c.height = M;
+    var M = 600, c = document.createElement('canvas'); c.width = c.height = M;
     var x = c.getContext('2d', { willReadFrequently: true });
     x.drawImage(img, 0, 0, M, M);   // the downscale averages the stipple into a density
     var lum = x.getImageData(0, 0, M, M).data, top = 0.2, out = [], tries = 0;
@@ -201,8 +203,10 @@
       tries++;
       var u = 0.16 + R() * 0.84, v = top + R() * (FILM.HORIZON - top - 0.004);
       var px = Math.floor(u * M), py = Math.floor(v * M), d = lum[(py * M + px) * 4] / 255;
-      if (R() > d * 1.6) continue;
-      var loose = smooth(0.05, 0.32, u - front[py]) * 0.85 + (R() - 0.5) * 0.15;
+      var keep = Math.min(1, d * 1.6);
+      if (R() > keep * keep) continue;   // squared, so the face's shadows stay dark when it turns to dust
+      // tight across the face to the back of the head, loose in the streams behind it, as the drawn face is
+      var loose = smooth(0.16, 0.42, u - front[py]) * 0.7 + (R() - 0.5) * 0.15;
       out.push([u + (R() - 0.5) / M, v + (R() - 0.5) / M, Math.min(1, Math.max(0, loose)), R(), 0.45 + 0.55 * Math.min(1, d * 1.4)]);
     }
     return out;
@@ -250,7 +254,7 @@
     'uniform float uTime, uProg, uScrollY, uVel, uAfter, uScale;',
     'uniform vec3 uMouse;',
     'uniform vec2 uWind;',
-    'uniform float uPulse, uHand;',     // uHand: how far the film has handed the face to the dust (1 without a film)
+    'uniform float uPulse, uHand, uMoveK, uFaceK;',   // uMoveK: 1 / the frame's scale, so a larger frame doesn't blow away faster     // uHand: how far the film has handed the face to the dust (1 without a film)
     'out vec3 vC;',
     'float h1(float n) { return fract(sin(n * 127.1) * 43758.5453); }',
     'void main() {',
@@ -262,13 +266,13 @@
     '    float age = fract(uTime * (0.045 + 0.075 * fract(seed * 7.31)) + seed * 17.0);',
     '    vec2 dir = normalize(vec2(1.0, (aA.y - 0.52) * (1.1 + uProg * 0.9) - 0.08));',
     '    vec2 perp = vec2(-dir.y, dir.x);',
-    '    float travel = age * (0.35 + 0.75 * fract(seed * 5.13)) * S * L * (1.0 + uProg * 1.6);',
-    '    float wob = sin(age * 6.0 + aA.y * 34.0 + seed * 2.0 + uTime * 0.35) * (0.035 + 0.06 * uProg) * S * age * L;',
+    '    float travel = age * (0.35 + 0.75 * fract(seed * 5.13)) * S * uMoveK * L * (1.0 + uProg * 1.6);',
+    '    float wob = sin(age * 6.0 + aA.y * 34.0 + seed * 2.0 + uTime * 0.35) * (0.035 + 0.06 * uProg) * S * uMoveK * age * L;',
     '    vec2 jit = vec2(sin(uTime * 0.9 + seed * 61.0), cos(uTime * 0.7 + seed * 37.0)) * 1.4 * (1.0 - L);',
     '    pos = home + dir * travel + perp * wob + jit;',
     '    float fade = pow(1.0 - age, 1.25) * smoothstep(0.0, 0.05, age);',
     '    b *= mix(0.8 + 0.2 * sin(uTime * 1.7 + seed * 90.0), fade, L);',
-    '    b *= (1.0 - smoothstep(0.72, 1.0, uProg)) * uHand;',
+    '    b *= (1.0 - smoothstep(0.72, 1.0, uProg)) * uHand * uFaceK;',
     '    if (kind > 3.5) {',
     '      if (pos.y > H) b = 0.0;',
     '      float d = H - pos.y;',
@@ -342,23 +346,51 @@
     '#version 300 es',
     'void main() { vec2 p = vec2(gl_VertexID == 1 ? 3.0 : -1.0, gl_VertexID == 2 ? 3.0 : -1.0); gl_Position = vec4(p, 0.0, 1.0); }',
   ].join('\n');
-  // the type pass: one glyph per cell, chosen by how much dust is there and which way it moves; the film,
-  // when there is one, is laid over the type at its own grain (lighter wins) and feathered at its edges
+  // the film pass: the film poured into the same grid the dust lands in, one cell at a time. A cell takes the
+  // film's stipple under it as dust (its average light) and the way its dashes run (the structure tensor of
+  // the stipple), so the filmed face is set in the same type as the sky around it. As the scroll begins, the
+  // film is carried off on the same wind the dust rides while it hands over to the dust sampled from it.
+  var FS_F = [
+    '#version 300 es',
+    'precision highp float;',
+    'uniform sampler2D uFilm;',
+    'uniform vec2 uCell, uGrid;',       // css px per cell, cells
+    'uniform vec4 uFilmRect;',          // left, top, size (css px), opacity
+    'uniform float uGain, uFloor, uProg, uScale;',
+    'out vec4 o;',
+    'float lum(vec2 p) { return texture(uFilm, p).r; }',
+    'void main() {',
+    '  vec2 cell = vec2(floor(gl_FragCoord.x), uGrid.y - 1.0 - floor(gl_FragCoord.y));',
+    '  vec2 q = ((cell + 0.5) * uCell - uFilmRect.xy) / uFilmRect.z;',
+    '  vec2 dir = normalize(vec2(1.0, (q.y - 0.52) * 1.4 - 0.08));',
+    '  q -= dir * uProg * (0.03 + 0.22 * smoothstep(0.18, 0.75, q.x)) * (1.0 + 0.3 * sin(q.y * 90.0 + q.x * 40.0));',
+    '  if (q.x <= 0.0 || q.y <= 0.0 || q.x >= 1.0 || q.y >= 1.0) { o = vec4(0.0); return; }',
+    '  float edge = smoothstep(0.0, 0.06, q.x) * smoothstep(0.0, 0.08, 1.0 - q.x) * smoothstep(0.0, 0.04, q.y) * smoothstep(0.0, 0.06, 1.0 - q.y);',
+    '  vec2 h = uCell / uFilmRect.z / 3.0;',
+    '  float s = 0.0, jxx = 0.0, jyy = 0.0, jxy = 0.0;',
+    '  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {',
+    '    vec2 p = q + vec2(float(i), float(j)) * h;',
+    '    s += lum(p);',
+    '    float gx = lum(p + vec2(h.x * 0.5, 0.0)) - lum(p - vec2(h.x * 0.5, 0.0));',
+    '    float gy = lum(p + vec2(0.0, h.y * 0.5)) - lum(p - vec2(0.0, h.y * 0.5));',
+    '    jxx += gx * gx; jyy += gy * gy; jxy += gx * gy;',
+    '  }',
+    '  float b = pow(max(0.0, s / 9.0 - uFloor) / (1.0 - uFloor), 0.8) * uGain * edge * uFilmRect.w;',
+    // the dashes run across the gradient: (cos 2t, sin 2t) of that direction, kept only where they clearly run one way
+    '  vec2 ori = -vec2(jxx - jyy, 2.0 * jxy) / (jxx + jyy + 1e-4);',
+    '  ori *= smoothstep(0.45, 0.9, length(ori)) * (1.0 - smoothstep(0.25, 0.45, s / 9.0));',
+    '  o = vec4(b, ori * b, 0.0) * uScale;',
+    '}',
+  ].join('\n');
+
+  // the type pass: one glyph per cell, chosen by how much dust is there and which way it moves
   var FS_Q = [
     '#version 300 es',
     'precision highp float;',
-    'uniform sampler2D uGridTex, uAtlas, uFilm;',
+    'uniform sampler2D uGridTex, uAtlas;',
     'uniform vec2 uCellDev, uGrid;',
     'uniform float uCanvasH, uGlyphs, uUnscale, uOri, uTime;',
     'uniform vec3 uInk, uBg;',
-    'uniform vec4 uFilmRect;',          // left, top, size (device px), opacity
-    'float film(vec2 fc) {',
-    '  if (uFilmRect.w < 0.003) return 0.0;',
-    '  vec2 q = (fc - uFilmRect.xy) / uFilmRect.z;',
-    '  if (q.x <= 0.0 || q.y <= 0.0 || q.x >= 1.0 || q.y >= 1.0) return 0.0;',
-    '  float edge = smoothstep(0.0, 0.06, q.x) * smoothstep(0.0, 0.08, 1.0 - q.x) * smoothstep(0.0, 0.04, q.y) * smoothstep(0.0, 0.06, 1.0 - q.y);',
-    '  return texture(uFilm, q).r * edge * uFilmRect.w;',
-    '}',
     'out vec4 o;',
     'float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
     'void main() {',
@@ -379,7 +411,6 @@
     '    float a = texture(uAtlas, vec2((idx + uv.x) / uGlyphs, uv.y)).a;',
     '    col = mix(uBg, uInk, a * clamp(0.22 + 0.16 * b, 0.0, 1.0));',
     '  }',
-    '  col = max(col, uInk * film(fc));',
     '  o = vec4(col, 1.0);',
     '}',
   ].join('\n');
@@ -398,8 +429,8 @@
     for (var i = 0; i < n; i++) { var name = gl.getActiveUniform(p, i).name; u[name] = gl.getUniformLocation(p, name); }
     return { p: p, u: u };
   }
-  var P, Q;
-  try { P = program(VS_P, FS_P); Q = program(VS_Q, FS_Q); }
+  var P, Q, F;
+  try { P = program(VS_P, FS_P); Q = program(VS_Q, FS_Q); F = program(VS_Q, FS_F); }
   catch (e) { console.warn('dust:', e.message); document.documentElement.classList.add('no-dust'); return; }
 
   var vao = gl.createVertexArray(); gl.bindVertexArray(vao);
@@ -421,7 +452,7 @@
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);   // keep the stipple crisp when enlarged
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     if (reduce) return;
@@ -475,12 +506,13 @@
   function size() {
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var cssW = canvas.clientWidth || innerWidth, cssH = canvas.clientHeight || innerHeight;
-    var cell = (params.get('cell') || (cssW < 560 ? '3x5' : '4x7')).split('x').map(Number);
+    // the filmed face needs the finer type to keep its features; the drawn face and the sky read well at 4x7
+    var cell = (params.get('cell') || (film || cssW < 560 ? '3x5' : '4x7')).split('x').map(Number);
     G.dpr = dpr; G.cssW = cssW; G.cssH = cssH;
     G.cw = Math.max(3, Math.round(cell[0] * dpr)); G.ch = Math.max(5, Math.round((cell[1] || cell[0] * 1.7) * dpr));
     G.w = Math.round(cssW * dpr); G.h = Math.round(cssH * dpr);
     canvas.width = G.w; canvas.height = G.h;
-    G.cols = Math.ceil(G.w / G.cw); G.rows = Math.ceil(G.h / G.ch);
+    G.cols = Math.max(1, Math.ceil(G.w / G.cw)); G.rows = Math.max(1, Math.ceil(G.h / G.ch));
     G.dust = Math.min(NDUST, Math.round(cssW * cssH / 210));
     gl.bindTexture(gl.TEXTURE_2D, gridTex);
     if (floatGrid) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, G.cols, G.rows, 0, gl.RGBA, gl.HALF_FLOAT, null);
@@ -544,8 +576,10 @@
     var after = Math.min(1, Math.max(0, (prog - 0.85) / 0.15));
     var lift = Math.min(y, hero ? hero.offsetHeight : 0) * 0.16;
     var H = L.H0 - lift;
-    // the film holds the face at rest; the first bit of scroll fades it as the dust takes its place
-    var filmA = filmTex ? 1 - smooth(0, 0.16, prog) : 0, hand = filmTex ? smooth(0, 0.12, prog) : 1;
+    // the film holds the face at rest; the first bit of scroll carries it off as the dust takes its place
+    // (the dust eases in a little behind the film's fade: where both land in one cell they add up, and this
+    // keeps the face at one brightness through the handover)
+    var filmA = filmTex ? 1 - smooth(0.0, 0.22, prog) : 0, hand = filmTex ? Math.pow(1 - filmA, 1.6) : 1;
     filmFrame(filmA > 0, now);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -564,9 +598,21 @@
     gl.uniform3f(u.uMouse, mouse.x, mouse.y, mouse.z);
     gl.uniform2f(u.uWind, mouse.wx / 1200 * ws, mouse.wy / 1200 * ws);
     gl.uniform1f(u.uPulse, pulse);
-    gl.uniform1f(u.uHand, hand);
+    gl.uniform1f(u.uHand, hand); gl.uniform1f(u.uMoveK, 1 / FRAME_SCALE); gl.uniform1f(u.uFaceK, filmTex ? FILM.DUST : 1);
     gl.bindVertexArray(vao);
     gl.drawArrays(gl.POINTS, 0, FIXED + G.dust);
+    if (filmA > 0.003) {   // the film, poured into the same cells
+      gl.useProgram(F.p); u = F.u;
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, filmTex); gl.uniform1i(u.uFilm, 0);
+      gl.uniform2f(u.uCell, G.cw / G.dpr, G.ch / G.dpr);
+      gl.uniform2f(u.uGrid, G.cols, G.rows);
+      gl.uniform4f(u.uFilmRect, L.left, L.top0 - lift, L.S, filmA);
+      gl.uniform1f(u.uGain, FILM.GAIN); gl.uniform1f(u.uFloor, FILM.FLOOR);
+      gl.uniform1f(u.uProg, smooth(0.0, 0.22, prog));
+      gl.uniform1f(u.uScale, floatGrid ? 1 : 0.16);
+      gl.bindVertexArray(qvao);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
     gl.disable(gl.BLEND);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -574,8 +620,6 @@
     gl.useProgram(Q.p); u = Q.u;
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, gridTex); gl.uniform1i(u.uGridTex, 0);
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, atlasTex); gl.uniform1i(u.uAtlas, 1);
-    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, filmTex || atlasTex); gl.uniform1i(u.uFilm, 2);
-    gl.uniform4f(u.uFilmRect, L.left * G.dpr, (L.top0 - lift) * G.dpr, L.S * G.dpr, filmA);
     gl.uniform2f(u.uCellDev, G.cw, G.ch); gl.uniform2f(u.uGrid, G.cols, G.rows);
     gl.uniform1f(u.uCanvasH, G.h); gl.uniform1f(u.uGlyphs, GLYPHS.length);
     gl.uniform1f(u.uUnscale, floatGrid ? 1 : 1 / 0.16); gl.uniform1f(u.uOri, floatGrid ? 1 : 0);
