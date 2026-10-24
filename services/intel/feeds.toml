@@ -37,7 +37,13 @@ name = "GlobeNewswire public companies"
 url = "https://www.globenewswire.com/RssFeed/orgclass/1/feedTitle/GlobeNewswire%20-%20News%20about%20Public%20Companies"
 
 [ticker_feeds]
-urls = ["https://feeds.finance.yahoo.com/rss/2.0/headline?s={ticker}&region=US&lang=en-US"]
+# Bing News reaches the major outlets (CNBC, Reuters, the Journal, AP) with links straight to them; Nasdaq's
+# per-symbol feed carries companies' own press releases; Yahoo's adds the rest
+urls = [
+  "https://www.bing.com/news/search?q=%22{name}%22&format=rss",
+  "https://www.nasdaq.com/feed/rssoutbound?symbol={ticker}",
+  "https://feeds.finance.yahoo.com/rss/2.0/headline?s={ticker}&region=US&lang=en-US",
+]
 
 [gdelt]
 enabled = true

@@ -16,7 +16,7 @@ import time
 import tomllib
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from urllib.parse import quote
+from urllib.parse import parse_qs, quote, urlsplit
 
 from lxml import etree
 
@@ -99,6 +99,14 @@ def load_config(path=FEEDS_PATH):
     return tomllib.loads(path.read_text(encoding="utf-8"))
 
 
+def unwrap(url):
+    """The article behind a news aggregator's click-tracking link (Bing News wraps every link in one)."""
+    parts = urlsplit(url)
+    if (parts.hostname or "").endswith("bing.com") and "apiclick" in parts.path:
+        return (parse_qs(parts.query).get("url") or [url])[0]
+    return url
+
+
 def parse_feed(body):
     """Items from an RSS or Atom document: [{url, title, published}]."""
     try:
@@ -121,7 +129,7 @@ def parse_feed(body):
             elif name in ("title", "pubDate", "published", "updated", "date") and child.text:
                 fields.setdefault(name, child.text.strip())
         if fields.get("link"):
-            out.append({"url": fields["link"], "title": fields.get("title", ""),
+            out.append({"url": unwrap(fields["link"]), "title": fields.get("title", ""),
                         "published": iso_utc(fields.get("pubDate") or fields.get("published") or fields.get("date")
                                              or fields.get("updated"))})
     return out

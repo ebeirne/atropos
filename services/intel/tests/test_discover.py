@@ -107,3 +107,12 @@ def test_gdelt_throttling_stops_gdelt_for_the_rest_of_the_cycle(store):
         return page(url, b"Please limit requests to one every 5 seconds")
     found = discover(store, u, {"gdelt": {"enabled": True}}, get=web, now=NOW, sleep=lambda s: None)
     assert found == [] and len(asked) == 1
+
+
+def test_bing_click_tracking_links_are_unwrapped():
+    from intel.discover import unwrap
+    rss = ('<rss><channel><item><title>Nvidia beats</title><link>http://www.bing.com/news/apiclick.aspx?ref=FexRss&amp;aid=&amp;'
+           'tid=abc&amp;url=https%3a%2f%2fwww.cnbc.com%2f2026%2f10%2f23%2fnvidia.html&amp;c=1</link>'
+           '<pubDate>Fri, 23 Oct 2026 04:00:00 GMT</pubDate></item></channel></rss>')
+    assert parse_feed(rss)[0]["url"] == "https://www.cnbc.com/2026/10/23/nvidia.html"
+    assert unwrap("https://www.reuters.com/x") == "https://www.reuters.com/x"
