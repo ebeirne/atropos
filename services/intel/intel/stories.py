@@ -42,6 +42,9 @@ def assign(store):
     touched = set()
     rows = store.con.execute("SELECT * FROM claims WHERE story_id IS NULL ORDER BY first_seen, id").fetchall()
     with store.tx() as con:
+        # a story whose claims were all read again (and went elsewhere) has nothing left to stand on
+        con.execute("UPDATE stories SET status='closed', updated_at=? WHERE status != 'closed' AND id NOT IN "
+                    "(SELECT story_id FROM claims WHERE story_id IS NOT NULL)", (now_iso(),))
         for c in rows:
             s = con.execute("SELECT id, first_seen FROM stories WHERE ticker=? AND event_type=? AND last_seen >= ? "
                             "AND status != 'closed' ORDER BY last_seen DESC LIMIT 1",

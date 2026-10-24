@@ -39,8 +39,9 @@ def test_claims_must_quote_the_article_and_name_a_followed_company(articles, uni
     assert [(c["ticker"], c["statement"]) for c in kept] == [("NWRB", "Northwind buys Contoso at $38")]
 
 
-def test_without_claude_the_fallback_files_neutral_claims(articles, universe):
-    kept, extractor = extract_claims(articles["reuters_original"], universe, ask=lambda *a, **k: None)
+def test_without_claude_the_fallback_files_neutral_claims(articles, universe, monkeypatch):
+    monkeypatch.setattr(claims.llm, "available", lambda: False)
+    kept, extractor = extract_claims(articles["reuters_original"], universe)
     assert extractor == "heuristic"
     assert kept and all(c["direction"] == "neutral" for c in kept)
     assert kept[0]["event_type"] == "merger_acquisition"
@@ -67,3 +68,27 @@ def test_file_new_reads_each_document_once_and_skips_teasers(store, articles, un
     c = store.con.execute("SELECT * FROM claims ORDER BY id").fetchone()
     assert c["first_seen"] == "2026-10-22T15:00:00Z" and c["story_id"] is None
     assert claims.for_story(store, 1) == []
+
+
+def test_fallback_reads_are_read_again_once_claude_is_back(store, articles, universe, monkeypatch):
+    from intel import stories
+    monkeypatch.setattr(claims.llm, "available", lambda: False)
+    store.put(articles["reuters_original"], fetched_at="2026-10-22T15:00:00Z")
+    first = file_new(store, universe)
+    assert first and {c["direction"] for c in first} == {"neutral"}
+    stories.assign(store)
+    assert file_new(store, universe) == []          # still no Claude: nothing to do again
+    again = file_new(store, universe, ask=FakeClaude())
+    assert [c["direction"] for c in again] == ["positive"]
+    assert {r[0] for r in store.con.execute("SELECT extractor FROM claims")} == {"claude-opus-5-5"}
+    stories.assign(store)
+    statuses = [s["status"] for s in stories.listing(store)]
+    assert statuses.count("open") == 1 and set(statuses) == {"open", "closed"}   # the neutral stories are gone
+
+
+def test_a_failed_claude_read_is_not_retried_every_cycle(store, articles, universe):
+    store.put(articles["reuters_original"], fetched_at="2026-10-22T15:00:00Z")
+    file_new(store, universe, ask=lambda *a, **k: None)
+    assert store.con.execute("SELECT extractor FROM extractions").fetchone()[0] == "heuristic: no answer"
+    calls = []
+    assert file_new(store, universe, ask=lambda *a, **k: calls.append(1)) == [] and calls == []
